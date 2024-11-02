@@ -20,9 +20,4 @@ class Kelas extends Model
     {
         return $this->hasMany(Student::class);
     }
-    
-    public function absensi():HasMany
-    {
-        return $this->hasMany(Absensi::class);
-    }
 }

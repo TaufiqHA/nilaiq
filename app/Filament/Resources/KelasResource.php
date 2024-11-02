@@ -21,6 +21,7 @@ use Filament\Forms\Components\MarkdownEditor;
 use App\Filament\Resources\KelasResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\KelasResource\RelationManagers;
+use App\Filament\WaliKelas\Resources\KelasResourcesResource\RelationManagers\StudentRelationManager;
 use Filament\Tables\Filters\QueryBuilder\Constraints\TextConstraint;
 
 class KelasResource extends Resource
@@ -86,7 +87,7 @@ class KelasResource extends Resource
     public static function getRelations(): array
     {
         return [
-            //
+            StudentRelationManager::class,
         ];
     }
 

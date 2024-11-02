@@ -14,7 +14,12 @@ return new class extends Migration
         Schema::create('absensis', function (Blueprint $table) {
             $table->id();
             $table->string('name');
-            $table->foreignId('kelas_id')->constrained('kelas');
+            $table->date('tanggal');
+            $table->foreignId('user_id')->constrained('users')->cascadeOnDelete()->cascadeOnUpdate();
+            $table->foreignId('student_id')->constrained('students')->cascadeOnDelete()->cascadeOnUpdate();
+            $table->foreignId('mapel_id')->constrained('mapels')->cascadeOnDelete()->cascadeOnUpdate();
+            $table->foreignId('kelas_id')->constrained('kelas')->cascadeOnDelete()->cascadeOnUpdate();
+            $table->enum('status', ['hadir', 'izin', 'sakit', 'alpha']);
             $table->timestamps();
         });
     }

@@ -7,6 +7,7 @@ use Filament\Panel;
 use Filament\Widgets;
 use Filament\PanelProvider;
 use Filament\Support\Colors\Color;
+use Illuminate\Support\Facades\Vite;
 use Filament\Http\Middleware\Authenticate;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\Cookie\Middleware\EncryptCookies;
@@ -58,6 +59,9 @@ class AdminPanelProvider extends PanelProvider
             ->plugins([
                 \BezhanSalleh\FilamentShield\FilamentShieldPlugin::make()
             ])
-            ->spa();
+            ->spa()
+            ->renderHook('panels::head.start',
+            fn(): string => Vite::useHotFile('hot')
+                ->withEntryPoints(['resources/css/app.css', 'resources/js/app.js'])->toHtml());
     }
 }

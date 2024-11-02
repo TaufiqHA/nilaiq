@@ -29,9 +29,6 @@ class KelasResource extends Resource
             ->schema([
                 Forms\Components\TextInput::make('name')
                     ->required(),
-                Forms\Components\Select::make('user_id')
-                    ->relationship('user', 'name')
-                    ->required(),
             ]);
     }
 
@@ -63,14 +60,14 @@ class KelasResource extends Resource
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),
                 ]),
-            ]);
+            ])
+            ->defaultSort('name');
     }
 
     public static function getRelations(): array
     {
         return [
             StudentRelationManager::class,
-            AbsensiRelationManager::class
         ];
     }
 
