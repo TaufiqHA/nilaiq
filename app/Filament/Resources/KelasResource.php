@@ -22,8 +22,10 @@ use App\Filament\Resources\KelasResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\KelasResource\RelationManagers;
 use App\Filament\WaliKelas\Resources\KelasResourcesResource\RelationManagers\StudentRelationManager;
+use App\Models\Scopes\KelasScope;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\QueryBuilder\Constraints\TextConstraint;
+use PDO;
 use PhpParser\Node\Expr\FuncCall;
 
 class KelasResource extends Resource
@@ -67,19 +69,24 @@ class KelasResource extends Resource
                     ->label('Wali Kelas')
                     ->searchable(),
                 Tables\Columns\TextColumn::make('tahunAjaran.name'),
-                Tables\Columns\TextColumn::make('created_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                // Tables\Columns\TextColumn::make('created_at')
+                //     ->dateTime()
+                //     ->sortable()
+                //     ->toggleable(isToggledHiddenByDefault: true),
+                // Tables\Columns\TextColumn::make('updated_at')
+                //     ->dateTime()
+                //     ->sortable()
+                //     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                Filter::make('Semua Kelas')
+                    ->toggle()
+                    ->baseQuery(function (Builder $query) {
+                        return $query->withoutGlobalScope(KelasScope::class);
+                    }),
             ])
             ->actions([
+                Tables\Actions\ViewAction::make(),
                 Tables\Actions\EditAction::make(),
             ])
             ->bulkActions([
@@ -101,14 +108,8 @@ class KelasResource extends Resource
         return [
             'index' => Pages\ListKelas::route('/'),
             'create' => Pages\CreateKelas::route('/create'),
+            'view' => Pages\ViewKelas::route('/{record}/view'),
             'edit' => Pages\EditKelas::route('/{record}/edit'),
         ];
     }
-
-    // public static function getEloquentQuery(): Builder
-    // {
-    //     return parent::getEloquentQuery()->whereHas('tahunAjaran', function($query){
-    //         $query->whereDate('tahun_selesai', '>=', now());
-    //     });
-    // }
 }

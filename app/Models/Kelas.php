@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Scopes\KelasScope;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -23,5 +24,10 @@ class Kelas extends Model
 
     public function tahunAjaran() : BelongsTo {
         return $this->belongsTo(TahunAjaran::class);
+    }
+
+    protected static function booted(): void
+    {
+        static::addGlobalScope(new KelasScope);
     }
 }

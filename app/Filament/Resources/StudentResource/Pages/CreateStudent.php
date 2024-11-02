@@ -2,19 +2,22 @@
 
 namespace App\Filament\Resources\StudentResource\Pages;
 
+use App\Models\Kelas;
 use Filament\Actions;
 use App\Models\student;
 use Filament\Forms\Form;
+use App\Imports\ImportStudent;
+use App\Models\Scopes\KelasScope;
 use Filament\Forms\Components\Card;
 use function Laravel\Prompts\select;
+
+use Maatwebsite\Excel\Facades\Excel;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Components\Repeater;
 use Filament\Forms\Components\TextInput;
-
+use Illuminate\Database\Eloquent\Builder;
 use Filament\Resources\Pages\CreateRecord;
 use App\Filament\Resources\StudentResource;
-use App\Imports\ImportStudent;
-use Maatwebsite\Excel\Facades\Excel;
 
 class CreateStudent extends CreateRecord
 {
@@ -30,7 +33,7 @@ class CreateStudent extends CreateRecord
                 Card::make()
                     ->schema([
                         Select::make('kelas_id')
-                            ->relationship('kelas', 'name')
+                            ->relationship(name: 'kelas', titleAttribute:'name'),
                     ]),
                 Repeater::make('siswa')
                     ->schema([
