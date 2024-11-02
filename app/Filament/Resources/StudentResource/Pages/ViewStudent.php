@@ -5,18 +5,11 @@ namespace App\Filament\Resources\StudentResource\Pages;
 use App\Filament\Resources\StudentResource;
 use App\Models\student;
 use Filament\Actions;
-use Filament\Resources\Pages\ListRecords;
+use Filament\Resources\Pages\ViewRecord;
 
-class ListStudents extends ListRecords
+class ViewStudent extends ViewRecord
 {
     protected static string $resource = StudentResource::class;
-
-    protected function getHeaderActions(): array
-    {
-        return [
-            Actions\CreateAction::make(),
-        ];
-    }
 
     protected function resolveRecord($key): student
     {

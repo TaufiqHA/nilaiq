@@ -19,7 +19,7 @@ class Kelas extends Model
 
     public function student(): HasMany
     {
-        return $this->hasMany(Student::class);
+        return $this->hasMany(Student::class)->withoutGlobalScopes();
     }
 
     public function tahunAjaran() : BelongsTo {
