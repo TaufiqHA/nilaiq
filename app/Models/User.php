@@ -6,6 +6,7 @@ namespace App\Models;
 use Filament\Panel;
 use App\Models\Kelas;
 use App\Models\Mapel;
+use BezhanSalleh\FilamentShield\Traits\HasPanelShield;
 use Illuminate\Support\Facades\Auth;
 use Spatie\Permission\Traits\HasRoles;
 use Illuminate\Notifications\Notifiable;
@@ -15,7 +16,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 
-class User extends Authenticatable
+class User extends Authenticatable implements FilamentUser
 {
     /** @use HasFactory<\Database\Factories\UserFactory> */
     use HasFactory, Notifiable, HasRoles;
@@ -54,6 +55,10 @@ class User extends Authenticatable
         ];
     }
 
+    public function kelas(): HasOne {
+        return $this->hasOne(Kelas::class);
+    }
+
     public function canAccessPanel(Panel $panel): bool
     {
         if ($panel->getId() === 'admin') {
@@ -76,10 +81,6 @@ class User extends Authenticatable
             }
         }
         return false;
-    }
-
-    public function kelas(): HasOne {
-        return $this->hasOne(Kelas::class);
     }
 
 }
