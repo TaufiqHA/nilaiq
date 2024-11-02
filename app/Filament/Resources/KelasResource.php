@@ -1,0 +1,106 @@
+<?php
+
+namespace App\Filament\Resources;
+
+use Filament\Forms;
+use Filament\Tables;
+use App\Models\Kelas;
+use Filament\Forms\Form;
+use Filament\Tables\Table;
+use Illuminate\Support\Str;
+use Filament\Resources\Resource;
+use Illuminate\Support\Facades\Auth;
+use Filament\Forms\Components\Toggle;
+use Filament\Forms\Components\TextInput;
+use Filament\Tables\Filters\QueryBuilder;
+use Illuminate\Database\Eloquent\Builder;
+use Filament\Actions\Modal\Actions\Action;
+use Filament\Forms\Components\Wizard\Step;
+
+use Filament\Forms\Components\MarkdownEditor;
+use App\Filament\Resources\KelasResource\Pages;
+use Illuminate\Database\Eloquent\SoftDeletingScope;
+use App\Filament\Resources\KelasResource\RelationManagers;
+use Filament\Tables\Filters\QueryBuilder\Constraints\TextConstraint;
+
+class KelasResource extends Resource
+{
+    protected static ?string $model = Kelas::class;
+
+    protected static ?string $navigationIcon = 'heroicon-o-building-library';
+
+    protected static ?string $navigationGroup = 'Class Management';
+
+    public static function form(Form $form): Form
+    {
+        return $form
+            ->schema([
+                Forms\Components\TextInput::make('name')
+                    ->required()
+                    ->label('Nama Kelas'),
+                Forms\Components\Select::make('user_id')
+                    ->relationship(
+                        name: 'user',
+                        titleAttribute: 'name',
+                        modifyQueryUsing: fn (Builder $query) => $query->whereHas('roles', function ($q) {
+                            $q->where('name', 'wali_kelas');
+                        }),
+                    )
+                    ->required()
+                    ->label('Wali Kelas'),
+            ]);
+    }
+
+    public static function table(Table $table): Table
+    {
+        return $table
+            ->columns([
+                Tables\Columns\TextColumn::make('name')
+                    ->sortable()
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('user.name')
+                    ->label('Wali Kelas')
+                    ->searchable(),
+                Tables\Columns\TextColumn::make('created_at')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+                Tables\Columns\TextColumn::make('updated_at')
+                    ->dateTime()
+                    ->sortable()
+                    ->toggleable(isToggledHiddenByDefault: true),
+            ])
+            ->filters([
+                //
+            ])
+            ->actions([
+                Tables\Actions\EditAction::make(),
+            ])
+            ->bulkActions([
+                Tables\Actions\BulkActionGroup::make([
+                    Tables\Actions\DeleteBulkAction::make(),
+                ]),
+            ]);
+    }
+
+    public static function getRelations(): array
+    {
+        return [
+            //
+        ];
+    }
+
+    public static function getPages(): array
+    {
+        return [
+            'index' => Pages\ListKelas::route('/'),
+            'create' => Pages\CreateKelas::route('/create'),
+            'edit' => Pages\EditKelas::route('/{record}/edit'),
+        ];
+    }
+
+    // public static function getEloquentQuery(): Builder
+    // {
+    //     return parent::getEloquentQuery()->where('user_id', Auth::user()->id);
+    // }
+}
