@@ -18,6 +18,8 @@ use Filament\Notifications\Notification;
 use Filament\Forms\Components\FileUpload;
 use Illuminate\Database\Eloquent\Builder;
 use App\Filament\Resources\StudentResource\Pages;
+use App\Models\Scopes\StudentScope;
+use Filament\Tables\Filters\Filter;
 
 class StudentResource extends Resource
 {
@@ -48,17 +50,21 @@ class StudentResource extends Resource
                 Tables\Columns\TextColumn::make('kelas.name')
                     ->numeric()
                     ->sortable(),
-                Tables\Columns\TextColumn::make('created_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                // Tables\Columns\TextColumn::make('created_at')
+                //     ->dateTime()
+                //     ->sortable()
+                //     ->toggleable(isToggledHiddenByDefault: true),
+                // Tables\Columns\TextColumn::make('updated_at')
+                //     ->dateTime()
+                //     ->sortable()
+                //     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                Filter::make('Semua Tahun Ajaran')
+                    ->toggle()
+                    ->baseQuery(function(Builder $query){
+                        return $query->withoutGlobalScope(StudentScope::class);
+                    }),
             ])
             ->actions([
                 ViewAction::make(),
