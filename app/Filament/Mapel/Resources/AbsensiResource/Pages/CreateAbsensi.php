@@ -27,23 +27,23 @@ class CreateAbsensi extends CreateRecord
         return $form->schema([
             Card::make()->schema([
                 Grid::make([
-                    'lg' => 3,
+                    'lg' => 2,
                     'md' => 1,
                 ])->schema([
                     TextInput::make('name')
                         ->required(),
                     DatePicker::make('tanggal')
                         ->required(),
-                    Select::make('mapel_id')
-                        ->options(Mapel::all()->pluck('name', 'id'))
-                        ->required(),
+                    // Select::make('mapel_id')
+                    //     ->options(Mapel::all()->pluck('name', 'id'))
+                    //     ->required(),
                     Select::make('kelas_id')
                         ->relationship(name: 'kelas', titleAttribute: 'name')
                         ->required()
                         ->preload()
                         ->live()
                         ->columnSpan([
-                            'lg' => 3,
+                            'lg' => 2,
                             'md' => 1                        ]),
                 ]),
 
@@ -70,6 +70,10 @@ class CreateAbsensi extends CreateRecord
                                     ->label('Status Kehadiran')
                                     ->required()
                                     ->afterStateUpdated(function ($state) use ($get, $student) {
+                                        $mapel = Mapel::whereHas('user', function($query){
+                                            $query->where('id', Auth::user()->id);
+                                        })->first();
+                                        $id = $mapel->id;
                                         // Menyimpan data ke database Absensi
                                         Absensi::insert(
                                             [
@@ -77,7 +81,7 @@ class CreateAbsensi extends CreateRecord
                                                 'status' => $state,
                                                 'tanggal' => $get('tanggal'),
                                                 'student_id' => $student->id,
-                                                'mapel_id' => $get('mapel_id'),
+                                                'mapel_id' => $id,
                                                 'kelas_id' => $get('kelas_id'),
                                                 'user_id' => Auth::user()->id,
                                             ]
