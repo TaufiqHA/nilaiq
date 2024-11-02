@@ -20,4 +20,8 @@ class Kelas extends Model
     {
         return $this->hasMany(Student::class);
     }
+
+    public function tahunAjaran() : BelongsTo {
+        return $this->belongsTo(TahunAjaran::class);
+    }
 }

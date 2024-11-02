@@ -22,7 +22,9 @@ use App\Filament\Resources\KelasResource\Pages;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Resources\KelasResource\RelationManagers;
 use App\Filament\WaliKelas\Resources\KelasResourcesResource\RelationManagers\StudentRelationManager;
+use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\QueryBuilder\Constraints\TextConstraint;
+use PhpParser\Node\Expr\FuncCall;
 
 class KelasResource extends Resource
 {
@@ -49,6 +51,8 @@ class KelasResource extends Resource
                     )
                     ->required()
                     ->label('Wali Kelas'),
+                Forms\Components\Select::make('tahun_ajaran_id')
+                    ->relationship('tahunAjaran', 'name'),
             ]);
     }
 
@@ -62,6 +66,7 @@ class KelasResource extends Resource
                 Tables\Columns\TextColumn::make('user.name')
                     ->label('Wali Kelas')
                     ->searchable(),
+                Tables\Columns\TextColumn::make('tahunAjaran.name'),
                 Tables\Columns\TextColumn::make('created_at')
                     ->dateTime()
                     ->sortable()
@@ -102,6 +107,8 @@ class KelasResource extends Resource
 
     // public static function getEloquentQuery(): Builder
     // {
-    //     return parent::getEloquentQuery()->where('user_id', Auth::user()->id);
+    //     return parent::getEloquentQuery()->whereHas('tahunAjaran', function($query){
+    //         $query->whereDate('tahun_selesai', '>=', now());
+    //     });
     // }
 }
