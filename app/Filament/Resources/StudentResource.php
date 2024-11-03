@@ -11,15 +11,16 @@ use Filament\Forms\Form;
 use Filament\Tables\Table;
 use Filament\Resources\Resource;
 use App\Models\Scopes\KelasScope;
+use App\Models\Scopes\StudentScope;
+use Filament\Tables\Filters\Filter;
 use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Actions\ViewAction;
 use Illuminate\Support\Facades\Storage;
 use Filament\Notifications\Notification;
 use Filament\Forms\Components\FileUpload;
+use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
 use App\Filament\Resources\StudentResource\Pages;
-use App\Models\Scopes\StudentScope;
-use Filament\Tables\Filters\Filter;
 
 class StudentResource extends Resource
 {
@@ -65,6 +66,10 @@ class StudentResource extends Resource
                     ->baseQuery(function(Builder $query){
                         return $query->withoutGlobalScope(StudentScope::class);
                     }),
+
+                SelectFilter::make('Kelas')
+                    ->options(Kelas::all()->pluck('name', 'id'))
+                    ->attribute('kelas_id')
             ])
             ->actions([
                 ViewAction::make(),

@@ -17,6 +17,10 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Mapel\Resources\NilaiResource\Pages;
 use App\Filament\Mapel\Resources\NilaiResource\RelationManagers;
+use App\Models\Scopes\KelasScope;
+use App\Models\Scopes\NilaiScope;
+use Filament\Forms\Components\Checkbox;
+use PDO;
 
 class NilaiResource extends Resource
 {
@@ -103,7 +107,19 @@ class NilaiResource extends Resource
                             $data['tanggal'],
                             fn (Builder $query, $date): Builder => $query->whereDate('tanggal', $date),
                         );
-                })
+                }),
+
+                Filter::make('Semua Tahun Ajaran')
+                    ->form([
+                        Checkbox::make('all'),
+                    ])
+                    ->baseQuery(function(Builder $query, array $data): Builder{
+                        return $query
+                            ->when(
+                                $data['all'],
+                                fn (Builder $query): Builder => $query->withoutGlobalScope(NilaiScope::class),
+                            );
+                    })
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),

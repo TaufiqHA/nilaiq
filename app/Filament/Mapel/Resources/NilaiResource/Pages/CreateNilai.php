@@ -47,7 +47,7 @@ class CreateNilai extends CreateRecord
                     Select::make('jenis_nilai')
                         ->options([
                             'harian' => 'Harian',
-                            'Tugas' => 'Tugas',
+                            'tugas' => 'Tugas',
                             'uts' => 'UTS',
                             'uas' => 'UAS'
                         ])

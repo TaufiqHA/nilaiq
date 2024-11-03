@@ -25,6 +25,7 @@ use App\Filament\WaliKelas\Resources\KelasResourcesResource\RelationManagers\Stu
 use App\Models\Scopes\KelasScope;
 use Filament\Tables\Filters\Filter;
 use Filament\Tables\Filters\QueryBuilder\Constraints\TextConstraint;
+use Filament\Tables\Filters\SelectFilter;
 use PDO;
 use PhpParser\Node\Expr\FuncCall;
 
