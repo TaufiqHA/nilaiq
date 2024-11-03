@@ -109,14 +109,14 @@ class NilaiResource extends Resource
                         );
                 }),
 
-                Filter::make('Semua Tahun Ajaran')
+                Filter::make('all')
                     ->form([
-                        Checkbox::make('all'),
+                        Checkbox::make('semua_tahun_ajaran'),
                     ])
                     ->baseQuery(function(Builder $query, array $data): Builder{
                         return $query
                             ->when(
-                                $data['all'],
+                                $data['semua_tahun_ajaran'],
                                 fn (Builder $query): Builder => $query->withoutGlobalScope(NilaiScope::class),
                             );
                     })

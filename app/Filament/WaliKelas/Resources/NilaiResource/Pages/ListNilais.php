@@ -2,9 +2,11 @@
 
 namespace App\Filament\WaliKelas\Resources\NilaiResource\Pages;
 
-use App\Filament\WaliKelas\Resources\NilaiResource;
 use Filament\Actions;
+use Filament\Resources\Components\Tab;
 use Filament\Resources\Pages\ListRecords;
+use Illuminate\Database\Eloquent\Builder;
+use App\Filament\WaliKelas\Resources\NilaiResource;
 
 class ListNilais extends ListRecords
 {
@@ -14,6 +16,21 @@ class ListNilais extends ListRecords
     {
         return [
             Actions\CreateAction::make(),
+        ];
+    }
+
+    public function getTabs(): array
+    {
+        return [
+            'all' => Tab::make(),
+            'Harian' => Tab::make()
+                ->modifyQueryUsing(fn (Builder $query) => $query->where('jenis_nilai', 'harian')),
+            'Tugas' => Tab::make()
+                ->modifyQueryUsing(fn (Builder $query) => $query->where('jenis_nilai', 'tugas')),
+            'UTS' => Tab::make()
+                ->modifyQueryUsing(fn (Builder $query) => $query->where('jenis_nilai', 'uts')),
+            'UAS' => Tab::make()
+                ->modifyQueryUsing(fn (Builder $query) => $query->where('jenis_nilai', 'uas')),
         ];
     }
 }

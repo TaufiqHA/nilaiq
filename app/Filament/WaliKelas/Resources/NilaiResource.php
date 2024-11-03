@@ -4,11 +4,13 @@ namespace App\Filament\WaliKelas\Resources;
 
 use Filament\Forms;
 use Filament\Tables;
+use App\Models\Mapel;
 use App\Models\Nilai;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
 use Filament\Resources\Resource;
 use Illuminate\Support\Facades\Auth;
+use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
 use App\Filament\WaliKelas\Resources\NilaiResource\Pages;
 
@@ -69,17 +71,28 @@ class NilaiResource extends Resource
                     ->sortable(),
                 Tables\Columns\TextColumn::make('jenis_nilai')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('created_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
-                Tables\Columns\TextColumn::make('updated_at')
-                    ->dateTime()
-                    ->sortable()
-                    ->toggleable(isToggledHiddenByDefault: true),
+                // Tables\Columns\TextColumn::make('created_at')
+                //     ->dateTime()
+                //     ->sortable()
+                //     ->toggleable(isToggledHiddenByDefault: true),
+                // Tables\Columns\TextColumn::make('updated_at')
+                //     ->dateTime()
+                //     ->sortable()
+                //     ->toggleable(isToggledHiddenByDefault: true),
             ])
             ->filters([
-                //
+                SelectFilter::make('Jenis Nilai')
+                    ->options([
+                        'harian' => "Harian",
+                        'tugas' => "Tugas",
+                        'uts' => "UTS",
+                        'uas' => "UAS",
+                    ])
+                    ->attribute('jenis_nilai'),
+
+                SelectFilter::make('Mata Pelajaran')
+                    ->options(Mapel::all()->pluck('name', 'id'))
+                    ->attribute('mapel_id')
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
