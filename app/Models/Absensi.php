@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Scopes\AbsensiScope;
 use App\Models\student;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -15,10 +16,15 @@ class Absensi extends Model
     }
 
     public function kelas(): BelongsTo {
-        return $this->belongsTo(Kelas::class);
+        return $this->belongsTo(Kelas::class)->withoutGlobalScopes();
     }
 
     public function student(): BelongsTo {
-        return $this->belongsTo(student::class);
+        return $this->belongsTo(student::class)->withoutGlobalScopes();
+    }
+
+    protected static function booted(): void
+    {
+        static::addGlobalScope(new AbsensiScope);
     }
 }

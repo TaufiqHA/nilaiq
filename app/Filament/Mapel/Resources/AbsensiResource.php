@@ -16,9 +16,9 @@ use Illuminate\Support\Facades\Auth;
 use Filament\Forms\Components\DatePicker;
 use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Mapel\Resources\AbsensiResource\Pages;
-use App\Filament\Mapel\Resources\AbsensiResource\RelationManagers;
+use App\Models\Scopes\AbsensiScope;
+use Filament\Forms\Components\Checkbox;
 
 class AbsensiResource extends Resource
 {
@@ -103,7 +103,19 @@ class AbsensiResource extends Resource
                             $data['tanggal'],
                             fn (Builder $query, $date): Builder => $query->whereDate('tanggal', $date),
                         );
-                })
+                }),
+
+                Filter::make('Semua Tahun Ajaran')
+                    ->form([
+                        Checkbox::make('all_class'),
+                    ])
+                    ->baseQuery(function(Builder $query, array $data): Builder {
+                        return $query
+                            ->when(
+                                $data['all_class'],
+                                fn (Builder $query): Builder => $query->withoutGlobalScope(AbsensiScope::class),
+                            );
+                    }),
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),
