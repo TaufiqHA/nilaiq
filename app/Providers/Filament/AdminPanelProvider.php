@@ -15,6 +15,7 @@ use Filament\Http\Middleware\Authenticate;
 use Filament\Navigation\NavigationBuilder;
 use App\Filament\Resources\ClassesResource;
 use App\Filament\Resources\SchoolsResource;
+use App\Filament\Resources\SubjectsResource;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Filament\Http\Middleware\AuthenticateSession;
@@ -67,17 +68,23 @@ class AdminPanelProvider extends PanelProvider
                 fn (): string => Blade::render("@vite('resources/js/app.js')"),
             )
             ->navigation(function (NavigationBuilder $builder): NavigationBuilder {
-                return $builder->groups([
-                    NavigationGroup::make('Dashboard')
-                        ->items([
-                            ...Dashboard::getNavigationItems(),
-                        ]),
+                return $builder->items([
+                    NavigationItem::make('Dashboard')
+                        ->icon('heroicon-o-home')
+                        ->isActiveWhen(fn (): bool => request()->routeIs('filament.admin.pages.dashboard'))
+                        ->url(fn (): string => Dashboard::getUrl()),
+
+                ])->groups([
                     NavigationGroup::make('Manajemen Sekolah')
                         ->items([
                             ...SchoolsResource::getNavigationItems(),
                             ...ClassesResource::getNavigationItems(),
                         ]),
-                ]);
+                    NavigationGroup::make('Manajemen Mata Pelajaran')
+                        ->items([
+                            ...SubjectsResource::getNavigationItems(),
+                        ]),
+                    ]);
             });
     }
 
