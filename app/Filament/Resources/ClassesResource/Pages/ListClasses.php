@@ -10,10 +10,7 @@ class ListClasses extends ListRecords
 {
     protected static string $resource = ClassesResource::class;
 
-    public function getTitle(): string
-    {
-        return 'Kelas';
-    }
+    protected static ?string $title = 'Kelas';
 
     protected function getHeaderActions(): array
     {

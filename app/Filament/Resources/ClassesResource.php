@@ -15,7 +15,7 @@ class ClassesResource extends Resource
 {
     protected static ?string $model = Classes::class;
 
-    protected static ?string $navigationIcon = 'heroicon-o-building-office';
+    protected static ?string $navigationIcon = 'heroicon-o-rectangle-stack';
 
     protected static ?string $navigationLabel = 'Kelas';
 
@@ -27,9 +27,9 @@ class ClassesResource extends Resource
                     ->label('Nama Kelas')
                     ->required(),
                 Forms\Components\Select::make('school_id')
-                    ->label('Sekolah')
+                    ->label('Tahun Ajaran')
                     ->required()
-                    ->options(schools::all()->pluck('school_name', 'id')),
+                    ->options(schools::all()->pluck('academic_year', 'id')),
             ]);
     }
 
@@ -38,8 +38,10 @@ class ClassesResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('class_name')
+                    ->label('Nama Kelas')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('school.school_name')
+                Tables\Columns\TextColumn::make('school.academic_year')
+                    ->label('Tahun Ajaran')
                     ->numeric()
                     ->sortable(),
             ])
@@ -49,7 +51,6 @@ class ClassesResource extends Resource
             ->actions([
                 Tables\Actions\EditAction::make(),
             ])
-            ->emptyStateHeading('Tidak Ada Kelas')
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
                     Tables\Actions\DeleteBulkAction::make(),

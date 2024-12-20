@@ -10,8 +10,5 @@ class CreateClasses extends CreateRecord
 {
     protected static string $resource = ClassesResource::class;
 
-    public function getTitle(): string
-    {
-        return 'Buat kelas';
-    }
+    protected static ?string $title = 'Tambah Kelas';
 }

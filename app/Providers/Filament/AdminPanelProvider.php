@@ -15,7 +15,9 @@ use Filament\Http\Middleware\Authenticate;
 use Filament\Navigation\NavigationBuilder;
 use App\Filament\Resources\ClassesResource;
 use App\Filament\Resources\SchoolsResource;
+use App\Filament\Resources\StudentsResource;
 use App\Filament\Resources\SubjectsResource;
+use App\Filament\Resources\TeachersResource;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Filament\Http\Middleware\AuthenticateSession;
@@ -34,10 +36,11 @@ class AdminPanelProvider extends PanelProvider
             ->default()
             ->id('admin')
             ->path('admin')
-            ->login()
             ->colors([
                 'primary' => Color::Amber,
             ])
+            ->login()
+            ->brandName('NilaiQ')
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')
             ->pages([
@@ -83,6 +86,14 @@ class AdminPanelProvider extends PanelProvider
                     NavigationGroup::make('Manajemen Mata Pelajaran')
                         ->items([
                             ...SubjectsResource::getNavigationItems(),
+                        ]),
+                    NavigationGroup::make('Manajemen Guru')
+                        ->items([
+                            ...TeachersResource::getNavigationItems(),
+                        ]),
+                    NavigationGroup::make('Manajemen Siswa')
+                        ->items([
+                            ...StudentsResource::getNavigationItems(),
                         ]),
                     ]);
             });

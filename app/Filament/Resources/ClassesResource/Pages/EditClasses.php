@@ -9,6 +9,7 @@ use Filament\Resources\Pages\EditRecord;
 class EditClasses extends EditRecord
 {
     protected static string $resource = ClassesResource::class;
+    protected static ?string $title = 'Edit Kelas';
 
     protected function getHeaderActions(): array
     {
