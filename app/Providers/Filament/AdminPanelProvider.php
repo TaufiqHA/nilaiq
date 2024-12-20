@@ -19,6 +19,7 @@ use App\Filament\Resources\SchoolsResource;
 use App\Filament\Resources\StudentsResource;
 use App\Filament\Resources\SubjectsResource;
 use App\Filament\Resources\TeachersResource;
+use App\Filament\Resources\WaliKelasResource;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Filament\Http\Middleware\AuthenticateSession;
@@ -91,6 +92,7 @@ class AdminPanelProvider extends PanelProvider
                     NavigationGroup::make('Manajemen Guru')
                         ->items([
                             ...TeachersResource::getNavigationItems(),
+                            ...WaliKelasResource::getNavigationItems(),
                         ]),
                     NavigationGroup::make('Manajemen Siswa')
                         ->items([
