@@ -14,6 +14,7 @@ use Filament\Navigation\NavigationGroup;
 use Filament\Http\Middleware\Authenticate;
 use Filament\Navigation\NavigationBuilder;
 use App\Filament\Resources\ClassesResource;
+use App\Filament\Resources\ExtracurricularsResource;
 use App\Filament\Resources\SchoolsResource;
 use App\Filament\Resources\StudentsResource;
 use App\Filament\Resources\SubjectsResource;
@@ -94,6 +95,10 @@ class AdminPanelProvider extends PanelProvider
                     NavigationGroup::make('Manajemen Siswa')
                         ->items([
                             ...StudentsResource::getNavigationItems(),
+                        ]),
+                    NavigationGroup::make('Manajemen Ekstrakurikuler')
+                        ->items([
+                            ...ExtracurricularsResource::getNavigationItems(),
                         ]),
                     ]);
             });
