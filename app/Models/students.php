@@ -7,4 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 class students extends Model
 {
     protected $guarded = ['id'];
+
+    public function class()
+    {
+        return $this->belongsTo(classes::class);
+    }
 }

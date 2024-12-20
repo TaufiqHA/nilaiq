@@ -2,13 +2,18 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\Teacher\Resources\SubjectAttendanceSessionsResource;
 use Filament\Pages;
 use Filament\Panel;
 use Filament\Widgets;
 use Filament\PanelProvider;
+use Filament\Pages\Dashboard;
 use Filament\Support\Colors\Color;
 use Illuminate\Support\Facades\Blade;
+use Filament\Navigation\NavigationItem;
+use Filament\Navigation\NavigationGroup;
 use Filament\Http\Middleware\Authenticate;
+use Filament\Navigation\NavigationBuilder;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Filament\Http\Middleware\AuthenticateSession;
@@ -58,6 +63,20 @@ class TeacherPanelProvider extends PanelProvider
             ->renderHook(
                 'panels::body.end',
                 fn (): string => Blade::render("@vite('resources/js/app.js')"),
-            );
+            )
+            ->navigation(function (NavigationBuilder $builder): NavigationBuilder {
+                return $builder->items([
+                    NavigationItem::make('Dashboard')
+                        ->icon('heroicon-o-home')
+                        ->isActiveWhen(fn (): bool => request()->routeIs('filament.admin.pages.dashboard'))
+                        ->url(fn (): string => Dashboard::getUrl()),
+
+                ])->groups([
+                    NavigationGroup::make('Manajemen Absensi')
+                        ->items([
+                            ...SubjectAttendanceSessionsResource::getNavigationItems(),
+                        ]),
+                    ]);
+            });
     }
 }

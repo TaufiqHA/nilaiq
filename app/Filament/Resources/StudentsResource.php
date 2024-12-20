@@ -64,6 +64,9 @@ class StudentsResource extends Resource
                 Tables\Columns\TextColumn::make('nis')
                     ->label('NIS')
                     ->searchable(),
+                Tables\Columns\TextColumn::make('class.class_name')
+                    ->label('Kelas')
+                    ->searchable(),
             ])
             ->filters([
                 //

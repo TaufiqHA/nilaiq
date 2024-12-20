@@ -9,11 +9,13 @@ use Filament\Resources\Pages\EditRecord;
 class EditGuruMataPelajaran extends EditRecord
 {
     protected static string $resource = GuruMataPelajaranResource::class;
+    protected static ?string $title = 'Edit Guru Mapel';
 
     protected function getHeaderActions(): array
     {
         return [
-            Actions\DeleteAction::make(),
+            Actions\DeleteAction::make()
+                ->label('Hapus'),
         ];
     }
 }
