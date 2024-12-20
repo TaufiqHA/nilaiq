@@ -7,4 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 class schools extends Model
 {
     protected $guarded = ['id'];
+
+    public function classess()
+    {
+        return $this->hasMany(classes::class);
+    }
 }
