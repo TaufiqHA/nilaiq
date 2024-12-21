@@ -11,4 +11,9 @@ class CreateSubjectAttendanceSessions extends CreateRecord
     protected static string $resource = SubjectAttendanceSessionsResource::class;
 
     protected static ?string $title = 'Tambah Sesi Absensi';
+
+    protected function getRedirectUrl(): string
+    {
+        return $this->getResource()::getUrl('kelola', [$this->record->id]);
+    }
 }

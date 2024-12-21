@@ -2,19 +2,20 @@
 
 namespace App\Filament\Teacher\Resources;
 
-use App\Filament\Teacher\Resources\SubjectAttendanceSessionsResource\Pages;
-use App\Filament\Teacher\Resources\SubjectAttendanceSessionsResource\Pages\subjectAttendanceRecords;
-use App\Filament\Teacher\Resources\SubjectAttendanceSessionsResource\RelationManagers;
-use App\Models\classes;
-use App\Models\SubjectAttendanceSessions;
-use App\Models\subjects;
 use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Resources\Resource;
 use Filament\Tables;
+use App\Models\classes;
+use App\Models\subjects;
+use Filament\Forms\Form;
 use Filament\Tables\Table;
+use Filament\Resources\Resource;
+use App\Models\SubjectAttendanceSessions;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use App\Filament\Teacher\Resources\SubjectAttendanceSessionsResource\Pages;
+use App\Filament\Teacher\Resources\SubjectAttendanceSessionsResource\RelationManagers;
+use App\Filament\Teacher\Resources\SubjectAttendanceSessionsResource\Pages\subjectAttendanceRecords;
+use App\Filament\Teacher\Resources\SubjectAttendanceSessionsResource\Pages\editsubjectAttendanceRecords;
 
 class SubjectAttendanceSessionsResource extends Resource
 {
@@ -70,7 +71,7 @@ class SubjectAttendanceSessionsResource extends Resource
             ->actions([
                 Tables\Actions\Action::make('kelola')
                     ->icon('heroicon-o-pencil-square')
-                    ->url(fn ($record) => subjectAttendanceRecords::getUrl([$record->id]))
+                    ->url(fn ($record) => editsubjectAttendanceRecords::getUrl([$record->id]))
             ])
             ->emptyStateHeading('Tidak Ada Sesi')
             ->bulkActions([
@@ -94,6 +95,7 @@ class SubjectAttendanceSessionsResource extends Resource
             'create' => Pages\CreateSubjectAttendanceSessions::route('/create'),
             'edit' => Pages\EditSubjectAttendanceSessions::route('/{record}/edit'),
             'kelola' => Pages\subjectAttendanceRecords::route('/{record}/kelola'),
+            'editRecord' => Pages\editsubjectAttendanceRecords::route('/{record}/editRecord'),
         ];
     }
 }

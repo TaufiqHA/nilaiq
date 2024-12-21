@@ -68,7 +68,7 @@ class TeacherPanelProvider extends PanelProvider
                 return $builder->items([
                     NavigationItem::make('Dashboard')
                         ->icon('heroicon-o-home')
-                        ->isActiveWhen(fn (): bool => request()->routeIs('filament.admin.pages.dashboard'))
+                        ->isActiveWhen(fn (): bool => request()->routeIs('filament.teacher.pages.dashboard'))
                         ->url(fn (): string => Dashboard::getUrl()),
 
                 ])->groups([
