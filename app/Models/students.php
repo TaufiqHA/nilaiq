@@ -12,4 +12,9 @@ class students extends Model
     {
         return $this->belongsTo(classes::class);
     }
+
+    public function subjectAttendanceRecords()
+    {
+        return $this->hasOne(subjectAttendanceRecords::class);
+    }
 }
