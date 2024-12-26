@@ -77,39 +77,39 @@ class editsubjectAttendanceRecords extends Page implements HasForms
 
 
     public function save()
-{
-    // Ambil data dari formulir
-    $data = $this->form->getState();
+    {
+        // Ambil data dari formulir
+        $data = $this->form->getState();
 
-    // Loop melalui setiap mahasiswa untuk memperbarui status
-    foreach ($data['absensi'] as $studentData) {
-        // Temukan mahasiswa berdasarkan nama atau ID (ubah sesuai kebutuhan)
-        $student = students::where('name', $studentData['name'])->first();
+        // Loop melalui setiap mahasiswa untuk memperbarui status
+        foreach ($data['absensi'] as $studentData) {
+            // Temukan mahasiswa berdasarkan nama atau ID (ubah sesuai kebutuhan)
+            $student = students::where('name', $studentData['name'])->first();
 
-        if ($student) {
-            // Cek jika record sudah ada, jika ada lakukan update
-            $attendanceRecord = subjectAttendanceRecords::where('attendance_session_id', $this->session->id)
-                                                              ->where('student_id', $student->id)
-                                                              ->first();
+            if ($student) {
+                // Cek jika record sudah ada, jika ada lakukan update
+                $attendanceRecord = subjectAttendanceRecords::where('attendance_session_id', $this->session->id)
+                                                                ->where('student_id', $student->id)
+                                                                ->first();
 
-            if ($attendanceRecord) {
-                // Jika record ada, update status
-                $attendanceRecord->update([
-                    'status' => $studentData['status']
-                ]);
-            } else {
-                // Jika record tidak ada, buat data baru
-                subjectAttendanceRecords::create([
-                    'attendance_session_id' => $this->session->id,
-                    'student_id' => $student->id,
-                    'status' => $studentData['status']
-                ]);
+                if ($attendanceRecord) {
+                    // Jika record ada, update status
+                    $attendanceRecord->update([
+                        'status' => $studentData['status']
+                    ]);
+                } else {
+                    // Jika record tidak ada, buat data baru
+                    subjectAttendanceRecords::create([
+                        'attendance_session_id' => $this->session->id,
+                        'student_id' => $student->id,
+                        'status' => $studentData['status']
+                    ]);
+                }
             }
         }
-    }
 
-    // Tampilkan notifikasi berhasil dan kembali ke halaman sebelumnya
-    return redirect(SubjectAttendanceSessionsResource::getUrl());
-}
+        // Tampilkan notifikasi berhasil dan kembali ke halaman sebelumnya
+        return redirect(SubjectAttendanceSessionsResource::getUrl());
+    }
 
 }

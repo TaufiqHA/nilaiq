@@ -3,6 +3,7 @@
 namespace App\Filament\Teacher\Resources;
 
 use App\Filament\Teacher\Resources\ScoreSessionsResource\Pages;
+use App\Filament\Teacher\Resources\ScoreSessionsResource\Pages\editscoreRecords;
 use App\Filament\Teacher\Resources\ScoreSessionsResource\Pages\scoreRecords;
 use App\Filament\Teacher\Resources\ScoreSessionsResource\RelationManagers;
 use App\Models\classes;
@@ -83,7 +84,7 @@ class ScoreSessionsResource extends Resource
             ->actions([
                 Tables\Actions\Action::make('Kelola')
                     ->icon('heroicon-o-pencil-square')
-                    ->url(fn ($record) => scoreRecords::getUrl([$record->id])),
+                    ->url(fn ($record) => editscoreRecords::getUrl([$record->id])),
             ])
             ->emptyStateHeading('Tidak Ada Sesi Nilai')
             ->bulkActions([
@@ -107,6 +108,7 @@ class ScoreSessionsResource extends Resource
             'create' => Pages\CreateScoreSessions::route('/create'),
             'edit' => Pages\EditScoreSessions::route('/{record}/edit'),
             'score' => Pages\scoreRecords::route('/{record}/score'),
+            'editScore' => Pages\editscoreRecords::route('/{record}/editScore'),
         ];
     }
 }
