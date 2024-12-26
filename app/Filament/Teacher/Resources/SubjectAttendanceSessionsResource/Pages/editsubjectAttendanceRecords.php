@@ -19,6 +19,7 @@ class editsubjectAttendanceRecords extends Page implements HasForms
 {
     use InteractsWithForms;
     protected static string $resource = SubjectAttendanceSessionsResource::class;
+    protected static ?string $title = 'Absensi';
 
     protected static string $view = 'filament.teacher.resources.subject-attendance-sessions-resource.pages.editsubject-attendance-records';
 

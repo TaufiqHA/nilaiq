@@ -2,11 +2,11 @@
 
 namespace App\Providers\Filament;
 
-use App\Filament\Teacher\Resources\SubjectAttendanceSessionsResource;
 use Filament\Pages;
 use Filament\Panel;
 use Filament\Widgets;
 use Filament\PanelProvider;
+use Filament\Enums\ThemeMode;
 use Filament\Pages\Dashboard;
 use Filament\Support\Colors\Color;
 use Illuminate\Support\Facades\Blade;
@@ -20,9 +20,11 @@ use Filament\Http\Middleware\AuthenticateSession;
 use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
+use App\Filament\Teacher\Resources\ScoreSessionsResource;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
+use App\Filament\Teacher\Resources\SubjectAttendanceSessionsResource;
 
 class TeacherPanelProvider extends PanelProvider
 {
@@ -64,6 +66,7 @@ class TeacherPanelProvider extends PanelProvider
                 'panels::body.end',
                 fn (): string => Blade::render("@vite('resources/js/app.js')"),
             )
+            ->defaultThemeMode(ThemeMode::Light)
             ->navigation(function (NavigationBuilder $builder): NavigationBuilder {
                 return $builder->items([
                     NavigationItem::make('Dashboard')
@@ -75,6 +78,10 @@ class TeacherPanelProvider extends PanelProvider
                     NavigationGroup::make('Manajemen Absensi')
                         ->items([
                             ...SubjectAttendanceSessionsResource::getNavigationItems(),
+                        ]),
+                    NavigationGroup::make('Manajemen Nilai')
+                        ->items([
+                            ...ScoreSessionsResource::getNavigationItems(),
                         ]),
                     ]);
             });

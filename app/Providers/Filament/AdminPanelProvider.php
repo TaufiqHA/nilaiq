@@ -21,6 +21,7 @@ use App\Filament\Resources\StudentsResource;
 use App\Filament\Resources\SubjectsResource;
 use App\Filament\Resources\TeachersResource;
 use App\Filament\Resources\WaliKelasResource;
+use Filament\Enums\ThemeMode;
 use Illuminate\Session\Middleware\StartSession;
 use Illuminate\Cookie\Middleware\EncryptCookies;
 use Filament\Http\Middleware\AuthenticateSession;
@@ -43,6 +44,7 @@ class AdminPanelProvider extends PanelProvider
                 'primary' => Color::Amber,
             ])
             ->login()
+            ->defaultThemeMode(ThemeMode::Light)
             ->brandName('NilaiQ')
             ->discoverResources(in: app_path('Filament/Resources'), for: 'App\\Filament\\Resources')
             ->discoverPages(in: app_path('Filament/Pages'), for: 'App\\Filament\\Pages')

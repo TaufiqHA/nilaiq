@@ -47,10 +47,10 @@ class subjectAttendanceRecords extends Page implements HasForms
         return $form
             ->schema([
                 Repeater::make('student') // Nama yang sesuai dengan data
-                    ->label('Daftar Mahasiswa')
+                    ->label('Daftar Siswa')
                     ->schema([
                         TextInput::make('name')
-                            ->label('Nama Mahasiswa')
+                            ->label('Nama Siswa')
                             ->readOnly(),
                         Select::make(name: 'status')
                             ->label('Status Kehadiran')
