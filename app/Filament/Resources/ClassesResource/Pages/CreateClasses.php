@@ -11,4 +11,10 @@ class CreateClasses extends CreateRecord
     protected static string $resource = ClassesResource::class;
 
     protected static ?string $title = 'Tambah Kelas';
+
+    protected function getRedirectUrl(): string
+    {
+        $record = $this->record;
+        return addStudent::getUrl([$record]);
+    }
 }

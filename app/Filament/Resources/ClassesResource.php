@@ -71,6 +71,7 @@ class ClassesResource extends Resource
             'index' => Pages\ListClasses::route('/'),
             'create' => Pages\CreateClasses::route('/create'),
             'edit' => Pages\EditClasses::route('/{record}/edit'),
+            'addStudents' => Pages\addStudent::route('/{record}/addStudents'),
         ];
     }
 }
