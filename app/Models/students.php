@@ -8,11 +8,6 @@ class students extends Model
 {
     protected $guarded = ['id'];
 
-    public function class()
-    {
-        return $this->belongsTo(classes::class);
-    }
-
     public function subjectAttendanceRecords()
     {
         return $this->hasOne(subjectAttendanceRecords::class);

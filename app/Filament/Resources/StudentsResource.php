@@ -43,14 +43,9 @@ class StudentsResource extends Resource
                         'Perempuan' => 'Perempuan'
                     ])
                     ->required(),
-                Forms\Components\Select::make('school_id')
-                    ->label('Sekolah')
-                    ->required()
-                    ->options(schools::all()->pluck('school_name', 'id')),
-                Forms\Components\Select::make('class_id')
+                Forms\Components\TextInput::make('class_name')
                     ->label('Kelas')
-                    ->required()
-                    ->options(classes::all()->pluck('class_name', 'id')),
+                    ->required(),
             ]);
     }
 
@@ -64,7 +59,7 @@ class StudentsResource extends Resource
                 Tables\Columns\TextColumn::make('nis')
                     ->label('NIS')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('class.class_name')
+                Tables\Columns\TextColumn::make('class_name')
                     ->label('Kelas')
                     ->searchable(),
             ])

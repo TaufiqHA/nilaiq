@@ -3,6 +3,7 @@
 namespace App\Filament\Resources;
 
 use App\Filament\Resources\ClassesResource\Pages;
+use App\Filament\Resources\ClassesResource\Pages\listStudents;
 use App\Models\Classes;
 use App\Models\schools;
 use Filament\Forms;
@@ -49,7 +50,8 @@ class ClassesResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\ViewAction::make()
+                    ->url(fn ($record) => listStudents::getUrl([$record->id])),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -72,6 +74,7 @@ class ClassesResource extends Resource
             'create' => Pages\CreateClasses::route('/create'),
             'edit' => Pages\EditClasses::route('/{record}/edit'),
             'addStudents' => Pages\addStudent::route('/{record}/addStudents'),
+            'listStudents' => Pages\listStudents::route('/{record}/listStudents'),
         ];
     }
 }
