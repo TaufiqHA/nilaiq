@@ -15,8 +15,8 @@ return new class extends Migration
             $table->id();
             $table->string('name');
             $table->string('nis');
-            $table->string('class_name');
             $table->enum('gender', ['Laki-Laki', 'Perempuan']);
+            $table->foreignId('class_id')->nullable()->constrained('classes')->cascadeOnDelete()->cascadeOnUpdate();
             $table->timestamps();
         });
     }

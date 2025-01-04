@@ -2,18 +2,15 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\StudentsResource\Pages;
-use App\Filament\Resources\StudentsResource\RelationManagers;
-use App\Models\classes;
-use App\Models\schools;
-use App\Models\Students;
 use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Resources\Resource;
 use Filament\Tables;
+use App\Models\classes;
+use App\Models\Students;
+use Filament\Forms\Form;
 use Filament\Tables\Table;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
+use Filament\Resources\Resource;
+use Filament\Tables\Filters\SelectFilter;
+use App\Filament\Resources\StudentsResource\Pages;
 
 class StudentsResource extends Resource
 {
@@ -43,8 +40,9 @@ class StudentsResource extends Resource
                         'Perempuan' => 'Perempuan'
                     ])
                     ->required(),
-                Forms\Components\TextInput::make('class_name')
+                Forms\Components\Select::make('class_id')
                     ->label('Kelas')
+                    ->relationship('class', 'class_name')
                     ->required(),
             ]);
     }
@@ -59,12 +57,13 @@ class StudentsResource extends Resource
                 Tables\Columns\TextColumn::make('nis')
                     ->label('NIS')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('class_name')
+                Tables\Columns\TextColumn::make('class.class_name')
                     ->label('Kelas')
                     ->searchable(),
             ])
             ->filters([
-                //
+                SelectFilter::make('class_name')
+                    ->relationship('class', 'class_name')
             ])
             ->actions([
                 Tables\Actions\EditAction::make(),

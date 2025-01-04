@@ -24,6 +24,7 @@ class ListTeachers extends ListRecords
                 ->label('Tambah Guru'),
             ImportAction::make()
                 ->importer(TeachersImporter::class)
+                ->label('Import Guru')
         ];
     }
 }

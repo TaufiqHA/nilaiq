@@ -3,13 +3,13 @@
 namespace App\Filament\Imports;
 
 use App\Models\Students;
-use Filament\Actions\Imports\ImportColumn;
 use Filament\Actions\Imports\Importer;
+use Filament\Actions\Imports\ImportColumn;
 use Filament\Actions\Imports\Models\Import;
 
 class StudentsImporter extends Importer
 {
-    protected static ?string $model = students::class;
+    protected static ?string $model = Students::class;
 
     public static function getColumns(): array
     {
@@ -23,8 +23,8 @@ class StudentsImporter extends Importer
             ImportColumn::make('gender')
                 ->requiredMapping()
                 ->rules(['required']),
-            ImportColumn::make('class_name')
-                ->requiredMapping()
+            ImportColumn::make('class')
+                ->relationship(resolveUsing: 'class_name')
                 ->rules(['required']),
         ];
     }
