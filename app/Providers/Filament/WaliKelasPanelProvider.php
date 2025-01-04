@@ -2,6 +2,7 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\WaliKelas\Resources\ClassAttendanceSessionsResource;
 use App\Filament\WaliKelas\Resources\StudentsResource;
 use Filament\Pages;
 use Filament\Panel;
@@ -78,6 +79,10 @@ class WaliKelasPanelProvider extends PanelProvider
                     NavigationGroup::make('Siswa')
                     ->items([
                         ...StudentsResource::getNavigationItems(),
+                    ]),
+                    NavigationGroup::make('Absensi')
+                    ->items([
+                        ...ClassAttendanceSessionsResource::getNavigationItems(),
                     ]),
                 ]);
             });
