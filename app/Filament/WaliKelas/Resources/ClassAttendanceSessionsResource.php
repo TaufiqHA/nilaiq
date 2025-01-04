@@ -2,14 +2,16 @@
 
 namespace App\Filament\WaliKelas\Resources;
 
+use Filament\Forms;
+use Filament\Tables;
+use Filament\Forms\Form;
+use Filament\Tables\Table;
+use Filament\Resources\Resource;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Database\Eloquent\Builder;
+use App\Models\ClassAttendanceSessions;
 use App\Filament\WaliKelas\Resources\ClassAttendanceSessionsResource\Pages;
 use App\Filament\WaliKelas\Resources\ClassAttendanceSessionsResource\Pages\editClassAttendanceRecords;
-use App\Models\ClassAttendanceSessions;
-use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Resources\Resource;
-use Filament\Tables;
-use Filament\Tables\Table;
 
 class ClassAttendanceSessionsResource extends Resource
 {
@@ -84,5 +86,10 @@ class ClassAttendanceSessionsResource extends Resource
             'kelola' => Pages\classAttendanceRecords::route('/{record}/kelola'),
             'editAbsensi' => Pages\editClassAttendanceRecords::route('/{record}/editAbsensi'),
         ];
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        return parent::getEloquentQuery()->where('wali_kelas_id', Auth::user()->id);
     }
 }
