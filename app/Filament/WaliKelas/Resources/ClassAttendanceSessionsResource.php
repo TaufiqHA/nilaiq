@@ -3,6 +3,7 @@
 namespace App\Filament\WaliKelas\Resources;
 
 use App\Filament\WaliKelas\Resources\ClassAttendanceSessionsResource\Pages;
+use App\Filament\WaliKelas\Resources\ClassAttendanceSessionsResource\Pages\editClassAttendanceRecords;
 use App\Models\ClassAttendanceSessions;
 use Filament\Forms;
 use Filament\Forms\Form;
@@ -56,7 +57,8 @@ class ClassAttendanceSessionsResource extends Resource
                 //
             ])
             ->actions([
-                Tables\Actions\EditAction::make(),
+                Tables\Actions\EditAction::make()
+                    ->url(fn ($record) => editClassAttendanceRecords::getUrl([$record->id])),
             ])
             ->emptyStateHeading('Tidak Ada Absensi')
             ->bulkActions([
@@ -80,6 +82,7 @@ class ClassAttendanceSessionsResource extends Resource
             'create' => Pages\CreateClassAttendanceSessions::route('/create'),
             'edit' => Pages\EditClassAttendanceSessions::route('/{record}/edit'),
             'kelola' => Pages\classAttendanceRecords::route('/{record}/kelola'),
+            'editAbsensi' => Pages\editClassAttendanceRecords::route('/{record}/editAbsensi'),
         ];
     }
 }
