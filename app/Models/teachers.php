@@ -20,4 +20,9 @@ class teachers extends User
         'password',
         'remember_token',
     ];
+
+    public function mapel()
+    {
+        return $this->hasOne(guruMataPelajaran::class);
+    }
 }

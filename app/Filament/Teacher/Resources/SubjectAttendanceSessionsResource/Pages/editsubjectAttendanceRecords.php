@@ -62,6 +62,7 @@ class editsubjectAttendanceRecords extends Page implements HasForms
                     ->addable(false)
                     ->deletable(false)
                     ->default($this->absensi) // Set nilai default
+                    ->columns(2)
             ]);
 
     }

@@ -64,6 +64,7 @@ class subjectAttendanceRecords extends Page implements HasForms
                     ->addable(false)
                     ->deletable(false)
                     ->default($this->student) // Set nilai default
+                    ->columns(2)
             ]);
 
     }

@@ -10,12 +10,9 @@ use Filament\Forms\Form;
 use Filament\Tables\Table;
 use Filament\Resources\Resource;
 use App\Models\SubjectAttendanceSessions;
-use Illuminate\Database\Eloquent\Builder;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\Teacher\Resources\SubjectAttendanceSessionsResource\Pages;
-use App\Filament\Teacher\Resources\SubjectAttendanceSessionsResource\RelationManagers;
-use App\Filament\Teacher\Resources\SubjectAttendanceSessionsResource\Pages\subjectAttendanceRecords;
 use App\Filament\Teacher\Resources\SubjectAttendanceSessionsResource\Pages\editsubjectAttendanceRecords;
+use App\Models\guruMataPelajaran;
 
 class SubjectAttendanceSessionsResource extends Resource
 {
@@ -29,10 +26,10 @@ class SubjectAttendanceSessionsResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\Select::make('subject_id')
+                Forms\Components\Hidden::make('subject_id')
                     ->required()
                     ->label('Mata Pelajaran')
-                    ->options(subjects::all()->pluck('subject_name', 'id')),
+                    ->default(guruMataPelajaran::where('teacher_id', auth('teacher')->user()->id)->first()->subject->id),
                 Forms\Components\Select::make('class_id')
                     ->required()
                     ->label('Nama Kelas')
