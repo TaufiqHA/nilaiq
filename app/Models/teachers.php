@@ -2,7 +2,10 @@
 
 namespace App\Models;
 
+use Filament\Panel;
+use App\Models\waliKelas;
 use Illuminate\Foundation\Auth\User;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Database\Eloquent\Model;
 

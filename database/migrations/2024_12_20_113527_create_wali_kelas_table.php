@@ -15,7 +15,6 @@ return new class extends Migration
             $table->id();
             $table->unsignedBigInteger('teacher_id'); // Foreign key to teachers table
             $table->unsignedBigInteger('class_id'); // Foreign key to classes table
-            $table->string('academic_year'); // Academic year
 
             // Define foreign key constraints
             $table->foreign('teacher_id')->references('id')->on('teachers')->cascadeOnDelete()->cascadeOnUpdate();
