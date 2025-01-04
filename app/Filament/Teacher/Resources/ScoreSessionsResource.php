@@ -7,6 +7,7 @@ use App\Filament\Teacher\Resources\ScoreSessionsResource\Pages\editscoreRecords;
 use App\Filament\Teacher\Resources\ScoreSessionsResource\Pages\scoreRecords;
 use App\Filament\Teacher\Resources\ScoreSessionsResource\RelationManagers;
 use App\Models\classes;
+use App\Models\guruMataPelajaran;
 use App\Models\ScoreSessions;
 use App\Models\subjects;
 use Filament\Forms;
@@ -29,9 +30,9 @@ class ScoreSessionsResource extends Resource
     {
         return $form
             ->schema([
-                Forms\Components\Select::make('subject_id')
+                Forms\Components\Hidden::make('subject_id')
                     ->required()
-                    ->options(subjects::all()->pluck('subject_name', 'id'))
+                    ->default(guruMataPelajaran::where('teacher_id', auth('teacher')->user()->id)->first()->subject->id)
                     ->label('Mata Pelajaran'),
                 Forms\Components\Select::make('class_id')
                     ->required()

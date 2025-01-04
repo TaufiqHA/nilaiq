@@ -55,6 +55,7 @@ class scoreRecords extends Page implements HasForms
                     ->addable(false)
                     ->deletable(false)
                     ->default($this->student)
+                    ->columns(2)
                 ]);
     }
 
