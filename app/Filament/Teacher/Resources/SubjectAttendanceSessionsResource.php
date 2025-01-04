@@ -13,6 +13,7 @@ use App\Models\SubjectAttendanceSessions;
 use App\Filament\Teacher\Resources\SubjectAttendanceSessionsResource\Pages;
 use App\Filament\Teacher\Resources\SubjectAttendanceSessionsResource\Pages\editsubjectAttendanceRecords;
 use App\Models\guruMataPelajaran;
+use Filament\Tables\Filters\SelectFilter;
 
 class SubjectAttendanceSessionsResource extends Resource
 {
@@ -63,7 +64,8 @@ class SubjectAttendanceSessionsResource extends Resource
                     ->sortable(),
             ])
             ->filters([
-                //
+                SelectFilter::make('class')
+                    ->relationship('class', 'class_name')
             ])
             ->actions([
                 Tables\Actions\Action::make('kelola')
