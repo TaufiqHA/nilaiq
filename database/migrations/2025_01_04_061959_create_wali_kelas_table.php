@@ -13,12 +13,12 @@ return new class extends Migration
     {
         Schema::create('wali_kelas', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('teacher_id'); // Foreign key to teachers table
-            $table->unsignedBigInteger('class_id'); // Foreign key to classes table
-
-            // Define foreign key constraints
-            $table->foreign('teacher_id')->references('id')->on('teachers')->cascadeOnDelete()->cascadeOnUpdate();
-            $table->foreign('class_id')->references('id')->on('classes')->cascadeOnDelete()->cascadeOnUpdate();
+            $table->string('name');
+            $table->string('nip')->nullable();
+            $table->string('email')->nullable();
+            $table->foreignId('class_id')->constrained('classes')->cascadeOnDelete()->cascadeOnUpdate();
+            $table->string('password');
+            $table->rememberToken();
             $table->timestamps();
         });
     }

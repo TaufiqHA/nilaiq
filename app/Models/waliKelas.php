@@ -4,13 +4,13 @@ namespace App\Models;
 
 use Illuminate\Foundation\Auth\User;
 
-class teachers extends User
+class waliKelas extends User
 {
     protected $fillable = [
         'name',
         'nip',
         'email',
-        'phone_number',
+        'class_id',
         'password',
     ];
 
@@ -19,8 +19,8 @@ class teachers extends User
         'remember_token',
     ];
 
-    public function mapel()
+    public function class()
     {
-        return $this->hasOne(guruMataPelajaran::class);
+        return $this->belongsTo(classes::class);
     }
 }

@@ -96,7 +96,7 @@ class AdminPanelProvider extends PanelProvider
                     NavigationGroup::make('Manajemen Guru')
                         ->items([
                             ...TeachersResource::getNavigationItems(),
-                            // ...WaliKelasResource::getNavigationItems(),
+                            ...WaliKelasResource::getNavigationItems(),
                             ...GuruMataPelajaranResource::getNavigationItems(),
                         ]),
                     NavigationGroup::make('Manajemen Siswa')

@@ -44,6 +44,10 @@ return [
             'driver' => 'session',
             'provider' => 'teacher',
         ],
+        'waliKelas' => [
+            'driver' => 'session',
+            'provider' => 'waliKelas',
+        ],
     ],
 
     /*
@@ -72,6 +76,11 @@ return [
         'teacher' => [
             'driver' => 'eloquent',
             'model' => App\Models\teachers::class,
+        ],
+
+        'waliKelas' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\waliKelas::class,
         ],
     ],
 
