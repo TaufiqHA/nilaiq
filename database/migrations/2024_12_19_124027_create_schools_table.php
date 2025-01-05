@@ -15,9 +15,16 @@ return new class extends Migration
             $table->id();
             $table->string('school_name');
             $table->string('address');
-            $table->string('academic_year');
+            $table->foreignId('academic_years_id')->nullable()->constrained('academic_years')->cascadeOnUpdate();
+            $table->string('nss');
+            $table->string('npsn');
+            $table->string('website')->nullable();
+            $table->string('email');
+            $table->string('phone')->nullable();
+            $table->string('principal_name');
+            $table->string('nip');
             $table->timestamps();
-        });
+        });        
     }
 
     /**

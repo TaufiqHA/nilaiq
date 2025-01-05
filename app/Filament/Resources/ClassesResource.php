@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use App\Filament\Resources\ClassesResource\Pages;
 use App\Filament\Resources\ClassesResource\Pages\listStudents;
+use App\Models\academicYear;
 use App\Models\Classes;
 use App\Models\schools;
 use Filament\Forms;
@@ -27,10 +28,10 @@ class ClassesResource extends Resource
                 Forms\Components\TextInput::make('class_name')
                     ->label('Nama Kelas')
                     ->required(),
-                Forms\Components\Select::make('school_id')
+                Forms\Components\Select::make('academic_year_id')
                     ->label('Tahun Ajaran')
                     ->required()
-                    ->options(schools::all()->pluck('academic_year', 'id')),
+                    ->options(academicYear::all()->pluck('name', 'id')),
             ]);
     }
 

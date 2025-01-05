@@ -2,6 +2,8 @@
 
 namespace App\Providers\Filament;
 
+use App\Filament\Pages\SchoolSettings;
+use App\Filament\Resources\AcademicYearResource;
 use Filament\Pages;
 use Filament\Panel;
 use Filament\Widgets;
@@ -86,8 +88,9 @@ class AdminPanelProvider extends PanelProvider
                 ])->groups([
                     NavigationGroup::make('Manajemen Sekolah')
                         ->items([
-                            ...SchoolsResource::getNavigationItems(),
+                            ...SchoolSettings::getNavigationItems(),
                             ...ClassesResource::getNavigationItems(),
+                            ...AcademicYearResource::getNavigationItems(),
                         ]),
                     NavigationGroup::make('Manajemen Mata Pelajaran')
                         ->items([

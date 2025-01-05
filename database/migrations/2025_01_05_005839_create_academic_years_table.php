@@ -11,10 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('classes', function (Blueprint $table) {
+        Schema::create('academic_years', function (Blueprint $table) {
             $table->id();
-            $table->string('class_name');
-            $table->foreignId('academic_year_id')->constrained('academic_years')->cascadeOnDelete()->cascadeOnUpdate();
+            $table->string('name');
+            $table->date('start');
+            $table->date('end');
             $table->timestamps();
         });
     }
@@ -24,6 +25,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('classes');
+        Schema::dropIfExists('academic_years');
     }
 };

@@ -12,4 +12,9 @@ class schools extends Model
     {
         return $this->hasMany(classes::class);
     }
+
+    public function academicYear()
+    {
+        return $this->belongsTo(academicYear::class);
+    }
 }

@@ -7,7 +7,6 @@ use App\Filament\WaliKelas\Resources\StudentsResource;
 use Filament\Pages;
 use Filament\Panel;
 use Filament\Widgets;
-use App\Models\teachers;
 use Filament\PanelProvider;
 use Filament\Enums\ThemeMode;
 use Filament\Pages\Dashboard;
@@ -68,11 +67,12 @@ class WaliKelasPanelProvider extends PanelProvider
                 'panels::body.end',
                 fn (): string => Blade::render("@vite('resources/js/app.js')"),
             )
+            ->spa()
             ->navigation(function (NavigationBuilder $builder): NavigationBuilder {
                 return $builder->items([
                     NavigationItem::make('Dashboard')
                         ->icon('heroicon-o-home')
-                        ->isActiveWhen(fn (): bool => request()->routeIs('filament.admin.pages.dashboard'))
+                        ->isActiveWhen(fn (): bool => request()->routeIs('filament.waliKelas.pages.dashboard'))
                         ->url(fn (): string => Dashboard::getUrl()),
                 ])
                 ->groups([
