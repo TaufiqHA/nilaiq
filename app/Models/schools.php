@@ -2,6 +2,7 @@
 
 namespace App\Models;
 
+use App\Models\Semester;
 use Illuminate\Database\Eloquent\Model;
 
 class schools extends Model
@@ -16,5 +17,10 @@ class schools extends Model
     public function academicYear()
     {
         return $this->belongsTo(academicYear::class);
+    }
+
+    public function semester()
+    {
+        return $this->belongsTo(Semester::class);
     }
 }

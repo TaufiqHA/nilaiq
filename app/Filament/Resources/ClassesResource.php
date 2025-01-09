@@ -42,9 +42,8 @@ class ClassesResource extends Resource
                 Tables\Columns\TextColumn::make('class_name')
                     ->label('Nama Kelas')
                     ->searchable(),
-                Tables\Columns\TextColumn::make('school.academic_year')
+                Tables\Columns\TextColumn::make('academic_year.name')
                     ->label('Tahun Ajaran')
-                    ->numeric()
                     ->sortable(),
             ])
             ->filters([

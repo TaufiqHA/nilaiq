@@ -18,4 +18,9 @@ class classes extends Model
     {
         return $this->hasMany(students::class, 'class_id', 'id');
     }
+
+    public function academic_year()
+    {
+        return $this->belongsTo(academicYear::class);
+    }
 }

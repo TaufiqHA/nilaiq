@@ -87,10 +87,10 @@ class AdminPanelProvider extends PanelProvider
 
                 ])->groups([
                     NavigationGroup::make('Manajemen Sekolah')
-                        ->items([
+                    ->items([
+                            ...AcademicYearResource::getNavigationItems(),
                             ...SchoolSettings::getNavigationItems(),
                             ...ClassesResource::getNavigationItems(),
-                            ...AcademicYearResource::getNavigationItems(),
                         ]),
                     NavigationGroup::make('Manajemen Mata Pelajaran')
                         ->items([

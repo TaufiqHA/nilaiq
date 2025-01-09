@@ -23,6 +23,7 @@ return new class extends Migration
             $table->string('phone')->nullable();
             $table->string('principal_name');
             $table->string('nip');
+            $table->foreignId('semester_id')->nullable()->constrained('semesters')->cascadeOnUpdate();
             $table->timestamps();
         });        
     }
