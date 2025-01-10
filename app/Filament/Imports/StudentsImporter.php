@@ -3,6 +3,7 @@
 namespace App\Filament\Imports;
 
 use App\Models\classes;
+use App\Models\schools;
 use App\Models\Students;
 use Filament\Actions\Imports\Importer;
 use Filament\Actions\Imports\ImportColumn;
@@ -26,7 +27,10 @@ class StudentsImporter extends Importer
                 ->rules(['required']),
             ImportColumn::make('class')
                 ->relationship(resolveUsing: function (string $state): ?classes {
-                    return classes::latest()
+                    $school = schools::first();
+                    $academicYear = $school->academicYear;
+                    return classes::where('class_name', $state)
+                        ->where('academic_year_id', $academicYear->id)
                         ->first();
                 })
                 ->rules(['required']),
