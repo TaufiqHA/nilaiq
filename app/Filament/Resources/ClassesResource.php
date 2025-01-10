@@ -2,16 +2,19 @@
 
 namespace App\Filament\Resources;
 
+use Filament\Forms;
+use Filament\Tables;
+use App\Models\Classes;
+use Filament\Forms\Form;
+use Filament\Tables\Table;
+use App\Models\academicYear;
+use Filament\Resources\Resource;
+use Illuminate\Database\Eloquent\Builder;
 use App\Filament\Resources\ClassesResource\Pages;
 use App\Filament\Resources\ClassesResource\Pages\listStudents;
-use App\Models\academicYear;
-use App\Models\Classes;
 use App\Models\schools;
-use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Resources\Resource;
-use Filament\Tables;
-use Filament\Tables\Table;
+use Filament\Forms\Components\Hidden;
+use Filament\Tables\Actions\EditAction;
 
 class ClassesResource extends Resource
 {
@@ -32,6 +35,8 @@ class ClassesResource extends Resource
                     ->label('Tahun Ajaran')
                     ->required()
                     ->options(academicYear::all()->pluck('name', 'id')),
+                Hidden::make('school_id')
+                    ->default(schools::first()->id),
             ]);
     }
 
@@ -52,6 +57,7 @@ class ClassesResource extends Resource
             ->actions([
                 Tables\Actions\ViewAction::make()
                     ->url(fn ($record) => listStudents::getUrl([$record->id])),
+                EditAction::make(),
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -76,5 +82,12 @@ class ClassesResource extends Resource
             'addStudents' => Pages\addStudent::route('/{record}/addStudents'),
             'listStudents' => Pages\listStudents::route('/{record}/listStudents'),
         ];
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        $school = schools::first();
+        $academicYear = $school->academicYear;
+        return parent::getEloquentQuery()->where('academic_year_id', $academicYear->id);
     }
 }

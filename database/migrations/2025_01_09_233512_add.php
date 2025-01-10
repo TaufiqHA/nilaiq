@@ -11,8 +11,8 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('schools', function (Blueprint $table) {
-            $table->foreignId('semester_id')->nullable()->constrained('semesters')->cascadeOnUpdate();
+        Schema::table('classes', function (Blueprint $table) {
+            $table->foreignId('school_id')->nullable()->constrained('schools')->cascadeOnDelete()->cascadeOnUpdate();
         });
     }
 
@@ -21,8 +21,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('schools', function (Blueprint $table) {
-            //
-        });
+        Schema::dropIfExists('classes');
     }
 };
