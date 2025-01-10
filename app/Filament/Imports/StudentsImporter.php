@@ -2,6 +2,7 @@
 
 namespace App\Filament\Imports;
 
+use App\Models\classes;
 use App\Models\Students;
 use Filament\Actions\Imports\Importer;
 use Filament\Actions\Imports\ImportColumn;
@@ -24,7 +25,10 @@ class StudentsImporter extends Importer
                 ->requiredMapping()
                 ->rules(['required']),
             ImportColumn::make('class')
-                ->relationship(resolveUsing: 'class_name')
+                ->relationship(resolveUsing: function (string $state): ?classes {
+                    return classes::latest()
+                        ->first();
+                })
                 ->rules(['required']),
         ];
     }

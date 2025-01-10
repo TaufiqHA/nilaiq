@@ -3,6 +3,7 @@
 namespace App\Filament\Resources\ClassesResource\Pages;
 
 use App\Models\classes;
+use App\Models\schools;
 use App\Models\students;
 use Filament\Tables\Table;
 use Filament\Resources\Pages\Page;
