@@ -23,4 +23,9 @@ class teachers extends User
     {
         return $this->hasOne(guruMataPelajaran::class);
     }
+
+    public function academic_year()
+    {
+        return $this->belongsTo(academicYear::class, 'academic_year_id');
+    }
 }

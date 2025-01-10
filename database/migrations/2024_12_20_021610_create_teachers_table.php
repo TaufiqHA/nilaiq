@@ -18,13 +18,14 @@ return new class extends Migration
             $table->string('email')->nullable();
             $table->string('phone_number')->nullable();
             $table->string('password');
+            $table->foreignId('academic_year_id')->nullable()->constrained('academic_years')->cascadeOnDelete()->cascadeOnUpdate();
             $table->rememberToken();
             $table->timestamps();
         });
     }
 
     /**
-     * Reverse the migrations.
+     * Reverse the migrations.\
      */
     public function down(): void
     {

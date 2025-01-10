@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use Filament\Forms;
 use Filament\Tables;
+use App\Models\schools;
 use Filament\Forms\Form;
 use App\Models\WaliKelas;
 use Filament\Tables\Table;
@@ -82,5 +83,14 @@ class WaliKelasResource extends Resource
             'create' => Pages\CreateWaliKelas::route('/create'),
             'edit' => Pages\EditWaliKelas::route('/{record}/edit'),
         ];
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        $school = schools::first();
+        $academicYear = $school->academicYear;
+        return parent::getEloquentQuery()->whereHas('class', function($query) use ($academicYear) {
+            $query->where('academic_year_id', $academicYear->id);
+        });
     }
 }

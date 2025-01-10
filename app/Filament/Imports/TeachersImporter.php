@@ -26,6 +26,9 @@ class TeachersImporter extends Importer
                 ->requiredMapping()
                 ->rules(['required'])
                 ->example(Hash::make('coba')),
+            ImportColumn::make('academic_year')
+                ->relationship(resolveUsing: 'name')
+                ->rules(['required']),
         ];
     }
 

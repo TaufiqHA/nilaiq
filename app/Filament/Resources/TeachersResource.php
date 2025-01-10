@@ -4,6 +4,7 @@ namespace App\Filament\Resources;
 
 use Filament\Forms;
 use Filament\Tables;
+use App\Models\schools;
 use App\Models\Teachers;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
@@ -40,6 +41,10 @@ class TeachersResource extends Resource
                 Forms\Components\TextInput::make('password')
                     ->password()
                     ->dehydrateStateUsing(fn (string $state): string => Hash::make($state))
+                    ->required(),
+                Forms\Components\Select::make('academic_year_id')
+                    ->label('Tahun Ajaran')
+                    ->relationship('academic_year', 'name')
                     ->required(),
             ]);
     }
@@ -85,5 +90,12 @@ class TeachersResource extends Resource
             'create' => Pages\CreateTeachers::route('/create'),
             'edit' => Pages\EditTeachers::route('/{record}/edit'),
         ];
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        $school = schools::first();
+        $academicYear = $school->academicYear;
+        return parent::getEloquentQuery()->where('academic_year_id', $academicYear->id);
     }
 }

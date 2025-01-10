@@ -31,10 +31,10 @@ class ClassesResource extends Resource
                 Forms\Components\TextInput::make('class_name')
                     ->label('Nama Kelas')
                     ->required(),
-                Forms\Components\Select::make('academic_year_id')
+                Forms\Components\Hidden::make('academic_year_id')
                     ->label('Tahun Ajaran')
                     ->required()
-                    ->options(academicYear::all()->pluck('name', 'id')),
+                    ->default(schools::first()->academicYear->id),
                 Hidden::make('school_id')
                     ->default(schools::first()->id),
             ]);
