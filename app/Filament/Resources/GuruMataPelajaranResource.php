@@ -2,18 +2,19 @@
 
 namespace App\Filament\Resources;
 
-use App\Filament\Resources\GuruMataPelajaranResource\Pages;
-use App\Filament\Resources\GuruMataPelajaranResource\RelationManagers;
-use App\Models\GuruMataPelajaran;
+use Filament\Forms;
+use Filament\Tables;
+use App\Models\schools;
 use App\Models\subjects;
 use App\Models\teachers;
-use Filament\Forms;
 use Filament\Forms\Form;
-use Filament\Resources\Resource;
-use Filament\Tables;
 use Filament\Tables\Table;
+use Filament\Resources\Resource;
+use App\Models\GuruMataPelajaran;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use App\Filament\Resources\GuruMataPelajaranResource\Pages;
+use App\Filament\Resources\GuruMataPelajaranResource\RelationManagers;
 
 class GuruMataPelajaranResource extends Resource
 {
@@ -75,5 +76,14 @@ class GuruMataPelajaranResource extends Resource
             'create' => Pages\CreateGuruMataPelajaran::route('/create'),
             'edit' => Pages\EditGuruMataPelajaran::route('/{record}/edit'),
         ];
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        $school = schools::first();
+        $academicYear = $school->academicYear;
+        return parent::getEloquentQuery()->whereHas('teacher', function($query) use ($academicYear) {
+            $query->where('academic_year_id', $academicYear->id);
+        });
     }
 }
