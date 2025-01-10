@@ -5,11 +5,13 @@ namespace App\Filament\Resources;
 use Filament\Forms;
 use Filament\Tables;
 use App\Models\classes;
+use App\Models\schools;
 use App\Models\Students;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
 use Filament\Resources\Resource;
 use Filament\Tables\Filters\SelectFilter;
+use Illuminate\Database\Eloquent\Builder;
 use App\Filament\Resources\StudentsResource\Pages;
 
 class StudentsResource extends Resource
@@ -90,5 +92,14 @@ class StudentsResource extends Resource
             'create' => Pages\CreateStudents::route('/create'),
             'edit' => Pages\EditStudents::route('/{record}/edit'),
         ];
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        $school = schools::first();
+        $academicYear = $school->academicYear;
+        return parent::getEloquentQuery()->whereHas('class', function($query) use ($academicYear) {
+            $query->where('academic_year_id', $academicYear->id);
+        });
     }
 }
