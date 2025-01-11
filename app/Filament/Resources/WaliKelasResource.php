@@ -34,7 +34,11 @@ class WaliKelasResource extends Resource
                     ->email(),
                 Forms\Components\Select::make('class_id')
                     ->required()
-                    ->relationship('class', 'class_name'),
+                    ->relationship('class', 'class_name', function(Builder $query) {
+                        $school = schools::first();
+                        $academicYear = $school->academicYear;
+                        $query->where('academic_year_id', $academicYear->id)->get();
+                    }),
                 Forms\Components\TextInput::make('password')
                     ->password()
                     ->dehydrateStateUsing(fn (string $state): string => Hash::make($state))
