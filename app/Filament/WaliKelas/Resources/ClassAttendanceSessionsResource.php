@@ -4,12 +4,14 @@ namespace App\Filament\WaliKelas\Resources;
 
 use Filament\Forms;
 use Filament\Tables;
+use App\Models\schools;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
 use Filament\Resources\Resource;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Database\Eloquent\Builder;
+use Filament\Forms\Components\Hidden;
 use App\Models\ClassAttendanceSessions;
+use Illuminate\Database\Eloquent\Builder;
 use App\Filament\WaliKelas\Resources\ClassAttendanceSessionsResource\Pages;
 use App\Filament\WaliKelas\Resources\ClassAttendanceSessionsResource\Pages\editClassAttendanceRecords;
 
@@ -31,6 +33,20 @@ class ClassAttendanceSessionsResource extends Resource
                 Forms\Components\Hidden::make('wali_kelas_id')
                     ->required()
                     ->default(auth('waliKelas')->user()->id),
+                Hidden::make('academic_year_id')
+                    ->default(function() {
+                        $school = schools::first();
+                        $academicYear = $school->academicYear->id;
+
+                        return $academicYear;
+                    }),
+                Hidden::make('semester_id')
+                    ->default(function() {
+                        $school = schools::first();
+                        $semester = $school->semester->id;
+
+                        return $semester;
+                    }),
                 Forms\Components\TextInput::make('session_name')
                     ->required()
                     ->label('Nama Sesi'),
@@ -90,6 +106,9 @@ class ClassAttendanceSessionsResource extends Resource
 
     public static function getEloquentQuery(): Builder
     {
-        return parent::getEloquentQuery()->where('wali_kelas_id', Auth::user()->id);
+        $school = schools::first();
+        $academicYear = $school->academicYear->id;
+        $semester = $school->semester->id;
+        return parent::getEloquentQuery()->where('wali_kelas_id', Auth::user()->id)->where('academic_year_id', $academicYear)->where('semester_id', $semester);
     }
 }

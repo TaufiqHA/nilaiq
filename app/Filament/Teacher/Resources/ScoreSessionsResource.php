@@ -2,22 +2,24 @@
 
 namespace App\Filament\Teacher\Resources;
 
-use App\Filament\Teacher\Resources\ScoreSessionsResource\Pages;
-use App\Filament\Teacher\Resources\ScoreSessionsResource\Pages\editscoreRecords;
-use App\Filament\Teacher\Resources\ScoreSessionsResource\Pages\scoreRecords;
-use App\Filament\Teacher\Resources\ScoreSessionsResource\RelationManagers;
-use App\Models\classes;
-use App\Models\guruMataPelajaran;
-use App\Models\ScoreSessions;
-use App\Models\subjects;
 use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Resources\Resource;
 use Filament\Tables;
-use Filament\Tables\Filters\SelectFilter;
+use App\Models\classes;
+use App\Models\schools;
+use App\Models\subjects;
+use Filament\Forms\Form;
 use Filament\Tables\Table;
+use App\Models\ScoreSessions;
+use Filament\Resources\Resource;
+use App\Models\guruMataPelajaran;
+use Filament\Forms\Components\Hidden;
+use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use App\Filament\Teacher\Resources\ScoreSessionsResource\Pages;
+use App\Filament\Teacher\Resources\ScoreSessionsResource\RelationManagers;
+use App\Filament\Teacher\Resources\ScoreSessionsResource\Pages\scoreRecords;
+use App\Filament\Teacher\Resources\ScoreSessionsResource\Pages\editscoreRecords;
 
 class ScoreSessionsResource extends Resource
 {
@@ -56,6 +58,20 @@ class ScoreSessionsResource extends Resource
                 Forms\Components\DatePicker::make('date')
                     ->required()
                     ->label('Tanggal'),
+                Hidden::make('academic_year_id')
+                    ->default(function() {
+                        $school = schools::first();
+                        $academicYear = $school->academicYear->id;
+
+                        return $academicYear;
+                    }),
+                Hidden::make('semester_id')
+                    ->default(function() {
+                        $school = schools::first();
+                        $semester = $school->semester->id;
+
+                        return $semester;
+                    }),
             ]);
     }
 
@@ -113,5 +129,13 @@ class ScoreSessionsResource extends Resource
             'score' => Pages\scoreRecords::route('/{record}/score'),
             'editScore' => Pages\editscoreRecords::route('/{record}/editScore'),
         ];
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        $school = schools::first();
+        $academicYear = $school->academicYear->id;
+        $semester = $school->semester->id;
+        return parent::getEloquentQuery()->where('teacher_id', auth('teacher')->user()->id)->where('academic_year_id', $academicYear)->where('semester_id', $semester);
     }
 }

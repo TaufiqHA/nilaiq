@@ -16,6 +16,8 @@ return new class extends Migration
             $table->unsignedBigInteger('subject_id'); // Mata pelajaran yang diabsen
             $table->unsignedBigInteger('class_id'); // Foreign key ke tabel classes
             $table->unsignedBigInteger('teacher_id'); // Guru pengampu mata pelajaran
+            $table->unsignedBigInteger('academic_year_id'); // Foreign key ke tabel academic_years
+            $table->unsignedBigInteger('semester_id'); // Foreign key ke tabel semesters
             $table->date('date'); // Tanggal absensi
             $table->string('session_name'); // Nama sesi absensi
             $table->timestamps(); // Waktu pencatatan dan pembaruan
@@ -24,6 +26,8 @@ return new class extends Migration
             $table->foreign('subject_id')->references('id')->on('subjects')->cascadeOnDelete()->cascadeOnUpdate();
             $table->foreign('class_id')->references('id')->on('classes')->cascadeOnDelete()->cascadeOnUpdate();
             $table->foreign('teacher_id')->references('id')->on('teachers')->cascadeOnDelete()->cascadeOnUpdate();
+            $table->foreign('academic_year_id')->references('id')->on('academic_years')->cascadeOnUpdate()->cascadeOnDelete();
+            $table->foreign('semester_id')->references('id')->on('semesters')->cascadeOnUpdate()->cascadeOnDelete();
         });
     }
 

@@ -5,15 +5,17 @@ namespace App\Filament\Teacher\Resources;
 use Filament\Forms;
 use Filament\Tables;
 use App\Models\classes;
-use App\Models\subjects;
+use App\Models\schools;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
 use Filament\Resources\Resource;
+use App\Models\guruMataPelajaran;
+use Filament\Forms\Components\Hidden;
 use App\Models\SubjectAttendanceSessions;
+use Filament\Tables\Filters\SelectFilter;
+use Illuminate\Database\Eloquent\Builder;
 use App\Filament\Teacher\Resources\SubjectAttendanceSessionsResource\Pages;
 use App\Filament\Teacher\Resources\SubjectAttendanceSessionsResource\Pages\editsubjectAttendanceRecords;
-use App\Models\guruMataPelajaran;
-use Filament\Tables\Filters\SelectFilter;
 
 class SubjectAttendanceSessionsResource extends Resource
 {
@@ -43,6 +45,20 @@ class SubjectAttendanceSessionsResource extends Resource
                 Forms\Components\TextInput::make('session_name')
                     ->required()
                     ->label('Nama Sesi'),
+                Hidden::make('academic_year_id')
+                    ->default(function() {
+                        $school = schools::first();
+                        $academicYear = $school->academicYear->id;
+
+                        return $academicYear;
+                    }),
+                Hidden::make('semester_id')
+                    ->default(function() {
+                        $school = schools::first();
+                        $semester = $school->semester->id;
+
+                        return $semester;
+                    }),
             ]);
     }
 
@@ -96,5 +112,13 @@ class SubjectAttendanceSessionsResource extends Resource
             'kelola' => Pages\subjectAttendanceRecords::route('/{record}/kelola'),
             'editRecord' => Pages\editsubjectAttendanceRecords::route('/{record}/editRecord'),
         ];
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        $school = schools::first();
+        $academicYear = $school->academicYear->id;
+        $semester = $school->semester->id;
+        return parent::getEloquentQuery()->where('teacher_id', auth('teacher')->user()->id)->where('academic_year_id', $academicYear)->where('semester_id', $semester);
     }
 }
