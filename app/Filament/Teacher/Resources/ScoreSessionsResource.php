@@ -13,6 +13,7 @@ use App\Models\ScoreSessions;
 use Filament\Resources\Resource;
 use App\Models\guruMataPelajaran;
 use Filament\Forms\Components\Hidden;
+use Filament\Tables\Enums\FiltersLayout;
 use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
@@ -99,7 +100,7 @@ class ScoreSessionsResource extends Resource
             ->filters([
                 SelectFilter::make('class')
                     ->relationship('class', 'class_name')
-            ])
+            ], layout: FiltersLayout::AboveContent)
             ->actions([
                 Tables\Actions\Action::make('Kelola')
                     ->icon('heroicon-o-pencil-square')

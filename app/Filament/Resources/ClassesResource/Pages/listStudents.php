@@ -29,7 +29,7 @@ class listStudents extends Page implements HasTable
     public function table(Table $table): Table
     {
         return $table
-            ->query(students::query()->where('class_name', $this->class->class_name))
+            ->query(students::query()->where('class_id', $this->class->id))
             ->columns([
                 TextColumn::make('name'),
                 TextColumn::make('nis')
