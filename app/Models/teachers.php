@@ -39,6 +39,6 @@ class teachers extends User implements FilamentUser
         $user = auth('teacher')->user();
 
         // Cek apakah ID user terdapat di tabel 'guruMataPelajaran'
-        return guruMataPelajaran::where('teachers_id', $user->id)->exists();
+        return guruMataPelajaran::where('teacher_id', $user->id)->exists();
     }
 }

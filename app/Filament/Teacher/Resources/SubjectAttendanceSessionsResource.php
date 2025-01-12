@@ -11,6 +11,7 @@ use Filament\Tables\Table;
 use Filament\Resources\Resource;
 use App\Models\guruMataPelajaran;
 use Filament\Forms\Components\Hidden;
+use Filament\Tables\Enums\FiltersLayout;
 use App\Models\SubjectAttendanceSessions;
 use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
@@ -82,7 +83,7 @@ class SubjectAttendanceSessionsResource extends Resource
             ->filters([
                 SelectFilter::make('class')
                     ->relationship('class', 'class_name')
-            ])
+            ], layout: FiltersLayout::AboveContent)
             ->actions([
                 Tables\Actions\Action::make('kelola')
                     ->icon('heroicon-o-pencil-square')

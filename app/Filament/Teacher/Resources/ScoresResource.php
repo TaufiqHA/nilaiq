@@ -100,6 +100,6 @@ class ScoresResource extends Resource
         $school = schools::first();
         $academicYear = $school->academicYear->id;
         $semester = $school->semester->id;
-        return parent::getEloquentQuery()->where('wali_kelas_id', Auth::user()->id)->where('academic_year_id', $academicYear)->where('semester_id', $semester);
+        return parent::getEloquentQuery()->where('teacher_id', Auth::user()->id)->where('academic_year_id', $academicYear)->where('semester_id', $semester);
     }
 }
