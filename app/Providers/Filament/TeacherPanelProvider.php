@@ -21,6 +21,7 @@ use Illuminate\Routing\Middleware\SubstituteBindings;
 use Illuminate\View\Middleware\ShareErrorsFromSession;
 use Filament\Http\Middleware\DisableBladeIconComponents;
 use App\Filament\Teacher\Resources\ScoreSessionsResource;
+use App\Filament\Teacher\Resources\ScoresResource;
 use Filament\Http\Middleware\DispatchServingFilamentEvent;
 use Illuminate\Foundation\Http\Middleware\VerifyCsrfToken;
 use Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse;
@@ -82,6 +83,10 @@ class TeacherPanelProvider extends PanelProvider
                     NavigationGroup::make('Manajemen Nilai')
                         ->items([
                             ...ScoreSessionsResource::getNavigationItems(),
+                        ]),
+                    NavigationGroup::make('Nilai Akhir')
+                        ->items([
+                            ...ScoresResource::getNavigationItems(),
                         ]),
                     ]);
             });
