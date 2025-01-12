@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('guru_mata_pelajarans', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('teacher_id'); // Foreign key to teachers table
+            $table->unsignedBigInteger('teachers_id'); // Foreign key to teachers table
             $table->unsignedBigInteger('subject_id'); // Foreign key to subjects table
 
             // Define foreign key constraints

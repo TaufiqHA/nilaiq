@@ -2,16 +2,18 @@
 
 namespace App\Filament\Teacher\Resources;
 
-use App\Filament\Teacher\Resources\ScoresResource\Pages;
-use App\Filament\Teacher\Resources\ScoresResource\RelationManagers;
-use App\Models\Scores;
 use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Resources\Resource;
 use Filament\Tables;
+use App\Models\Scores;
+use App\Models\schools;
+use Filament\Forms\Form;
 use Filament\Tables\Table;
+use Filament\Resources\Resource;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use App\Filament\Teacher\Resources\ScoresResource\Pages;
+use App\Filament\Teacher\Resources\ScoresResource\RelationManagers;
 
 class ScoresResource extends Resource
 {
@@ -91,5 +93,13 @@ class ScoresResource extends Resource
             'create' => Pages\CreateScores::route('/create'),
             'edit' => Pages\EditScores::route('/{record}/edit'),
         ];
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        $school = schools::first();
+        $academicYear = $school->academicYear->id;
+        $semester = $school->semester->id;
+        return parent::getEloquentQuery()->where('wali_kelas_id', Auth::user()->id)->where('academic_year_id', $academicYear)->where('semester_id', $semester);
     }
 }
