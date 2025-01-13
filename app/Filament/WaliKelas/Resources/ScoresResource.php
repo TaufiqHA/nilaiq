@@ -60,7 +60,8 @@ class ScoresResource extends Resource
             ->columns([
                 Tables\Columns\TextColumn::make('student.name')
                     ->label('Nama Siswa')
-                    ->sortable(),
+                    ->sortable()
+                    ->searchable(),
                 Tables\Columns\TextColumn::make('subject.subject_name')
                     ->label('Mata Pelajaran')
                     ->sortable(),
