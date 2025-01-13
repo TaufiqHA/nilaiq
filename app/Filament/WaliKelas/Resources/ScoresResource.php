@@ -2,16 +2,20 @@
 
 namespace App\Filament\WaliKelas\Resources;
 
-use App\Filament\WaliKelas\Resources\ScoresResource\Pages;
-use App\Filament\WaliKelas\Resources\ScoresResource\RelationManagers;
-use App\Models\Scores;
 use Filament\Forms;
-use Filament\Forms\Form;
-use Filament\Resources\Resource;
 use Filament\Tables;
+use App\Models\Scores;
+use App\Models\schools;
+use Filament\Forms\Form;
 use Filament\Tables\Table;
+use Filament\Resources\Resource;
+use Illuminate\Support\Facades\Auth;
+use Filament\Tables\Enums\FiltersLayout;
+use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
+use App\Filament\WaliKelas\Resources\ScoresResource\Pages;
+use App\Filament\WaliKelas\Resources\ScoresResource\RelationManagers;
 
 class ScoresResource extends Resource
 {
@@ -55,15 +59,21 @@ class ScoresResource extends Resource
         return $table
             ->columns([
                 Tables\Columns\TextColumn::make('student.name')
-                    ->numeric()
+                    ->label('Nama Siswa')
+                    ->sortable(),
+                Tables\Columns\TextColumn::make('subject.subject_name')
+                    ->label('Mata Pelajaran')
                     ->sortable(),
                 Tables\Columns\TextColumn::make('score')
+                    ->label('Nilai')
                     ->numeric()
                     ->sortable(),
             ])
             ->filters([
-                //
-            ])
+                SelectFilter::make('subject')
+                    ->label('Mata Pelajaran')
+                    ->relationship('subject', 'subject_name')
+            ], layout: FiltersLayout::AboveContent)
             ->actions([
                 Tables\Actions\EditAction::make(),
             ])
@@ -89,5 +99,13 @@ class ScoresResource extends Resource
             'create' => Pages\CreateScores::route('/create'),
             'edit' => Pages\EditScores::route('/{record}/edit'),
         ];
+    }
+
+    public static function getEloquentQuery(): Builder
+    {
+        $school = schools::first();
+        $academicYear = $school->academicYear;
+        $semester = $school->semester->id;
+        return parent::getEloquentQuery()->where('class_id', Auth::user()->class->id)->where('academic_year_id', $academicYear->id)->where('semester_id', $semester);
     }
 }

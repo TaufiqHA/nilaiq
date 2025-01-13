@@ -17,4 +17,9 @@ class Scores extends Model
     {
         return $this->belongsTo(classes::class);
     }
+
+    public function subject()
+    {
+        return $this->belongsTo(subjects::class);
+    }
 }
