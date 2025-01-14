@@ -10,6 +10,7 @@ use App\Models\Students;
 use Filament\Forms\Form;
 use Filament\Tables\Table;
 use Filament\Resources\Resource;
+use Filament\Tables\Enums\FiltersLayout;
 use Filament\Tables\Filters\SelectFilter;
 use Illuminate\Database\Eloquent\Builder;
 use App\Filament\Resources\StudentsResource\Pages;
@@ -66,7 +67,7 @@ class StudentsResource extends Resource
             ->filters([
                 SelectFilter::make('class_name')
                     ->relationship('class', 'class_name')
-            ])
+            ], layout: FiltersLayout::AboveContent)
             ->actions([
                 Tables\Actions\EditAction::make(),
             ])
