@@ -34,6 +34,27 @@ class StudentsImporter extends Importer
                         ->first();
                 })
                 ->rules(['required']),
+            ImportColumn::make('nisn'),
+            ImportColumn::make('birth_place'),
+            ImportColumn::make('birth_date'),
+            ImportColumn::make('religion'),
+            ImportColumn::make('family_status'),
+            ImportColumn::make('child_order')->numeric(),
+            ImportColumn::make('address'),
+            ImportColumn::make('origin_school'),
+            ImportColumn::make('registration_status'),
+            ImportColumn::make('accepted_in_class'),
+            ImportColumn::make('admission_date'),
+            ImportColumn::make('father_name'),
+            ImportColumn::make('mother_name'),
+            ImportColumn::make('parent_address'),
+            ImportColumn::make('father_job'),
+            ImportColumn::make('mother_job'),
+            ImportColumn::make('parent_phone'),
+            ImportColumn::make('guardian_name'),
+            ImportColumn::make('guardian_address'),
+            ImportColumn::make('guardian_phone'),
+            ImportColumn::make('guardian_job'),
         ];
     }
 

@@ -56,6 +56,7 @@ class ClassesResource extends Resource
             ])
             ->actions([
                 Tables\Actions\ViewAction::make()
+                    ->label('siswa')
                     ->url(fn ($record) => listStudents::getUrl([$record->id])),
                 EditAction::make(),
             ])
