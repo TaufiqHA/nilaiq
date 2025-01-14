@@ -2,8 +2,12 @@
 
 namespace App\Models;
 
+use App\Observers\StudentObserver;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Attributes\ObservedBy;
 
+#[ObservedBy([StudentObserver::class])]
 class students extends Model
 {
     protected $guarded = ['id'];
@@ -16,5 +20,10 @@ class students extends Model
     public function subjectAttendanceRecords()
     {
         return $this->hasOne(subjectAttendanceRecords::class);
+    }
+
+    public function sikap()
+    {
+        return $this->hasOne(Attitudes::class);
     }
 }

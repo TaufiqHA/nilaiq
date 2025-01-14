@@ -2,6 +2,8 @@
 
 namespace App\Providers;
 
+use App\Models\students;
+use App\Observers\StudentObserver;
 use Illuminate\Foundation\AliasLoader;
 use Illuminate\Support\ServiceProvider;
 
@@ -25,6 +27,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        //
+        students::observe(StudentObserver::class);
     }
 }
