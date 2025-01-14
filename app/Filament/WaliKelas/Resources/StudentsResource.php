@@ -9,8 +9,12 @@ use Filament\Forms\Form;
 use Filament\Tables\Table;
 use Filament\Resources\Resource;
 use Illuminate\Support\Facades\Auth;
+use Filament\Tables\Actions\EditAction;
+use Filament\Tables\Actions\ActionGroup;
+use Filament\Tables\Actions\CreateAction;
 use Illuminate\Database\Eloquent\Builder;
 use App\Filament\WaliKelas\Resources\StudentsResource\Pages;
+use App\Filament\WaliKelas\Resources\StudentsResource\Pages\ListAchievement;
 
 class StudentsResource extends Resource
 {
@@ -110,7 +114,14 @@ class StudentsResource extends Resource
             ])
             ->emptyStateHeading('Tidak Ada Siswa')
             ->actions([
-                Tables\Actions\EditAction::make(),
+                ActionGroup::make([
+                    EditAction::make(),
+                    CreateAction::make()
+                        ->label('prestasi')
+                        ->icon('heroicon-o-trophy')
+                        ->url(fn($record) => ListAchievement::getUrl([$record->id]))
+                ]),
+        
             ])
             ->bulkActions([
                 Tables\Actions\BulkActionGroup::make([
@@ -132,6 +143,9 @@ class StudentsResource extends Resource
             'index' => Pages\ListStudents::route('/'),
             'create' => Pages\CreateStudents::route('/create'),
             'edit' => Pages\EditStudents::route('/{record}/edit'),
+            'listAchievements' => Pages\ListAchievement::route('/{record}/listAchievements'),
+            'createAchievements' => Pages\CreateAchievement::route('/{record}/createAchievements'),
+            'editAchievements' => Pages\EditAchievement::route('/{record}/editAchievements'),
         ];
     }
 
