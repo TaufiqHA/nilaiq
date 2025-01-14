@@ -15,6 +15,7 @@ use Filament\Tables\Actions\CreateAction;
 use Illuminate\Database\Eloquent\Builder;
 use App\Filament\WaliKelas\Resources\StudentsResource\Pages;
 use App\Filament\WaliKelas\Resources\StudentsResource\Pages\Attitudes;
+use App\Filament\WaliKelas\Resources\StudentsResource\Pages\HomeroomTeacherNotes;
 use App\Filament\WaliKelas\Resources\StudentsResource\Pages\ListAchievement;
 use Filament\Tables\Actions\Action;
 
@@ -124,7 +125,10 @@ class StudentsResource extends Resource
                         ->url(fn($record) => ListAchievement::getUrl([$record->id])),
                     Action::make('Sikap')
                         ->icon('heroicon-o-users')
-                        ->url(fn ($record) => Attitudes::getUrl([$record->id]))
+                        ->url(fn ($record) => Attitudes::getUrl([$record->id])),
+                    Action::make('Catatan')
+                        ->icon('heroicon-o-pencil')
+                        ->url(fn ($record) => HomeroomTeacherNotes::getUrl([$record->id]))
                 ]),
         
             ])
@@ -152,6 +156,7 @@ class StudentsResource extends Resource
             'createAchievements' => Pages\CreateAchievement::route('/{record}/createAchievements'),
             'editAchievements' => Pages\EditAchievement::route('/{record}/editAchievements'),
             'attitudes' => Pages\Attitudes::route('/{record}/attitudes'),
+            'catatan' => Pages\HomeroomTeacherNotes::route('/{record}/catatan'),
         ];
     }
 

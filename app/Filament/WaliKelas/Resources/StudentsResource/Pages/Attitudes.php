@@ -19,6 +19,7 @@ class Attitudes extends Page implements HasForms
 {
     use InteractsWithForms;
     protected static string $resource = StudentsResource::class;
+    protected static ?string $title = 'Sikap';
 
     protected static string $view = 'filament.wali-kelas.resources.students-resource.pages.attitudes';
 
