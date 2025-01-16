@@ -106,10 +106,6 @@ class AdminPanelProvider extends PanelProvider
                         ->items([
                             ...StudentsResource::getNavigationItems(),
                         ]),
-                    NavigationGroup::make('Manajemen Ekstrakurikuler')
-                        ->items([
-                            ...ExtracurricularsResource::getNavigationItems(),
-                        ]),
                     ]);
             });
     }
