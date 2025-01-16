@@ -166,6 +166,7 @@ class StudentsResource extends Resource
             // ekskul
             'listEkskul' => Pages\ListExtracurriculars::route('/{record}/listEkskul'),
             'createEkskul' => Pages\CreateExtracurriculars::route('/{record}/createEkskul'),
+            'editEkskul' => Pages\EditExtracurriculars::route('/{record}/editEkskul'),
         ];
     }
 

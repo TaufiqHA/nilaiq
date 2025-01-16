@@ -7,10 +7,13 @@ use App\Models\Extracurriculars;
 use App\Models\students;
 use Filament\Resources\Pages\Page;
 use Filament\Tables\Actions\Action;
+use Filament\Tables\Actions\BulkAction;
+use Filament\Tables\Actions\EditAction;
 use Filament\Tables\Columns\TextColumn;
 use Filament\Tables\Concerns\InteractsWithTable;
 use Filament\Tables\Contracts\HasTable;
 use Filament\Tables\Table;
+use Illuminate\Database\Eloquent\Collection;
 
 class ListExtracurriculars extends Page implements HasTable
 {
@@ -35,10 +38,20 @@ class ListExtracurriculars extends Page implements HasTable
             ->columns([
                 TextColumn::make('name')
             ])
+            ->actions([
+                EditAction::make()
+                    ->url(fn ($record) => EditExtracurriculars::getUrl([$record->id]))
+            ])
             ->emptyStateHeading('Tidak Ada Ekskul')
             ->headerActions([
                 Action::make('Tambah Ekskul')
                     ->url(fn ($record) => CreateExtracurriculars::getUrl([$this->student->id]))
+            ])
+            ->bulkActions([
+                BulkAction::make('Delete')
+                    ->requiresConfirmation()
+                    ->action(fn (Collection $record) => $record->each->delete())
+                    ->deselectRecordsAfterCompletion()
             ]);
     }
 }
