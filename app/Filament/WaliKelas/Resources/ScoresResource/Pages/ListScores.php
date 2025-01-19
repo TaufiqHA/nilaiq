@@ -2,9 +2,9 @@
 
 namespace App\Filament\WaliKelas\Resources\ScoresResource\Pages;
 
-use App\Filament\WaliKelas\Resources\ScoresResource;
 use Filament\Actions;
 use Filament\Resources\Pages\ListRecords;
+use App\Filament\WaliKelas\Resources\ScoresResource;
 
 class ListScores extends ListRecords
 {

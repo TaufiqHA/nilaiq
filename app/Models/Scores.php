@@ -22,4 +22,19 @@ class Scores extends Model
     {
         return $this->belongsTo(subjects::class);
     }
+
+    public function teacher()
+    {
+        return $this->belongsTo(teachers::class);
+    }
+
+    public function academic_year()
+    {
+        return $this->belongsTo(academicYear::class);
+    }
+
+    public function semester()
+    {
+        return $this->belongsTo(Semester::class);
+    }
 }

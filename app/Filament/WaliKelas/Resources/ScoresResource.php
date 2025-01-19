@@ -2,6 +2,7 @@
 
 namespace App\Filament\WaliKelas\Resources;
 
+use App\Filament\Imports\ScoresImporter;
 use Filament\Forms;
 use Filament\Tables;
 use App\Models\Scores;
@@ -16,6 +17,7 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use App\Filament\WaliKelas\Resources\ScoresResource\Pages;
 use App\Filament\WaliKelas\Resources\ScoresResource\RelationManagers;
+use Filament\Tables\Actions\ImportAction;
 
 class ScoresResource extends Resource
 {
