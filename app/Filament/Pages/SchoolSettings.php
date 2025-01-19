@@ -8,6 +8,7 @@ use Filament\Forms\Form;
 use Filament\Pages\Page;
 use App\Models\academicYear;
 use Filament\Actions\Action;
+use Filament\Forms\Components\DatePicker;
 use Filament\Forms\Components\Select;
 use Filament\Forms\Contracts\HasForms;
 use Filament\Forms\Components\Fieldset;
@@ -51,6 +52,15 @@ class SchoolSettings extends Page implements HasForms
                             ->label('Alamat')
                             ->required()
                             ->maxLength(255),
+                        TextInput::make('kelurahan')
+                            ->required()
+                            ->maxLength(255),
+                        TextInput::make('kecamatan')
+                            ->required()
+                            ->maxLength(255),
+                        TextInput::make('kabupaten')
+                            ->required()
+                            ->maxLength(255),
                         TextInput::make('nss')
                             ->label('NSS')
                             ->required()
@@ -78,6 +88,11 @@ class SchoolSettings extends Page implements HasForms
                             ->required()
                             ->maxLength(255),
                     ]),
+                Fieldset::make('Tanggal Penerimaan Rapor')
+                    ->schema([
+                        DatePicker::make('tanggalPenerimaan')
+                    ])
+                    ->columns(1),
                 Fieldset::make('Tahun Ajaran')
                     ->schema([
                         Select::make('academic_years_id')

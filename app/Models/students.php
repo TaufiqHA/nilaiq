@@ -24,6 +24,6 @@ class students extends Model
 
     public function sikap()
     {
-        return $this->hasOne(Attitudes::class);
+        return $this->hasOne(Attitudes::class, 'student_id');
     }
 }

@@ -15,6 +15,10 @@ return new class extends Migration
             $table->id();
             $table->string('school_name');
             $table->string('address');
+            $table->string('kelurahan')->nullable();
+            $table->string('kecamatan')->nullable();
+            $table->string('kabupaten')->nullable();
+            $table->date('tanggalPenerimaan')->nullable();
             $table->foreignId('academic_years_id')->nullable()->constrained('academic_years')->cascadeOnUpdate();
             $table->string('nss');
             $table->string('npsn');

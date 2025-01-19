@@ -132,7 +132,11 @@ class StudentsResource extends Resource
                         ->url(fn ($record) => HomeroomTeacherNotes::getUrl([$record->id])),
                     Action::make('Ekskul')
                         ->icon('heroicon-o-rectangle-group')
-                        ->url(fn ($record) => ListExtracurriculars::getUrl([$record->id]))
+                        ->url(fn ($record) => ListExtracurriculars::getUrl([$record->id])),
+                    Action::make('Raport')
+                        ->icon('heroicon-o-arrow-down-on-square-stack')
+                        ->url(fn ($record) => url("/export/{$record->id}"))
+                        ->openUrlInNewTab()
                 ]),
         
             ])
