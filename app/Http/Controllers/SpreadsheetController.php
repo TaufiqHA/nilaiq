@@ -2,8 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\classes;
+use App\Models\guruMataPelajaran;
 use Storage;
 use App\Models\schools;
+use App\Models\Scores;
 use App\Models\students;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Cell\DataType;
@@ -106,6 +109,59 @@ class SpreadsheetController extends Controller
 
         
         $filename = $siswa->name;
+
+        // redirect output to client browser
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Disposition: attachment;filename="'. $filename .'.xlsx"');
+        header('Cache-Control: max-age=0');
+
+        $writer = \PhpOffice\PhpSpreadsheet\IOFactory::createWriter($spreadsheet, 'Xlsx');
+        $writer->save('php://output');
+    }
+
+    public function exportScore($id) // id kelas
+    {
+        $class = classes::where('id', $id)->first();
+        $sekolah = schools::first();
+        $tahunAjaran = $sekolah->academicYear;
+        $semester = $sekolah->semester;
+        $teacher = auth('teacher')->user();
+        $subject = guruMataPelajaran::where('teacher_id', $teacher->id)->first()->subject;
+
+        // scores
+
+        $scores = Scores::where('class_id', $class->id)->where('subject_id', $subject->id)->where('teacher_id', $teacher->id)->where('academic_year_id', $tahunAjaran->id)->where('semester_id', $semester->id)->get();
+
+        $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load(storage_path('/app/public/templates/template 2.xlsx'));
+
+        // sheet sampul
+        $worksheet = $spreadsheet->getActiveSheet();
+
+        // data umum
+
+        $worksheet->getCell('B3')->setValue($sekolah->school_name);
+        $worksheet->getCell('B4')->setValue('TAHUN AJARAN ' . $tahunAjaran->name);
+        $worksheet->getCell('F6')->setValue($class->class_name);
+        $worksheet->getCell('F7')->setValue($semester->name);
+        $worksheet->getCell('F8')->setValue($subject->subject_name);
+        $worksheet->getCell('F9')->setValue($teacher->name);
+
+        $no = 1;
+        $index = 14;
+
+        foreach ($scores as $score) {
+            $worksheet->getCell('B' . $index)->setValue($no);
+            $worksheet->getCell('C' . $index)->setValueExplicit($score->student->nis, DataType::TYPE_STRING);
+            $worksheet->getCell('D' . $index)->setValueExplicit($score->student->nisn, DataType::TYPE_STRING);
+            $worksheet->getCell('F' . $index)->setValue($score->student->name);
+            $worksheet->getCell('G' . $index)->setValue($score->score);
+            $worksheet->getCell('H' . $index)->setValue($score->teacher_notes);
+
+            $no++;
+            $index++;
+        }
+
+        $filename = $class->class_name;
 
         // redirect output to client browser
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
