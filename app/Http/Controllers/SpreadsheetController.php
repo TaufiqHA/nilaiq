@@ -118,62 +118,62 @@ class SpreadsheetController extends Controller
 
         // keterampilan dan pengetahuan (kelompok a)
 
-        // $subjects = subjects::all();
-        // $row = 21;
-        // $no = 1;
+        $subjects = subjects::all();
+        $row = 21;
+        $no = 1;
 
-        // foreach($subjects as $subject) {
-        //     if($no == 8) {
-        //         continue;
-        //     }
+        foreach($subjects as $subject) {
+            if($no == 8) {
+                continue;
+            }
 
-        //     $score = Scores::where('student_id', $siswa->id)->where('subject_id', $subject->id)->where('academic_year_id', $tahunAjaran->id)->where('semester_id', $semester->id)->first();
+            $score = Scores::where('student_id', $siswa->id)->where('subject_id', $subject->id)->where('academic_year_id', $tahunAjaran->id)->where('semester_id', $semester->id)->first();
 
-        //     if(!$score) {
-        //         Notification::make()
-        //             ->title('Lengkapi Nilai !')
-        //             ->danger()
-        //             ->send();
+            if(!$score) {
+                Notification::make()
+                    ->title('Lengkapi Nilai !')
+                    ->danger()
+                    ->send();
 
-        //         return redirect('/waliKelas/students');
-        //     }
+                return redirect('/waliKelas/students');
+            }
             
-        //     $worksheet->setCellValue('A' . $row, $no);
-        //     $worksheet->setCellValue('B' . $row, $subject->subject_name);
-        //     $worksheet->setCellValue('C' . $row, $score->score);
-        //     $worksheet->setCellValue('E' . $row, $score->teacher_notes);
-        //     $row++;
-        //     $no++;
-        // }
+            $worksheet->setCellValue('A' . $row, $no);
+            $worksheet->setCellValue('B' . $row, $subject->subject_name);
+            $worksheet->setCellValue('C' . $row, $score->score);
+            $worksheet->setCellValue('E' . $row, $score->teacher_notes);
+            $row++;
+            $no++;
+        }
 
-        // // keterampilan dan pengetahuan (kelompok b)
+        // keterampilan dan pengetahuan (kelompok b)
 
-        // $countSubject = $subject->count();
-        // $countColumn = $countSubject - 7;
-        // $mataPelajaran = subjects::orderBy('id', 'desc')->limit($countColumn)->get();
-        // $subjects = $mataPelajaran->sortBy('id');
-        // $row = 33;
-        // $no = 1;
+        $countSubject = $subject->count();
+        $countColumn = $countSubject - 7;
+        $mataPelajaran = subjects::orderBy('id', 'desc')->limit($countColumn)->get();
+        $subjects = $mataPelajaran->sortBy('id');
+        $row = 33;
+        $no = 1;
 
-        // foreach($subjects as $subject) {
-        //     $score = Scores::where('student_id', $siswa->id)->where('subject_id', $subject->id)->where('academic_year_id', $tahunAjaran->id)->where('semester_id', $semester->id)->first();
+        foreach($subjects as $subject) {
+            $score = Scores::where('student_id', $siswa->id)->where('subject_id', $subject->id)->where('academic_year_id', $tahunAjaran->id)->where('semester_id', $semester->id)->first();
 
-        //     if(!$score) {
-        //         Notification::make()
-        //             ->title('Lengkapi Nilai !')
-        //             ->danger()
-        //             ->send();
+            if(!$score) {
+                Notification::make()
+                    ->title('Lengkapi Nilai !')
+                    ->danger()
+                    ->send();
 
-        //         return redirect('/waliKelas/students');
-        //     }
+                return redirect('/waliKelas/students');
+            }
 
-        //     $worksheet->setCellValue('A' . $row, $no);
-        //     $worksheet->setCellValue('B' . $row, $subject->subject_name);
-        //     $worksheet->setCellValue('C' . $row, $score->score);
-        //     $worksheet->setCellValue('E' . $row, $score->teacher_notes);
-        //     $row++;
-        //     $no++;
-        // }
+            $worksheet->setCellValue('A' . $row, $no);
+            $worksheet->setCellValue('B' . $row, $subject->subject_name);
+            $worksheet->setCellValue('C' . $row, $score->score);
+            $worksheet->setCellValue('E' . $row, $score->teacher_notes);
+            $row++;
+            $no++;
+        }
 
         // ekstrakurikuler
 
