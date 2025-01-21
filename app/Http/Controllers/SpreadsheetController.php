@@ -2,12 +2,19 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\classes;
-use App\Models\guruMataPelajaran;
 use Storage;
-use App\Models\schools;
 use App\Models\Scores;
+use App\Models\classes;
+use App\Models\schools;
 use App\Models\students;
+use App\Models\subjects;
+use App\Models\Achievement;
+use App\Models\Extracurriculars;
+use App\Models\guruMataPelajaran;
+use Illuminate\Support\Facades\DB;
+use App\Models\HomeroomTeacherNotes;
+use App\Models\classAttendanceRecords;
+use Filament\Notifications\Notification;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Cell\DataType;
 
@@ -16,6 +23,8 @@ class SpreadsheetController extends Controller
     public function export($siswa_id)
     {
         $sekolah = schools::first();
+        $tahunAjaran = $sekolah->academicYear;
+        $semester = $sekolah->semester;
         $siswa = students::where('id', $siswa_id)->first();
 
         $spreadsheet = \PhpOffice\PhpSpreadsheet\IOFactory::load(storage_path('/app/public/templates/template.xlsx'));
@@ -107,6 +116,165 @@ class SpreadsheetController extends Controller
         $worksheet->setCellValue('B' . $row, 'Berkebinekaan global');
         $worksheet->setCellValue('D' . $row, $siswa->sikap->global_diversity);
 
+        // keterampilan dan pengetahuan (kelompok a)
+
+        // $subjects = subjects::all();
+        // $row = 21;
+        // $no = 1;
+
+        // foreach($subjects as $subject) {
+        //     if($no == 8) {
+        //         continue;
+        //     }
+
+        //     $score = Scores::where('student_id', $siswa->id)->where('subject_id', $subject->id)->where('academic_year_id', $tahunAjaran->id)->where('semester_id', $semester->id)->first();
+
+        //     if(!$score) {
+        //         Notification::make()
+        //             ->title('Lengkapi Nilai !')
+        //             ->danger()
+        //             ->send();
+
+        //         return redirect('/waliKelas/students');
+        //     }
+            
+        //     $worksheet->setCellValue('A' . $row, $no);
+        //     $worksheet->setCellValue('B' . $row, $subject->subject_name);
+        //     $worksheet->setCellValue('C' . $row, $score->score);
+        //     $worksheet->setCellValue('E' . $row, $score->teacher_notes);
+        //     $row++;
+        //     $no++;
+        // }
+
+        // // keterampilan dan pengetahuan (kelompok b)
+
+        // $countSubject = $subject->count();
+        // $countColumn = $countSubject - 7;
+        // $mataPelajaran = subjects::orderBy('id', 'desc')->limit($countColumn)->get();
+        // $subjects = $mataPelajaran->sortBy('id');
+        // $row = 33;
+        // $no = 1;
+
+        // foreach($subjects as $subject) {
+        //     $score = Scores::where('student_id', $siswa->id)->where('subject_id', $subject->id)->where('academic_year_id', $tahunAjaran->id)->where('semester_id', $semester->id)->first();
+
+        //     if(!$score) {
+        //         Notification::make()
+        //             ->title('Lengkapi Nilai !')
+        //             ->danger()
+        //             ->send();
+
+        //         return redirect('/waliKelas/students');
+        //     }
+
+        //     $worksheet->setCellValue('A' . $row, $no);
+        //     $worksheet->setCellValue('B' . $row, $subject->subject_name);
+        //     $worksheet->setCellValue('C' . $row, $score->score);
+        //     $worksheet->setCellValue('E' . $row, $score->teacher_notes);
+        //     $row++;
+        //     $no++;
+        // }
+
+        // ekstrakurikuler
+
+        $extracurriculars = Extracurriculars::where('student_id', $siswa->id)->get();
+
+        $row = 40;
+
+        if($extracurriculars) {
+            foreach($extracurriculars as $extracurricular) {
+                $worksheet->setCellValue('B' . $row, value: $extracurricular->name);
+                $worksheet->setCellValue('E' . $row, strip_tags(html_entity_decode($extracurricular->note)));
+
+                $row++;
+            }
+        }
+
+        // prestasi
+
+        $achievements = Achievement::where('student_id', $siswa->id)->get();
+
+        $row = 46;
+
+        if($achievements) {
+            foreach($achievements as $achievement) {
+                $worksheet->setCellValue('B' . $row, value: $achievement->name);
+                $worksheet->setCellValue('E' . $row, strip_tags(html_entity_decode($achievement->note)));
+
+                $row++;
+            }
+        }
+
+        // absensi
+
+        $present = classAttendanceRecords::where('student_id', $siswa->id)->where('status', 'Present')->count();
+        $sick = classAttendanceRecords::where('student_id', $siswa->id)->where('status', 'Sick')->count();
+        $permission = classAttendanceRecords::where('student_id', $siswa->id)->where('status', 'Permission')->count();
+        $absent = classAttendanceRecords::where('student_id', $siswa->id)->where('status', 'Absent')->count();
+
+        $worksheet->setCellValue('C53', $sick);
+        $worksheet->setCellValue('C54', $permission);
+        $worksheet->setCellValue('C55', $absent);
+
+        // catatan wali kelas
+
+        $catatan = HomeroomTeacherNotes::where('student_id', $siswa->id)->first();
+
+        $worksheet->setCellValue('B58', strip_tags(html_entity_decode($catatan->note)));
+
+        // TANGGAL DAN NAMA WALI KELAS
+
+        // Array nama bulan dalam bahasa Indonesia
+        $bulanIndonesia = [
+            1 => 'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
+            'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+        ];
+
+        // Pecah tanggal menjadi bagian-bagian
+        $tanggalPenerimaan = strtotime($sekolah->tanggalPenerimaan);
+        $tanggal = date('j', $tanggalPenerimaan); // Hari
+        $bulan = $bulanIndonesia[date('n', $tanggalPenerimaan)]; // Bulan
+        $tahun = date('Y', $tanggalPenerimaan); // Tahun
+
+        // Gabungkan dalam format yang diinginkan
+        $tanggalFormatted = "$tanggal $bulan $tahun";
+        $waliKelas = auth('waliKelas')->user();
+
+        $worksheet->setCellValue('F60', $sekolah->kelurahan . ', ' . $tanggalFormatted);
+        $worksheet->setCellValue('F61', 'Wali Kelas ' . $siswa->class->class_name);
+        $worksheet->setCellValue('F65', $waliKelas->name);
+        $worksheet->setCellValue('F66', 'NIP. ' . $waliKelas->nip);
+
+        // footer
+        $worksheet->setCellValue('A72', $sekolah->principal_name);
+        $worksheet->getCell('A73')->setValueExplicit('NIP. ' . $sekolah->nip, DataType::TYPE_STRING);
+
+        // ranking
+
+        $rankings = DB::table('scores')
+        ->select(
+            'student_id',
+            DB::raw("SUM(score) as total_score")
+        )
+        ->where('class_id', $siswa->class->id)
+        ->where('semester_id', $semester->id)
+        ->where('academic_year_id', $tahunAjaran->id)
+        ->groupBy('student_id')
+        ->orderByDesc('total_score')
+        ->get();
+
+        $siswaId = $siswa->id;
+
+        // Tambahkan peringkat dan cari siswa yang dimaksud
+        $rankedStudents = $rankings->map(function ($item, $index) use ($siswaId) {
+            $item->rank = $index + 1; // Peringkat dimulai dari 1
+            return $item;
+        });
+
+        // Cari siswa tertentu berdasarkan student_id
+        $studentRank = $rankedStudents->firstWhere('student_id', $siswaId);
+        $worksheet->setCellValue('E51', 'RANGKING : ' . $studentRank->rank);
+        $worksheet->setCellValue('G51', 'JUMLAH NILAI : ' . $studentRank->total_score);
         
         $filename = $siswa->name;
 
