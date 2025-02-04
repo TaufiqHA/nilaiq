@@ -38,7 +38,6 @@ class WaliKelasPanelProvider extends PanelProvider
                 'primary' => Color::Amber,
             ])
             ->login()
-            ->defaultThemeMode(ThemeMode::Light)
             ->discoverResources(in: app_path('Filament/WaliKelas/Resources'), for: 'App\\Filament\\WaliKelas\\Resources')
             ->discoverPages(in: app_path('Filament/WaliKelas/Pages'), for: 'App\\Filament\\WaliKelas\\Pages')
             ->pages([
