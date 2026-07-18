@@ -4,6 +4,7 @@ use App\Http\Controllers\AcademicYearController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ClassesController;
 use App\Http\Controllers\SettingsController;
+use App\Http\Controllers\StudentsController;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('guest')->group(function () {
@@ -33,4 +34,7 @@ Route::middleware('auth')->group(function () {
 
     Route::resource('classes', ClassesController::class);
     Route::delete('classes/{class}/delete', [ClassesController::class, 'delete'])->name('classes.delete');
+
+    Route::resource('students', StudentsController::class);
+    Route::delete('students/{student}/delete', [StudentsController::class, 'delete'])->name('students.delete');
 });
