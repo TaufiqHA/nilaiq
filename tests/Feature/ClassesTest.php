@@ -39,7 +39,7 @@ class ClassesTest extends TestCase
         $response = $this->actingAs($user)->get(route('classes.index'));
 
         $response->assertStatus(200);
-        $response->assertViewIs('auth.Classes');
+        $response->assertViewIs('auth.class');
         $response->assertViewHas('classes');
         $response->assertViewHas('academicYears');
     }
@@ -119,7 +119,7 @@ class ClassesTest extends TestCase
         $response = $this->actingAs($user)->get(route('classes.show', $class));
 
         $response->assertStatus(200);
-        $response->assertViewIs('auth.Classes');
+        $response->assertViewIs('auth.class');
         $response->assertViewHas('class');
     }
 

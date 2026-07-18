@@ -16,14 +16,14 @@ class ClassesController extends Controller
      */
     public function index(Request $request): JsonResponse|View
     {
-        $classes = Classes::with('academicYear')->get();
+        $classes = Classes::with(['academicYear', 'students'])->get();
         $academicYears = AcademicYear::all();
 
         if ($request->wantsJson()) {
             return response()->json($classes);
         }
 
-        return view('auth.Classes', compact('classes', 'academicYears'));
+        return view('auth.class', compact('classes', 'academicYears'));
     }
 
     /**
@@ -50,16 +50,16 @@ class ClassesController extends Controller
      */
     public function show(Request $request, Classes $class): JsonResponse|View
     {
-        $class->load('academicYear');
+        $class->load(['academicYear', 'students']);
 
         if ($request->wantsJson()) {
             return response()->json($class);
         }
 
-        $classes = Classes::with('academicYear')->get();
+        $classes = Classes::with(['academicYear', 'students'])->get();
         $academicYears = AcademicYear::all();
 
-        return view('auth.Classes', compact('classes', 'academicYears', 'class'));
+        return view('auth.class', compact('classes', 'academicYears', 'class'));
     }
 
     /**
