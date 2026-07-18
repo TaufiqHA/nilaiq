@@ -79,6 +79,14 @@
                         <span class="flex-1 ms-3 whitespace-nowrap">PTS</span>
                      </a>
                   </li>
+                  <li>
+                     <a href="{{ route('final-exams.index') }}" class="flex items-center px-2 py-1.5 {{ request()->routeIs('final-exams.*') ? 'bg-neutral-tertiary text-fg-brand font-bold' : 'text-body hover:bg-neutral-tertiary hover:text-fg-brand' }} rounded-base group transition-all duration-200">
+                        <svg class="shrink-0 w-5 h-5 transition duration-75 {{ request()->routeIs('final-exams.*') ? 'text-fg-brand' : 'group-hover:text-fg-brand' }}" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                           <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 19V4a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v13H7a2 2 0 0 0-2 2Zm0 0a2 2 0 0 0 2 2h12M9 7h6m-6 4h6m-6 4h3"/>
+                        </svg>
+                        <span class="flex-1 ms-3 whitespace-nowrap">PAS</span>
+                     </a>
+                  </li>
                </ul>
             </div>
 
