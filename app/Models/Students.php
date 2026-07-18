@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 #[Fillable([
     'class_id',
@@ -44,5 +45,37 @@ class Students extends Model
     public function class(): BelongsTo
     {
         return $this->belongsTo(Classes::class, 'class_id');
+    }
+
+    /**
+     * Get the daily test scores for the student.
+     */
+    public function dailyTestScores(): HasMany
+    {
+        return $this->hasMany(DailyTestScores::class, 'student_id');
+    }
+
+    /**
+     * Get the assignment scores for the student.
+     */
+    public function assignmentScores(): HasMany
+    {
+        return $this->hasMany(AssignmentScores::class, 'student_id');
+    }
+
+    /**
+     * Get the midterm scores for the student.
+     */
+    public function midtermScores(): HasMany
+    {
+        return $this->hasMany(MidtermScores::class, 'student_id');
+    }
+
+    /**
+     * Get the final scores for the student.
+     */
+    public function finalScores(): HasMany
+    {
+        return $this->hasMany(FinalScores::class, 'student_id');
     }
 }
