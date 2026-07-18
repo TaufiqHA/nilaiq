@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 #[Fillable([
     'class_id',
@@ -37,5 +38,13 @@ class AssignmentMeetings extends Model
     public function class(): BelongsTo
     {
         return $this->belongsTo(Classes::class, 'class_id');
+    }
+
+    /**
+     * Get the scores for the assignment meeting.
+     */
+    public function scores(): HasMany
+    {
+        return $this->hasMany(AssignmentScores::class, 'assignment_meeting_id');
     }
 }

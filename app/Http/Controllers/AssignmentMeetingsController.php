@@ -3,77 +3,104 @@
 namespace App\Http\Controllers;
 
 use App\Models\AssignmentMeetings;
+use App\Models\Classes;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\View\View;
 
 class AssignmentMeetingsController extends Controller
 {
     /**
      * Display a listing of the assignment meetings.
      */
-    public function index(): JsonResponse
+    public function index(Request $request): JsonResponse|View
     {
-        $meetings = AssignmentMeetings::with('class.students')->get();
+        $meetings = AssignmentMeetings::with(['class.students', 'scores'])->get();
+        $classes = Classes::with('students')->get();
 
-        return response()->json($meetings);
+        if ($request->wantsJson()) {
+            return response()->json($meetings);
+        }
+
+        return view('auth.tugas', compact('meetings', 'classes'));
     }
 
     /**
      * Store a newly created assignment meeting in storage.
      */
-    public function store(Request $request): JsonResponse
+    public function store(Request $request): JsonResponse|RedirectResponse
     {
         $validated = $request->validate($this->validationRules());
 
         $meeting = AssignmentMeetings::create($validated);
 
-        return response()->json([
-            'message' => 'Assignment meeting created successfully.',
-            'data' => $meeting->load('class'),
-        ], 201);
+        if ($request->wantsJson()) {
+            return response()->json([
+                'message' => 'Assignment meeting created successfully.',
+                'data' => $meeting->load('class'),
+            ], 201);
+        }
+
+        return redirect()->route('assignment-meetings.index')->with('success', 'Assignment meeting created successfully.');
     }
 
     /**
      * Display the specified assignment meeting.
      */
-    public function show(AssignmentMeetings $assignmentMeeting): JsonResponse
+    public function show(Request $request, AssignmentMeetings $assignmentMeeting): JsonResponse|View
     {
-        $assignmentMeeting->load('class.students');
+        $assignmentMeeting->load(['class.students', 'scores']);
 
-        return response()->json($assignmentMeeting);
+        if ($request->wantsJson()) {
+            return response()->json($assignmentMeeting);
+        }
+
+        $meetings = AssignmentMeetings::with(['class.students', 'scores'])->get();
+        $classes = Classes::with('students')->get();
+
+        return view('auth.tugas', compact('meetings', 'classes', 'assignmentMeeting'));
     }
 
     /**
      * Update the specified assignment meeting in storage.
      */
-    public function update(Request $request, AssignmentMeetings $assignmentMeeting): JsonResponse
+    public function update(Request $request, AssignmentMeetings $assignmentMeeting): JsonResponse|RedirectResponse
     {
         $validated = $request->validate($this->validationRules());
 
         $assignmentMeeting->update($validated);
 
-        return response()->json([
-            'message' => 'Assignment meeting updated successfully.',
-            'data' => $assignmentMeeting->load('class'),
-        ]);
+        if ($request->wantsJson()) {
+            return response()->json([
+                'message' => 'Assignment meeting updated successfully.',
+                'data' => $assignmentMeeting->load('class'),
+            ]);
+        }
+
+        return redirect()->route('assignment-meetings.index')->with('success', 'Assignment meeting updated successfully.');
     }
 
     /**
      * Remove the specified assignment meeting from storage.
      */
-    public function destroy(AssignmentMeetings $assignmentMeeting): JsonResponse
+    public function destroy(AssignmentMeetings $assignmentMeeting): JsonResponse|RedirectResponse
     {
         $assignmentMeeting->delete();
 
-        return response()->json([
-            'message' => 'Assignment meeting deleted successfully.',
-        ]);
+        if (request()->wantsJson()) {
+            return response()->json([
+                'message' => 'Assignment meeting deleted successfully.',
+            ]);
+        }
+
+        return redirect()->route('assignment-meetings.index')->with('success', 'Assignment meeting deleted successfully.');
     }
 
     /**
      * Alias for destroy method to support explicit 'delete' request.
      */
-    public function delete(AssignmentMeetings $assignmentMeeting): JsonResponse
+    public function delete(AssignmentMeetings $assignmentMeeting): JsonResponse|RedirectResponse
     {
         return $this->destroy($assignmentMeeting);
     }

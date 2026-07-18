@@ -1,16 +1,16 @@
 @extends('layouts.main')
 
-@section('title', 'Absensi')
+@section('title', 'Tugas')
 
 @section('content')
-<div class="max-w-6xl mx-auto py-8 px-4">
+<div class="max-w-none mx-auto py-8 px-4">
     <!-- Section 1: Meetings List Section -->
     <div id="meeting-list-section" class="transition-all duration-300">
         <!-- Header -->
         <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
             <div>
-                <h1 class="text-3xl font-extrabold text-heading tracking-tight mb-2">Absensi</h1>
-                <p class="text-body">Kelola pertemuan dan isi absensi siswa di setiap kelas.</p>
+                <h1 class="text-3xl font-extrabold text-heading tracking-tight mb-2">Tugas</h1>
+                <p class="text-body">Kelola pertemuan tugas dan isi nilai siswa di setiap kelas.</p>
             </div>
             <div>
                 <button type="button" onclick="prepareAddMeeting()" data-modal-target="meeting-modal" data-modal-toggle="meeting-modal" class="bg-brand hover:bg-brand-strong text-white px-5 py-2.5 rounded-base text-sm font-bold shadow-md shadow-brand/10 transition-all duration-200 cursor-pointer flex items-center gap-2">
@@ -94,21 +94,21 @@
                     </thead>
                     <tbody class="divide-y divide-default">
                         @forelse($meetings as $meeting)
-                            <tr id="meeting-row-{{ $meeting->id }}" data-title="{{ strtolower($meeting->title) }}" data-class="{{ $meeting->class?->name ?? '' }}" data-date="{{ $meeting->meeting_date ? \Carbon\Carbon::parse($meeting->meeting_date)->format('Y-m-d') : '' }}" class="meeting-row hover:bg-neutral-secondary-soft dark:hover:bg-neutral-tertiary transition-colors duration-150 border-b border-default last:border-0 cursor-pointer" onclick="showMeetingAttendances({{ $meeting->id }})">
+                            <tr id="meeting-row-{{ $meeting->id }}" data-title="{{ strtolower($meeting->title) }}" data-class="{{ $meeting->class?->name ?? '' }}" data-date="{{ $meeting->assignment_date ? \Carbon\Carbon::parse($meeting->assignment_date)->format('Y-m-d') : '' }}" class="meeting-row hover:bg-neutral-secondary-soft dark:hover:bg-neutral-tertiary transition-colors duration-150 border-b border-default last:border-0 cursor-pointer" onclick="showMeetingScores({{ $meeting->id }})">
                                 <td class="px-6 py-4 text-center font-semibold text-heading select-none hidden sm:table-cell">{{ sprintf('%02d', $loop->iteration) }}</td>
                                 <td class="px-6 py-4 font-bold text-heading whitespace-nowrap">{{ $meeting->title }}</td>
                                 <td class="px-6 py-4 text-body font-semibold">{{ $meeting->class?->name ?? '-' }}</td>
-                                <td class="px-6 py-4 text-body whitespace-nowrap hidden md:table-cell">{{ $meeting->meeting_date ? \Carbon\Carbon::parse($meeting->meeting_date)->translatedFormat('d F Y') : '-' }}</td>
+                                <td class="px-6 py-4 text-body whitespace-nowrap hidden md:table-cell">{{ $meeting->assignment_date ? \Carbon\Carbon::parse($meeting->assignment_date)->translatedFormat('d F Y') : '-' }}</td>
                                 <td class="px-6 py-4 text-body max-w-xs truncate hidden lg:table-cell">{{ $meeting->description ?? '-' }}</td>
                                 <td class="px-6 py-4 text-center whitespace-nowrap">
                                     <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-brand/10 text-brand border border-brand/20">
-                                        {{ $meeting->attendances->count() }} / {{ $meeting->class?->students->count() ?? 0 }} Siswa
+                                        {{ $meeting->scores->count() }} / {{ $meeting->class?->students->count() ?? 0 }} Siswa
                                     </span>
                                 </td>
                                 <td class="px-6 py-4 text-center whitespace-nowrap" onclick="event.stopPropagation()">
                                     <div class="flex items-center justify-center gap-2">
-                                        <button type="button" onclick="showMeetingAttendances({{ $meeting->id }})" class="text-xs bg-brand hover:bg-brand-strong text-white px-2.5 py-1.5 rounded-base font-bold transition-all duration-150 cursor-pointer">
-                                            Isi Absensi
+                                        <button type="button" onclick="showMeetingScores({{ $meeting->id }})" class="text-xs bg-brand hover:bg-brand-strong text-white px-2.5 py-1.5 rounded-base font-bold transition-all duration-150 cursor-pointer">
+                                            Isi Nilai
                                         </button>
                                         <button id="dropdownButton-{{ $meeting->id }}" data-dropdown-toggle="dropdown-{{ $meeting->id }}" class="inline-block text-body hover:bg-neutral-secondary-soft focus:ring-4 focus:outline-none focus:ring-neutral-tertiary rounded-lg text-sm p-1.5 transition-colors duration-150 cursor-pointer" type="button">
                                             <span class="sr-only">Open options</span>
@@ -125,7 +125,7 @@
                                     <svg class="mx-auto h-12 w-12 text-neutral-400 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2" />
                                     </svg>
-                                    <p class="font-medium text-heading">Belum ada data pertemuan.</p>
+                                    <p class="font-medium text-heading">Belum ada data pertemuan tugas.</p>
                                     <p class="text-xs mt-1">Silakan buat pertemuan baru menggunakan tombol di kanan atas.</p>
                                 </td>
                             </tr>
@@ -144,7 +144,7 @@
                             </button>
                         </li>
                         <li>
-                            <form action="{{ route('attendance-meetings.delete', $meeting->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus pertemuan ini? Semua data absensi di pertemuan ini juga akan terhapus.')" class="block w-full">
+                            <form action="{{ route('assignment-meetings.delete', $meeting->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus pertemuan ini? Semua data nilai di pertemuan ini juga akan terhapus.')" class="block w-full">
                                 @csrf
                                 @method('DELETE')
                                 <button type="submit" class="block w-full text-left px-4 py-2 text-fg-danger-strong hover:bg-danger-soft/20 transition-colors duration-150 cursor-pointer">
@@ -166,10 +166,9 @@
             </div>
         </div>
     </div>
-    </div>
 
-    <!-- Section 2: Attendances Fill Section (Hidden by Default) -->
-    <div id="attendance-fill-section" class="hidden transition-all duration-300">
+    <!-- Section 2: Scores Fill Section (Hidden by Default) -->
+    <div id="score-fill-section" class="hidden transition-all duration-300">
         <!-- Header -->
         <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
             <div class="flex items-start gap-3">
@@ -179,8 +178,8 @@
                     </svg>
                 </button>
                 <div>
-                    <h1 id="attendance-title" class="text-2xl sm:text-3xl font-extrabold text-heading tracking-tight">Isi Absensi Kelas</h1>
-                    <p class="text-body text-sm sm:text-base" id="attendance-subtitle">Pertemuan 1 - Kelas VII A</p>
+                    <h1 id="score-title" class="text-2xl sm:text-3xl font-extrabold text-heading tracking-tight">Isi Nilai Kelas</h1>
+                    <p class="text-body text-sm sm:text-base" id="score-subtitle">Pertemuan 1 - Kelas VII A</p>
                 </div>
             </div>
             
@@ -204,28 +203,27 @@
             </div>
         </div>
 
-        <!-- Student Attendance Table Card -->
+        <!-- Student Score Table Card -->
         <div class="bg-white dark:bg-neutral-primary-soft border border-default rounded-base p-6 shadow-sm">
-            <div class="relative overflow-x-auto border border-default rounded-base bg-white dark:bg-neutral-primary-soft" id="attendances-table-container">
+            <div class="relative overflow-x-auto border border-default rounded-base bg-white dark:bg-neutral-primary-soft" id="scores-table-container">
                 <table class="w-full text-sm text-left text-body">
                     <thead class="text-xs font-bold text-heading uppercase bg-neutral-secondary-medium border-b border-default select-none">
                         <tr>
                             <th scope="col" class="px-6 py-3.5 w-12 text-center hidden sm:table-cell">No</th>
                             <th scope="col" class="px-6 py-3.5">Nama Lengkap</th>
                             <th scope="col" class="px-6 py-3.5 text-center hidden sm:table-cell">L/P</th>
-                            <th scope="col" class="px-6 py-3.5 whitespace-nowrap" style="width: 170px;">Status Absensi</th>
-                            <th scope="col" class="px-6 py-3.5">Catatan</th>
+                            <th scope="col" class="px-6 py-3.5 text-center" style="width: 180px;">Nilai (0-100)</th>
                             <th scope="col" class="px-6 py-3.5 text-center whitespace-nowrap" style="width: 120px;">Aksi</th>
                         </tr>
                     </thead>
-                    <tbody id="attendances-table-body" class="divide-y divide-default">
+                    <tbody id="scores-table-body" class="divide-y divide-default">
                         <!-- Javascript will populate rows here -->
                     </tbody>
                 </table>
             </div>
             
             <!-- Empty state for student list -->
-            <div id="attendances-empty" class="hidden text-center py-12 text-body">
+            <div id="scores-empty" class="hidden text-center py-12 text-body">
                 <svg class="mx-auto h-12 w-12 text-neutral-400 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.354a4 4 0 110 5.292" />
                 </svg>
@@ -244,7 +242,7 @@
             <!-- Modal header -->
             <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t border-default">
                 <h3 id="modal-title" class="text-lg font-bold text-heading">
-                    Tambah Pertemuan
+                    Tambah Pertemuan Tugas
                 </h3>
                 <button type="button" class="text-body bg-transparent hover:bg-neutral-secondary-soft hover:text-heading rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-neutral-tertiary cursor-pointer" data-modal-hide="meeting-modal">
                     <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
@@ -275,13 +273,13 @@
                     <label for="modal_title_input" class="block mb-2 text-sm font-semibold text-heading">Nama Pertemuan</label>
                     <input type="text" name="title" id="modal_title_input" required
                            class="bg-neutral-secondary-medium border border-default text-heading text-sm rounded-base focus:ring-brand focus:border-brand block w-full p-2.5"
-                           placeholder="contoh: Pertemuan Pertama">
+                           placeholder="contoh: Tugas Bab 1">
                 </div>
 
-                <!-- Meeting Date Input -->
+                <!-- Assignment Date Input -->
                 <div>
-                    <label for="modal_meeting_date" class="block mb-2 text-sm font-semibold text-heading">Tanggal Pertemuan</label>
-                    <input type="date" name="meeting_date" id="modal_meeting_date" required
+                    <label for="modal_assignment_date" class="block mb-2 text-sm font-semibold text-heading">Tanggal Tugas</label>
+                    <input type="date" name="assignment_date" id="modal_assignment_date" required
                            class="bg-neutral-secondary-medium border border-default text-heading text-sm rounded-base focus:ring-brand focus:border-brand block w-full p-2.5">
                 </div>
 
@@ -290,7 +288,7 @@
                     <label for="modal_description" class="block mb-2 text-sm font-semibold text-heading">Deskripsi / Keterangan</label>
                     <textarea name="description" id="modal_description" rows="3"
                               class="bg-neutral-secondary-medium border border-default text-heading text-sm rounded-base focus:ring-brand focus:border-brand block w-full p-2.5"
-                              placeholder="contoh: Membahas bab 1..."></textarea>
+                              placeholder="contoh: Materi Bab 1 tentang..."></textarea>
                 </div>
 
                 <!-- Modal Action Buttons -->
@@ -315,7 +313,7 @@
         </svg>
         <span class="sr-only">Check icon</span>
     </div>
-    <div class="ms-3 text-sm font-normal" id="toast-message">Absensi berhasil disimpan.</div>
+    <div class="ms-3 text-sm font-normal" id="toast-message">Nilai berhasil disimpan.</div>
     <button type="button" class="ms-auto -mx-1.5 -my-1.5 bg-white text-gray-400 hover:text-gray-900 rounded-lg focus:ring-2 focus:ring-gray-300 p-1.5 hover:bg-gray-100 inline-flex items-center justify-center h-8 w-8 dark:bg-neutral-primary-soft dark:text-gray-500 dark:hover:text-white border-none cursor-pointer" onclick="document.getElementById('toast-success').classList.add('hidden')" aria-label="Close">
         <span class="sr-only">Close</span>
         <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
@@ -329,72 +327,72 @@
     const meetingsData = @json($meetings);
     let currentMeetingId = null;
     let currentClassStudents = [];
-    let attendanceRecords = [];
+    let scoreRecords = [];
 
     // Open Modal for Add Meeting
     function prepareAddMeeting() {
-        document.getElementById('modal-title').innerText = 'Tambah Pertemuan';
-        document.getElementById('meeting-form').action = "{{ route('attendance-meetings.store') }}";
+        document.getElementById('modal-title').innerText = 'Tambah Pertemuan Tugas';
+        document.getElementById('meeting-form').action = "{{ route('assignment-meetings.store') }}";
         document.getElementById('modal-method-container').innerHTML = '';
         
         document.getElementById('modal_class_id').value = '';
         document.getElementById('modal_title_input').value = '';
-        document.getElementById('modal_meeting_date').value = new Date().toISOString().split('T')[0];
+        document.getElementById('modal_assignment_date').value = new Date().toISOString().split('T')[0];
         document.getElementById('modal_description').value = '';
     }
 
     // Open Modal for Edit Meeting
     function prepareEditMeeting(meeting) {
-        document.getElementById('modal-title').innerText = 'Ubah Pertemuan';
-        document.getElementById('meeting-form').action = `/attendance-meetings/${meeting.id}`;
+        document.getElementById('modal-title').innerText = 'Ubah Pertemuan Tugas';
+        document.getElementById('meeting-form').action = `/assignment-meetings/${meeting.id}`;
         document.getElementById('modal-method-container').innerHTML = '@method("PUT")';
 
         document.getElementById('modal_class_id').value = meeting.class_id;
         document.getElementById('modal_title_input').value = meeting.title;
         
-        let rawDate = meeting.meeting_date;
+        let rawDate = meeting.assignment_date;
         if (rawDate && rawDate.includes('T')) {
             rawDate = rawDate.split('T')[0];
         }
-        document.getElementById('modal_meeting_date').value = rawDate;
+        document.getElementById('modal_assignment_date').value = rawDate;
         document.getElementById('modal_description').value = meeting.description || '';
     }
 
-    // Show attendance record view
-    function showMeetingAttendances(meetingId) {
+    // Show scores view
+    function showMeetingScores(meetingId) {
         const meeting = meetingsData.find(m => m.id === meetingId);
         if (!meeting) return;
 
         currentMeetingId = meetingId;
         currentClassStudents = meeting.class ? (meeting.class.students || []) : [];
-        attendanceRecords = meeting.attendances || [];
+        scoreRecords = meeting.scores || [];
 
         // Set Headers
-        document.getElementById('attendance-title').innerText = 'Absensi: ' + meeting.title;
-        document.getElementById('attendance-subtitle').innerText = (meeting.class ? meeting.class.name : '-') + ' • ' + (meeting.meeting_date ? new Date(meeting.meeting_date).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) : '-');
+        document.getElementById('score-title').innerText = 'Nilai: ' + meeting.title;
+        document.getElementById('score-subtitle').innerText = (meeting.class ? meeting.class.name : '-') + ' • ' + (meeting.assignment_date ? new Date(meeting.assignment_date).toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' }) : '-');
 
         // Clear search
         document.getElementById('search-students').value = '';
 
         // Render Table
-        renderAttendances(currentClassStudents);
+        renderScores(currentClassStudents);
 
         // Toggle sections
         document.getElementById('meeting-list-section').classList.add('hidden');
-        document.getElementById('attendance-fill-section').classList.remove('hidden');
+        document.getElementById('score-fill-section').classList.remove('hidden');
     }
 
     // Back to meetings grid
     function backToMeetings() {
-        document.getElementById('attendance-fill-section').classList.add('hidden');
+        document.getElementById('score-fill-section').classList.add('hidden');
         document.getElementById('meeting-list-section').classList.remove('hidden');
     }
 
-    // Render student table with current attendance status
-    function renderAttendances(studentsList) {
-        const tableBody = document.getElementById('attendances-table-body');
-        const tableContainer = document.getElementById('attendances-table-container');
-        const emptyState = document.getElementById('attendances-empty');
+    // Render student table with current score values
+    function renderScores(studentsList) {
+        const tableBody = document.getElementById('scores-table-body');
+        const tableContainer = document.getElementById('scores-table-container');
+        const emptyState = document.getElementById('scores-empty');
         tableBody.innerHTML = '';
 
         if (studentsList.length === 0) {
@@ -409,19 +407,19 @@
         // Sort alphabetically
         const sortedList = [...studentsList].sort((a, b) => a.name.localeCompare(b.name));
 
-        // Map existing attendance records by student ID
-        const attendanceMap = {};
-        attendanceRecords.forEach(att => {
-            attendanceMap[att.student_id] = att;
+        // Map existing score records by student ID
+        const scoreMap = {};
+        scoreRecords.forEach(rec => {
+            scoreMap[rec.student_id] = rec;
         });
 
         sortedList.forEach((student, index) => {
             const indexStr = String(index + 1).padStart(2, '0');
-            const studentAttendance = attendanceMap[student.id];
+            const studentScore = scoreMap[student.id];
             
-            const currentStatus = studentAttendance ? studentAttendance.status : 'HADIR';
-            const currentNote = studentAttendance ? (studentAttendance.note || '') : '';
-            const attendanceId = studentAttendance ? studentAttendance.id : null;
+            // Format score if exists, else empty
+            const currentScore = studentScore ? parseFloat(studentScore.score) : '';
+            const scoreId = studentScore ? studentScore.id : null;
             
             const genderBadgeColor = student.gender === 'L' ? 'text-sky-600 bg-sky-50 dark:bg-sky-950/20 border-sky-100 dark:border-sky-900/30' : 'text-rose-600 bg-rose-50 dark:bg-rose-950/20 border-rose-100 dark:border-rose-900/30';
             const genderLabel = student.gender === 'L' ? 'Laki-laki' : 'Perempuan';
@@ -437,22 +435,14 @@
                     </span>
                 </td>
                 <td class="px-6 py-4">
-                    <select id="status-${student.id}" onchange="markUnsaved(${student.id})" class="bg-neutral-secondary-medium border border-default text-heading text-xs rounded-base focus:ring-brand focus:border-brand block w-28 p-1.5 font-bold" ${studentAttendance ? 'disabled' : ''}>
-                        <option value="HADIR" ${currentStatus === 'HADIR' ? 'selected' : ''}>HADIR</option>
-                        <option value="IZIN" ${currentStatus === 'IZIN' ? 'selected' : ''}>IZIN</option>
-                        <option value="SAKIT" ${currentStatus === 'SAKIT' ? 'selected' : ''}>SAKIT</option>
-                        <option value="ALFA" ${currentStatus === 'ALFA' ? 'selected' : ''}>ALFA</option>
-                    </select>
-                </td>
-                <td class="px-6 py-4">
-                    <input type="text" id="note-${student.id}" oninput="markUnsaved(${student.id})" value="${currentNote}" placeholder="Catatan..." class="w-full bg-neutral-secondary-medium border border-default text-heading text-xs rounded-base focus:ring-brand focus:border-brand p-1.5" ${studentAttendance ? 'disabled' : ''}>
+                    <input type="number" step="0.01" min="0" max="100" id="score-${student.id}" oninput="markUnsaved(${student.id})" value="${currentScore}" placeholder="0.00" class="w-full bg-neutral-secondary-medium border border-default text-heading text-xs rounded-base focus:ring-brand focus:border-brand p-1.5 font-bold text-center" ${studentScore ? 'disabled' : ''}>
                 </td>
                 <td class="px-6 py-4 text-center">
-                    <button type="button" onclick="saveAttendance(${student.id}, ${attendanceId})" id="btn-save-${student.id}" class="${studentAttendance ? 'bg-emerald-600 hover:bg-emerald-700 cursor-not-allowed opacity-90' : 'bg-brand hover:bg-brand-strong cursor-pointer'} text-white px-3 py-1.5 rounded-base text-xs font-bold transition-all duration-150 flex items-center justify-center gap-1 w-full" ${studentAttendance ? 'disabled' : ''}>
-                        <svg class="w-3.5 h-3.5 shrink-0 ${studentAttendance ? 'text-emerald-300' : ''}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                    <button type="button" onclick="saveScore(${student.id}, ${scoreId})" id="btn-save-${student.id}" class="${studentScore ? 'bg-emerald-600 hover:bg-emerald-700 cursor-not-allowed opacity-90' : 'bg-brand hover:bg-brand-strong cursor-pointer'} text-white px-3 py-1.5 rounded-base text-xs font-bold transition-all duration-150 flex items-center justify-center gap-1 w-full" ${studentScore ? 'disabled' : ''}>
+                        <svg class="w-3.5 h-3.5 shrink-0 ${studentScore ? 'text-emerald-300' : ''}" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M4.5 12.75l6 6 9-13.5" />
                         </svg>
-                        <span id="btn-text-${student.id}">${studentAttendance ? 'Disimpan' : 'Simpan'}</span>
+                        <span id="btn-text-${student.id}">${studentScore ? 'Disimpan' : 'Simpan'}</span>
                     </button>
                 </td>
             `;
@@ -460,7 +450,7 @@
         });
     }
 
-    // Mark a student's attendance row as unsaved (revert button from "Disimpan" back to "Simpan")
+    // Mark a student's score row as unsaved (revert button from "Disimpan" back to "Simpan")
     function markUnsaved(studentId) {
         const saveBtn = document.getElementById(`btn-save-${studentId}`);
         const btnText = document.getElementById(`btn-text-${studentId}`);
@@ -481,15 +471,20 @@
         const filtered = currentClassStudents.filter(student => {
             return student.name.toLowerCase().includes(query.toLowerCase());
         });
-        renderAttendances(filtered);
+        renderScores(filtered);
     }
 
-    // Save/Update student attendance using AJAX
-    function saveAttendance(studentId, existingAttendanceId) {
-        const status = document.getElementById(`status-${studentId}`).value;
-        const note = document.getElementById(`note-${studentId}`).value;
+    // Save/Update student score using AJAX
+    function saveScore(studentId, existingScoreId) {
+        const scoreInput = document.getElementById(`score-${studentId}`);
+        const score = scoreInput.value;
         const saveBtn = document.getElementById(`btn-save-${studentId}`);
         
+        if (score === '' || isNaN(score) || score < 0 || score > 100) {
+            alert('Nilai harus berupa angka antara 0 dan 100.');
+            return;
+        }
+
         saveBtn.disabled = true;
         saveBtn.innerHTML = `
             <svg class="animate-spin h-3.5 w-3.5 text-white" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -498,17 +493,16 @@
             </svg>
         `;
 
-        const url = existingAttendanceId 
-            ? `/attendances/${existingAttendanceId}`
-            : '/attendances';
+        const url = existingScoreId 
+            ? `/assignment-scores/${existingScoreId}`
+            : '/assignment-scores';
             
-        const method = existingAttendanceId ? 'PUT' : 'POST';
+        const method = existingScoreId ? 'PUT' : 'POST';
         
         const payload = {
-            attendance_meeting_id: currentMeetingId,
+            assignment_meeting_id: currentMeetingId,
             student_id: studentId,
-            status: status,
-            note: note
+            score: parseFloat(score)
         };
 
         fetch(url, {
@@ -529,14 +523,14 @@
         })
         .then(result => {
             // Update local records
-            const savedAttendance = result.data;
+            const savedScore = result.data;
             
             // Replace or add in local array
-            const recordIndex = attendanceRecords.findIndex(r => r.student_id === studentId);
+            const recordIndex = scoreRecords.findIndex(r => r.student_id === studentId);
             if (recordIndex !== -1) {
-                attendanceRecords[recordIndex] = savedAttendance;
+                scoreRecords[recordIndex] = savedScore;
             } else {
-                attendanceRecords.push(savedAttendance);
+                scoreRecords.push(savedScore);
             }
 
             // Restore button with updated onclick action for PUT mapping and disable it
@@ -549,14 +543,16 @@
             `;
             saveBtn.className = "bg-emerald-600 text-white px-3 py-1.5 rounded-base text-xs font-bold transition-all duration-150 flex items-center justify-center gap-1 cursor-not-allowed w-full opacity-90";
             
-            // Disable select and input fields
-            document.getElementById(`status-${studentId}`).disabled = true;
-            document.getElementById(`note-${studentId}`).disabled = true;
+            // Disable input field
+            scoreInput.disabled = true;
             
-            // Update onclick attribute to pass the new attendance id
-            saveBtn.setAttribute('onclick', `saveAttendance(${studentId}, ${savedAttendance.id})`);
+            // Update onclick attribute to pass the new score id
+            saveBtn.setAttribute('onclick', `saveScore(${studentId}, ${savedScore.id})`);
 
-            showToast(`Absensi ${savedAttendance.student ? savedAttendance.student.name : 'Siswa'} berhasil disimpan.`);
+            // Update input value with formatted value
+            scoreInput.value = parseFloat(savedScore.score);
+
+            showToast(`Nilai ${savedScore.student ? savedScore.student.name : 'Siswa'} berhasil disimpan.`);
         })
         .catch(error => {
             saveBtn.disabled = false;
@@ -578,31 +574,33 @@
                 saveBtn.className = "bg-brand hover:bg-brand-strong text-white px-3 py-1.5 rounded-base text-xs font-bold transition-all duration-150 flex items-center justify-center gap-1 cursor-pointer w-full";
             }, 3000);
 
-            alert('Gagal menyimpan absensi: ' + (error.message || 'Terjadi kesalahan sistem.'));
+            alert('Gagal menyimpan nilai: ' + (error.message || 'Terjadi kesalahan sistem.'));
         });
     }
 
-    // Save all unsaved attendances and then redirect to index
+    // Save all unsaved scores and then redirect to index
     function saveAllAndFinish(btnElement) {
         const unsavedStudents = [];
         
         currentClassStudents.forEach(student => {
             const saveBtn = document.getElementById(`btn-save-${student.id}`);
             if (saveBtn && !saveBtn.disabled) {
-                const record = attendanceRecords.find(r => r.student_id === student.id);
+                const record = scoreRecords.find(r => r.student_id === student.id);
                 const existingId = record ? record.id : null;
+                const scoreVal = document.getElementById(`score-${student.id}`).value;
                 
-                unsavedStudents.push({
-                    studentId: student.id,
-                    existingId: existingId,
-                    status: document.getElementById(`status-${student.id}`).value,
-                    note: document.getElementById(`note-${student.id}`).value
-                });
+                if (scoreVal !== '') {
+                    unsavedStudents.push({
+                        studentId: student.id,
+                        existingId: existingId,
+                        score: scoreVal
+                    });
+                }
             }
         });
 
         if (unsavedStudents.length === 0) {
-            window.location.href = "{{ route('attendance-meetings.index') }}";
+            window.location.href = "{{ route('assignment-meetings.index') }}";
             return;
         }
 
@@ -618,14 +616,13 @@
 
         const promises = unsavedStudents.map(item => {
             const url = item.existingId 
-                ? `/attendances/${item.existingId}`
-                : '/attendances';
+                ? `/assignment-scores/${item.existingId}`
+                : '/assignment-scores';
             const method = item.existingId ? 'PUT' : 'POST';
             const payload = {
-                attendance_meeting_id: currentMeetingId,
+                assignment_meeting_id: currentMeetingId,
                 student_id: item.studentId,
-                status: item.status,
-                note: item.note
+                score: parseFloat(item.score)
             };
 
             return fetch(url, {
@@ -647,12 +644,12 @@
 
         Promise.all(promises)
             .then(() => {
-                window.location.href = "{{ route('attendance-meetings.index') }}";
+                window.location.href = "{{ route('assignment-meetings.index') }}";
             })
             .catch(err => {
                 btnElement.disabled = false;
                 btnElement.innerHTML = originalHtml;
-                alert('Gagal menyimpan beberapa absensi: ' + (err.message || 'Terjadi kesalahan sistem.'));
+                alert('Gagal menyimpan beberapa nilai: ' + (err.message || 'Terjadi kesalahan sistem.'));
             });
     }
 
@@ -725,6 +722,11 @@
                 }, 500);
             }, 3000);
         }
+        
+        // Handle showing specific meeting scores if passed via query or redirect
+        @if(isset($assignmentMeeting))
+            showMeetingScores({{ $assignmentMeeting->id }});
+        @endif
     });
 </script>
 @endsection

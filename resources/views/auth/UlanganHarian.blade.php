@@ -3,7 +3,7 @@
 @section('title', 'Ulangan Harian')
 
 @section('content')
-<div class="max-w-6xl mx-auto py-8 px-4">
+<div class="max-w-none mx-auto py-8 px-4">
     <!-- Section 1: Meetings List Section -->
     <div id="meeting-list-section" class="transition-all duration-300">
         <!-- Header -->
@@ -116,25 +116,6 @@
                                                 <path d="M2 0a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Zm6.041 0a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM14 0a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Z"/>
                                             </svg>
                                         </button>
-                                        <!-- Dropdown menu -->
-                                        <div id="dropdown-{{ $meeting->id }}" class="z-20 hidden bg-white divide-y divide-gray-100 rounded-lg shadow-md w-32 dark:bg-neutral-primary-soft dark:divide-neutral-tertiary border border-default text-left">
-                                            <ul class="py-2 text-sm text-heading" aria-labelledby="dropdownButton-{{ $meeting->id }}">
-                                                <li>
-                                                    <button type="button" onclick="prepareEditMeeting({{ json_encode($meeting) }})" data-modal-target="meeting-modal" data-modal-toggle="meeting-modal" class="block w-full text-left px-4 py-2 hover:bg-neutral-secondary-soft dark:hover:bg-neutral-tertiary transition-colors duration-150 cursor-pointer">
-                                                        Ubah
-                                                    </button>
-                                                </li>
-                                                <li>
-                                                    <form action="{{ route('daily-test-meetings.delete', $meeting->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus pertemuan ini? Semua data nilai di pertemuan ini juga akan terhapus.')" class="block w-full">
-                                                        @csrf
-                                                        @method('DELETE')
-                                                        <button type="submit" class="block w-full text-left px-4 py-2 text-fg-danger-strong hover:bg-danger-soft/20 transition-colors duration-150 cursor-pointer">
-                                                            Hapus
-                                                        </button>
-                                                    </form>
-                                                </li>
-                                            </ul>
-                                        </div>
                                     </div>
                                 </td>
                             </tr>
@@ -152,6 +133,28 @@
                     </tbody>
                 </table>
             </div>
+
+            <!-- Dropdown menus rendered outside the overflow container -->
+            @foreach($meetings as $meeting)
+                <div id="dropdown-{{ $meeting->id }}" class="z-50 hidden bg-white divide-y divide-gray-100 rounded-lg shadow-md w-32 dark:bg-neutral-primary-soft dark:divide-neutral-tertiary border border-default text-left">
+                    <ul class="py-2 text-sm text-heading" aria-labelledby="dropdownButton-{{ $meeting->id }}">
+                        <li>
+                            <button type="button" onclick="prepareEditMeeting({{ json_encode($meeting) }})" data-modal-target="meeting-modal" data-modal-toggle="meeting-modal" class="block w-full text-left px-4 py-2 hover:bg-neutral-secondary-soft dark:hover:bg-neutral-tertiary transition-colors duration-150 cursor-pointer">
+                                Ubah
+                            </button>
+                        </li>
+                        <li>
+                            <form action="{{ route('daily-test-meetings.delete', $meeting->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus pertemuan ini? Semua data nilai di pertemuan ini juga akan terhapus.')" class="block w-full">
+                                @csrf
+                                @method('DELETE')
+                                <button type="submit" class="block w-full text-left px-4 py-2 text-fg-danger-strong hover:bg-danger-soft/20 transition-colors duration-150 cursor-pointer">
+                                    Hapus
+                                </button>
+                            </form>
+                        </li>
+                    </ul>
+                </div>
+            @endforeach
 
             <!-- Empty state for filtered meetings search -->
             <div id="meetings-table-empty" class="hidden text-center py-12 text-body">
@@ -432,7 +435,7 @@
                     </span>
                 </td>
                 <td class="px-6 py-4">
-                    <input type="number" step="0.01" min="0" max="100" id="score-${student.id}" oninput="markUnsaved(${student.id})" value="${currentScore}" placeholder="0.00" class="w-full bg-neutral-secondary-medium border border-default text-heading text-xs rounded-base focus:ring-brand focus:border-brand p-1.5 font-bold text-center">
+                    <input type="number" step="0.01" min="0" max="100" id="score-${student.id}" oninput="markUnsaved(${student.id})" value="${currentScore}" placeholder="0.00" class="w-full bg-neutral-secondary-medium border border-default text-heading text-xs rounded-base focus:ring-brand focus:border-brand p-1.5 font-bold text-center" ${studentScore ? 'disabled' : ''}>
                 </td>
                 <td class="px-6 py-4 text-center">
                     <button type="button" onclick="saveScore(${student.id}, ${scoreId})" id="btn-save-${student.id}" class="${studentScore ? 'bg-emerald-600 hover:bg-emerald-700 cursor-not-allowed opacity-90' : 'bg-brand hover:bg-brand-strong cursor-pointer'} text-white px-3 py-1.5 rounded-base text-xs font-bold transition-all duration-150 flex items-center justify-center gap-1 w-full" ${studentScore ? 'disabled' : ''}>
@@ -539,6 +542,9 @@
                 <span id="btn-text-${studentId}">Disimpan</span>
             `;
             saveBtn.className = "bg-emerald-600 text-white px-3 py-1.5 rounded-base text-xs font-bold transition-all duration-150 flex items-center justify-center gap-1 cursor-not-allowed w-full opacity-90";
+            
+            // Disable input field
+            scoreInput.disabled = true;
             
             // Update onclick attribute to pass the new score id
             saveBtn.setAttribute('onclick', `saveScore(${studentId}, ${savedScore.id})`);
