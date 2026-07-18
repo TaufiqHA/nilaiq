@@ -16,14 +16,14 @@ class DailyTestMeetingsController extends Controller
      */
     public function index(Request $request): JsonResponse|View
     {
-        $meetings = DailyTestMeetings::with(['class.students'])->get();
+        $meetings = DailyTestMeetings::with(['class.students', 'scores'])->get();
         $classes = Classes::with('students')->get();
 
         if ($request->wantsJson()) {
             return response()->json($meetings);
         }
 
-        return view('auth.daily-test', compact('meetings', 'classes'));
+        return view('auth.UlanganHarian', compact('meetings', 'classes'));
     }
 
     /**
@@ -50,16 +50,16 @@ class DailyTestMeetingsController extends Controller
      */
     public function show(Request $request, DailyTestMeetings $dailyTestMeeting): JsonResponse|View
     {
-        $dailyTestMeeting->load(['class.students']);
+        $dailyTestMeeting->load(['class.students', 'scores']);
 
         if ($request->wantsJson()) {
             return response()->json($dailyTestMeeting);
         }
 
-        $meetings = DailyTestMeetings::with(['class.students'])->get();
+        $meetings = DailyTestMeetings::with(['class.students', 'scores'])->get();
         $classes = Classes::with('students')->get();
 
-        return view('auth.daily-test', compact('meetings', 'classes', 'dailyTestMeeting'));
+        return view('auth.UlanganHarian', compact('meetings', 'classes', 'dailyTestMeeting'));
     }
 
     /**

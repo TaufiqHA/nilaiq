@@ -55,6 +55,14 @@
                         <span class="flex-1 ms-3 whitespace-nowrap">Absensi</span>
                      </a>
                   </li>
+                  <li>
+                     <a href="{{ route('daily-test-meetings.index') }}" class="flex items-center px-2 py-1.5 {{ request()->routeIs('daily-test-meetings.*') ? 'bg-neutral-tertiary text-fg-brand font-bold' : 'text-body hover:bg-neutral-tertiary hover:text-fg-brand' }} rounded-base group transition-all duration-200">
+                        <svg class="shrink-0 w-5 h-5 transition duration-75 {{ request()->routeIs('daily-test-meetings.*') ? 'text-fg-brand' : 'group-hover:text-fg-brand' }}" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                           <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.03v13m0-13c-2.819-.831-7.5-3-7.5-3v13.75c0 .104.058.2.15.25 1.125.625 5.432 2.378 7.35 3M12 6.03c2.819-.831 7.5-3 7.5-3v13.75c0 .104-.058.2-.15.25-1.125.625-5.432 2.378-7.35 3M12 19.03V20"/>
+                        </svg>
+                        <span class="flex-1 ms-3 whitespace-nowrap">Ulangan Harian</span>
+                     </a>
+                  </li>
                </ul>
             </div>
 
