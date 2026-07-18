@@ -33,4 +33,12 @@ class Classes extends Model
     {
         return $this->hasMany(Students::class, 'class_id');
     }
+
+    /**
+     * Get the attendance meetings for the class.
+     */
+    public function attendanceMeetings(): HasMany
+    {
+        return $this->hasMany(AttendanceMeetings::class, 'class_id');
+    }
 }

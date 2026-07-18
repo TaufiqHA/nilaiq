@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AcademicYearController;
+use App\Http\Controllers\AttendanceMeetingsController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ClassesController;
 use App\Http\Controllers\SettingsController;
@@ -37,4 +38,7 @@ Route::middleware('auth')->group(function () {
 
     Route::resource('students', StudentsController::class);
     Route::delete('students/{student}/delete', [StudentsController::class, 'delete'])->name('students.delete');
+
+    Route::resource('attendance-meetings', AttendanceMeetingsController::class);
+    Route::delete('attendance-meetings/{attendance_meeting}/delete', [AttendanceMeetingsController::class, 'delete'])->name('attendance-meetings.delete');
 });
