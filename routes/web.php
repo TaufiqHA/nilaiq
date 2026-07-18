@@ -6,6 +6,7 @@ use App\Http\Controllers\AttendancesController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ClassesController;
 use App\Http\Controllers\DailyTestMeetingsController;
+use App\Http\Controllers\DailyTestScoresController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\StudentsController;
 use Illuminate\Support\Facades\Route;
@@ -49,4 +50,7 @@ Route::middleware('auth')->group(function () {
 
     Route::resource('daily-test-meetings', DailyTestMeetingsController::class);
     Route::delete('daily-test-meetings/{daily_test_meeting}/delete', [DailyTestMeetingsController::class, 'delete'])->name('daily-test-meetings.delete');
+
+    Route::resource('daily-test-scores', DailyTestScoresController::class);
+    Route::delete('daily-test-scores/{daily_test_score}/delete', [DailyTestScoresController::class, 'delete'])->name('daily-test-scores.delete');
 });
