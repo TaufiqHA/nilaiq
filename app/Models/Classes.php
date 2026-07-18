@@ -49,4 +49,12 @@ class Classes extends Model
     {
         return $this->hasMany(DailyTestMeetings::class, 'class_id');
     }
+
+    /**
+     * Get the assignment meetings for the class.
+     */
+    public function assignmentMeetings(): HasMany
+    {
+        return $this->hasMany(AssignmentMeetings::class, 'class_id');
+    }
 }

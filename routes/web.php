@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\AcademicYearController;
+use App\Http\Controllers\AssignmentMeetingsController;
 use App\Http\Controllers\AttendanceMeetingsController;
 use App\Http\Controllers\AttendancesController;
 use App\Http\Controllers\AuthController;
@@ -53,4 +54,7 @@ Route::middleware('auth')->group(function () {
 
     Route::resource('daily-test-scores', DailyTestScoresController::class);
     Route::delete('daily-test-scores/{daily_test_score}/delete', [DailyTestScoresController::class, 'delete'])->name('daily-test-scores.delete');
+
+    Route::resource('assignment-meetings', AssignmentMeetingsController::class);
+    Route::delete('assignment-meetings/{assignment_meeting}/delete', [AssignmentMeetingsController::class, 'delete'])->name('assignment-meetings.delete');
 });
