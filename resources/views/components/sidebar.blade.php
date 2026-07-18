@@ -12,48 +12,67 @@
             <span class="font-extrabold text-lg text-heading tracking-tight">NilaiQ</span>
          </div>
          
-         <!-- Navigation Links -->
-         <ul class="space-y-2 font-medium">
-            <li>
-               <a href="{{ route('dashboard') }}" class="flex items-center px-2 py-1.5 {{ request()->routeIs('dashboard') ? 'bg-neutral-tertiary text-fg-brand font-bold' : 'text-body hover:bg-neutral-tertiary hover:text-fg-brand' }} rounded-base group transition-all duration-200">
-                  <svg class="w-5 h-5 transition duration-75 {{ request()->routeIs('dashboard') ? 'text-fg-brand' : 'group-hover:text-fg-brand' }}" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6.025A7.5 7.5 0 1 0 17.975 14H10V6.025Z"/><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.5 3c-.169 0-.334.014-.5.025V11h7.975c.011-.166.025-.331.025-.5A7.5 7.5 0 0 0 13.5 3Z"/></svg>
-                  <span class="ms-3">Dashboard</span>
-               </a>
-            </li>
-            <li>
-               <a href="{{ route('master-data.index') }}" class="flex items-center px-2 py-1.5 {{ request()->routeIs('master-data.*') ? 'bg-neutral-tertiary text-fg-brand font-bold' : 'text-body hover:bg-neutral-tertiary hover:text-fg-brand' }} rounded-base group transition-all duration-200">
-                  <svg class="shrink-0 w-5 h-5 transition duration-75 {{ request()->routeIs('master-data.*') ? 'text-fg-brand' : 'group-hover:text-fg-brand' }}" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                     <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 6c0 1.657-3.134 3-7 3S5 7.657 5 6m14 0c0-1.657-3.134-3-7-3S5 4.343 5 6m14 0v6c0 1.657-3.134 3-7 3s-7-1.343-7-3V6m14 6v6c0 1.657-3.134 3-7 3s-7-1.343-7-3v-6"/>
-                  </svg>
-                  <span class="flex-1 ms-3 whitespace-nowrap">Master Data</span>
-               </a>
-            </li>
-            <li>
-               <a href="{{ route('academic-years.index') }}" class="flex items-center px-2 py-1.5 {{ request()->routeIs('academic-years.*') ? 'bg-neutral-tertiary text-fg-brand font-bold' : 'text-body hover:bg-neutral-tertiary hover:text-fg-brand' }} rounded-base group transition-all duration-200">
-                  <svg class="shrink-0 w-5 h-5 transition duration-75 {{ request()->routeIs('academic-years.*') ? 'text-fg-brand' : 'group-hover:text-fg-brand' }}" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                     <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V6a1 1 0 0 1 1-1h11a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1h-1M3 18v-7a1 1 0 0 1 1-1h11a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1Zm8-10a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>
-                  </svg>
-                  <span class="flex-1 ms-3 whitespace-nowrap">Tahun Ajaran</span>
-               </a>
-            </li>
-            <li>
-               <a href="{{ route('classes.index') }}" class="flex items-center px-2 py-1.5 {{ request()->routeIs('classes.*') ? 'bg-neutral-tertiary text-fg-brand font-bold' : 'text-body hover:bg-neutral-tertiary hover:text-fg-brand' }} rounded-base group transition-all duration-200">
-                  <svg class="shrink-0 w-5 h-5 transition duration-75 {{ request()->routeIs('classes.*') ? 'text-fg-brand' : 'group-hover:text-fg-brand' }}" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                     <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2m14 0V9a2 2 0 0 0-2-2M5 11V9a2 2 0 0 1 2-2m0 0V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2M7 7h10"/>
-                  </svg>
-                  <span class="flex-1 ms-3 whitespace-nowrap">Kelas</span>
-               </a>
-            </li>
-            <li>
-               <a href="{{ route('attendance-meetings.index') }}" class="flex items-center px-2 py-1.5 {{ request()->routeIs('attendance-meetings.*') ? 'bg-neutral-tertiary text-fg-brand font-bold' : 'text-body hover:bg-neutral-tertiary hover:text-fg-brand' }} rounded-base group transition-all duration-200">
-                  <svg class="shrink-0 w-5 h-5 transition duration-75 {{ request()->routeIs('attendance-meetings.*') ? 'text-fg-brand' : 'group-hover:text-fg-brand' }}" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-                     <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2M9 5a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2M9 5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2m-6 9 2 2 4-4"/>
-                  </svg>
-                  <span class="flex-1 ms-3 whitespace-nowrap">Absensi</span>
-               </a>
-            </li>
+         <!-- Navigation Links Grouped -->
+         <div class="space-y-6">
+            <!-- Group: Menu Utama -->
+            <div>
+               <span class="px-2 mb-2 block text-[11px] font-bold uppercase tracking-wider text-body/60">Menu Utama</span>
+               <ul class="space-y-1 font-medium">
+                  <li>
+                     <a href="{{ route('dashboard') }}" class="flex items-center px-2 py-1.5 {{ request()->routeIs('dashboard') ? 'bg-neutral-tertiary text-fg-brand font-bold' : 'text-body hover:bg-neutral-tertiary hover:text-fg-brand' }} rounded-base group transition-all duration-200">
+                        <svg class="w-5 h-5 transition duration-75 {{ request()->routeIs('dashboard') ? 'text-fg-brand' : 'group-hover:text-fg-brand' }}" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6.025A7.5 7.5 0 1 0 17.975 14H10V6.025Z"/><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.5 3c-.169 0-.334.014-.5.025V11h7.975c.011-.166.025-.331.025-.5A7.5 7.5 0 0 0 13.5 3Z"/></svg>
+                        <span class="ms-3">Dashboard</span>
+                     </a>
+                  </li>
+               </ul>
+            </div>
 
-         </ul>
+            <!-- Group: Akademik -->
+            <div>
+               <span class="px-2 mb-2 block text-[11px] font-bold uppercase tracking-wider text-body/60">Akademik</span>
+               <ul class="space-y-1 font-medium">
+                  <li>
+                     <a href="{{ route('academic-years.index') }}" class="flex items-center px-2 py-1.5 {{ request()->routeIs('academic-years.*') ? 'bg-neutral-tertiary text-fg-brand font-bold' : 'text-body hover:bg-neutral-tertiary hover:text-fg-brand' }} rounded-base group transition-all duration-200">
+                        <svg class="shrink-0 w-5 h-5 transition duration-75 {{ request()->routeIs('academic-years.*') ? 'text-fg-brand' : 'group-hover:text-fg-brand' }}" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                           <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V6a1 1 0 0 1 1-1h11a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1h-1M3 18v-7a1 1 0 0 1 1-1h11a1 1 0 0 1 1 1v7a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1Zm8-10a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>
+                        </svg>
+                        <span class="flex-1 ms-3 whitespace-nowrap">Tahun Ajaran</span>
+                     </a>
+                  </li>
+                  <li>
+                     <a href="{{ route('classes.index') }}" class="flex items-center px-2 py-1.5 {{ request()->routeIs('classes.*') ? 'bg-neutral-tertiary text-fg-brand font-bold' : 'text-body hover:bg-neutral-tertiary hover:text-fg-brand' }} rounded-base group transition-all duration-200">
+                        <svg class="shrink-0 w-5 h-5 transition duration-75 {{ request()->routeIs('classes.*') ? 'text-fg-brand' : 'group-hover:text-fg-brand' }}" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                           <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2m14 0V9a2 2 0 0 0-2-2M5 11V9a2 2 0 0 1 2-2m0 0V5a2 2 0 0 1 2-2h6a2 2 0 0 1 2 2v2M7 7h10"/>
+                        </svg>
+                        <span class="flex-1 ms-3 whitespace-nowrap">Kelas</span>
+                     </a>
+                  </li>
+                  <li>
+                     <a href="{{ route('attendance-meetings.index') }}" class="flex items-center px-2 py-1.5 {{ request()->routeIs('attendance-meetings.*') ? 'bg-neutral-tertiary text-fg-brand font-bold' : 'text-body hover:bg-neutral-tertiary hover:text-fg-brand' }} rounded-base group transition-all duration-200">
+                        <svg class="shrink-0 w-5 h-5 transition duration-75 {{ request()->routeIs('attendance-meetings.*') ? 'text-fg-brand' : 'group-hover:text-fg-brand' }}" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                           <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 0 0-2 2v12a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V7a2 2 0 0 0-2-2h-2M9 5a2 2 0 0 0 2 2h2a2 2 0 0 0 2-2M9 5a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2m-6 9 2 2 4-4"/>
+                        </svg>
+                        <span class="flex-1 ms-3 whitespace-nowrap">Absensi</span>
+                     </a>
+                  </li>
+               </ul>
+            </div>
+
+            <!-- Group: Pengaturan -->
+            <div>
+               <span class="px-2 mb-2 block text-[11px] font-bold uppercase tracking-wider text-body/60">Pengaturan</span>
+               <ul class="space-y-1 font-medium">
+                  <li>
+                     <a href="{{ route('master-data.index') }}" class="flex items-center px-2 py-1.5 {{ request()->routeIs('master-data.*') ? 'bg-neutral-tertiary text-fg-brand font-bold' : 'text-body hover:bg-neutral-tertiary hover:text-fg-brand' }} rounded-base group transition-all duration-200">
+                        <svg class="shrink-0 w-5 h-5 transition duration-75 {{ request()->routeIs('master-data.*') ? 'text-fg-brand' : 'group-hover:text-fg-brand' }}" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                           <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 6c0 1.657-3.134 3-7 3S5 7.657 5 6m14 0c0-1.657-3.134-3-7-3S5 4.343 5 6m14 0v6c0 1.657-3.134 3-7 3s-7-1.343-7-3V6m14 6v6c0 1.657-3.134 3-7 3s-7-1.343-7-3v-6"/>
+                        </svg>
+                        <span class="flex-1 ms-3 whitespace-nowrap">Master Data</span>
+                     </a>
+                  </li>
+               </ul>
+            </div>
+         </div>
       </div>
       
       <!-- Quick User profile info footer inside sidebar -->
