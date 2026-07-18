@@ -71,6 +71,14 @@
                         <span class="flex-1 ms-3 whitespace-nowrap">Tugas</span>
                      </a>
                   </li>
+                  <li>
+                     <a href="{{ route('midterm-exams.index') }}" class="flex items-center px-2 py-1.5 {{ request()->routeIs('midterm-exams.*') ? 'bg-neutral-tertiary text-fg-brand font-bold' : 'text-body hover:bg-neutral-tertiary hover:text-fg-brand' }} rounded-base group transition-all duration-200">
+                        <svg class="shrink-0 w-5 h-5 transition duration-75 {{ request()->routeIs('midterm-exams.*') ? 'text-fg-brand' : 'group-hover:text-fg-brand' }}" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                           <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 4h3a1 1 0 0 1 1 1v15a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V5a1 1 0 0 1 1-1h3m2-1h2a1 1 0 0 1 1 1v1a1 1 0 0 1-1 1h-2a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Zm-2 7h6m-6 4h6"/>
+                        </svg>
+                        <span class="flex-1 ms-3 whitespace-nowrap">PTS</span>
+                     </a>
+                  </li>
                </ul>
             </div>
 
