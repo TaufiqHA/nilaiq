@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AcademicYearController;
 use App\Http\Controllers\AssignmentMeetingsController;
+use App\Http\Controllers\AssignmentScoresController;
 use App\Http\Controllers\AttendanceMeetingsController;
 use App\Http\Controllers\AttendancesController;
 use App\Http\Controllers\AuthController;
@@ -57,4 +58,7 @@ Route::middleware('auth')->group(function () {
 
     Route::resource('assignment-meetings', AssignmentMeetingsController::class);
     Route::delete('assignment-meetings/{assignment_meeting}/delete', [AssignmentMeetingsController::class, 'delete'])->name('assignment-meetings.delete');
+
+    Route::resource('assignment-scores', AssignmentScoresController::class);
+    Route::delete('assignment-scores/{assignment_score}/delete', [AssignmentScoresController::class, 'delete'])->name('assignment-scores.delete');
 });
