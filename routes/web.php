@@ -9,6 +9,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ClassesController;
 use App\Http\Controllers\DailyTestMeetingsController;
 use App\Http\Controllers\DailyTestScoresController;
+use App\Http\Controllers\MidtermExamsController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\StudentsController;
 use Illuminate\Support\Facades\Route;
@@ -61,4 +62,7 @@ Route::middleware('auth')->group(function () {
 
     Route::resource('assignment-scores', AssignmentScoresController::class);
     Route::delete('assignment-scores/{assignment_score}/delete', [AssignmentScoresController::class, 'delete'])->name('assignment-scores.delete');
+
+    Route::resource('midterm-exams', MidtermExamsController::class);
+    Route::delete('midterm-exams/{midterm_exam}/delete', [MidtermExamsController::class, 'delete'])->name('midterm-exams.delete');
 });
