@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AcademicYearController;
 use App\Http\Controllers\AttendanceMeetingsController;
+use App\Http\Controllers\AttendancesController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ClassesController;
 use App\Http\Controllers\SettingsController;
@@ -41,4 +42,7 @@ Route::middleware('auth')->group(function () {
 
     Route::resource('attendance-meetings', AttendanceMeetingsController::class);
     Route::delete('attendance-meetings/{attendance_meeting}/delete', [AttendanceMeetingsController::class, 'delete'])->name('attendance-meetings.delete');
+
+    Route::resource('attendances', AttendancesController::class);
+    Route::delete('attendances/{attendance}/delete', [AttendancesController::class, 'delete'])->name('attendances.delete');
 });
