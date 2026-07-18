@@ -9,6 +9,7 @@ use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ClassesController;
 use App\Http\Controllers\DailyTestMeetingsController;
 use App\Http\Controllers\DailyTestScoresController;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\FinalExamsController;
 use App\Http\Controllers\FinalScoresController;
 use App\Http\Controllers\MidtermExamsController;
@@ -30,9 +31,7 @@ Route::middleware('auth')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
     Route::get('/me', [AuthController::class, 'me'])->name('me');
 
-    Route::get('/dashboard', function () {
-        return view('auth.dashboard');
-    })->name('dashboard');
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     Route::get('/master-data', [SettingsController::class, 'index'])->name('master-data.index');
     Route::post('/master-data', [SettingsController::class, 'store'])->name('master-data.store');
