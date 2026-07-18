@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\AcademicYearController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\ClassesController;
 use App\Http\Controllers\SettingsController;
 use Illuminate\Support\Facades\Route;
 
@@ -29,4 +30,7 @@ Route::middleware('auth')->group(function () {
 
     Route::resource('academic-years', AcademicYearController::class);
     Route::delete('academic-years/{academic_year}/delete', [AcademicYearController::class, 'delete'])->name('academic-years.delete');
+
+    Route::resource('classes', ClassesController::class);
+    Route::delete('classes/{class}/delete', [ClassesController::class, 'delete'])->name('classes.delete');
 });
