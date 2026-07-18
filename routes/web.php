@@ -5,6 +5,7 @@ use App\Http\Controllers\AttendanceMeetingsController;
 use App\Http\Controllers\AttendancesController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ClassesController;
+use App\Http\Controllers\DailyTestMeetingsController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\StudentsController;
 use Illuminate\Support\Facades\Route;
@@ -45,4 +46,7 @@ Route::middleware('auth')->group(function () {
 
     Route::resource('attendances', AttendancesController::class);
     Route::delete('attendances/{attendance}/delete', [AttendancesController::class, 'delete'])->name('attendances.delete');
+
+    Route::resource('daily-test-meetings', DailyTestMeetingsController::class);
+    Route::delete('daily-test-meetings/{daily_test_meeting}/delete', [DailyTestMeetingsController::class, 'delete'])->name('daily-test-meetings.delete');
 });
