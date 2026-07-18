@@ -10,6 +10,7 @@ use App\Http\Controllers\ClassesController;
 use App\Http\Controllers\DailyTestMeetingsController;
 use App\Http\Controllers\DailyTestScoresController;
 use App\Http\Controllers\FinalExamsController;
+use App\Http\Controllers\FinalScoresController;
 use App\Http\Controllers\MidtermExamsController;
 use App\Http\Controllers\MidtermScoresController;
 use App\Http\Controllers\SettingsController;
@@ -73,4 +74,7 @@ Route::middleware('auth')->group(function () {
 
     Route::resource('midterm-scores', MidtermScoresController::class);
     Route::delete('midterm-scores/{midterm_score}/delete', [MidtermScoresController::class, 'delete'])->name('midterm-scores.delete');
+
+    Route::resource('final-scores', FinalScoresController::class);
+    Route::delete('final-scores/{final_score}/delete', [FinalScoresController::class, 'delete'])->name('final-scores.delete');
 });

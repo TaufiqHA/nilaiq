@@ -2,6 +2,8 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -9,11 +11,8 @@ class AuthController extends Controller
 {
     /**
      * Handle an authentication attempt.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Http\JsonResponse
      */
-    public function login(Request $request): \Illuminate\Http\RedirectResponse|\Illuminate\Http\JsonResponse
+    public function login(Request $request): RedirectResponse|JsonResponse
     {
         $credentials = $request->validate([
             'email' => ['required', 'email'],
@@ -43,11 +42,8 @@ class AuthController extends Controller
 
     /**
      * Log the user out of the application.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\RedirectResponse|\Illuminate\Http\JsonResponse
      */
-    public function logout(Request $request): \Illuminate\Http\RedirectResponse|\Illuminate\Http\JsonResponse
+    public function logout(Request $request): RedirectResponse|JsonResponse
     {
         Auth::logout();
 
@@ -63,11 +59,8 @@ class AuthController extends Controller
 
     /**
      * Get the authenticated user.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\JsonResponse
      */
-    public function me(Request $request): \Illuminate\Http\JsonResponse
+    public function me(Request $request): JsonResponse
     {
         $user = $request->user();
 
