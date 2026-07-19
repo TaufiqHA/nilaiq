@@ -44,46 +44,41 @@
         <!-- Classes Grid -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             @forelse($classes as $class)
-                <div onclick="showClassStudents({{ $class->id }})" class="bg-white dark:bg-neutral-primary-soft border border-default hover:border-brand rounded-base p-6 shadow-sm hover:shadow-md transition-all duration-200 cursor-pointer group flex flex-col justify-between relative overflow-hidden min-h-[170px]">
+                <div class="bg-white dark:bg-neutral-primary-soft border border-default rounded-base p-6 shadow-sm hover:shadow-md transition-all duration-200 group flex flex-col justify-between relative overflow-hidden min-h-[170px]">
                     
                     <!-- Glow effect on hover -->
-                    <div class="absolute -right-4 -top-4 w-24 h-24 bg-brand/5 rounded-full blur-xl group-hover:bg-brand/10 transition-all duration-200"></div>
+                    <div class="absolute -right-4 -top-4 w-24 h-24 bg-brand/5 rounded-full blur-xl group-hover:bg-brand/10 transition-all duration-200 pointer-events-none"></div>
 
                     <div>
                         <!-- Title & Options -->
-                        <div class="flex items-start justify-between gap-4 mb-4">
-                            <h3 class="text-xl font-bold text-heading group-hover:text-brand transition-colors duration-200">
+                        <div class="flex items-start justify-between gap-4 mb-4 relative z-10">
+                            <h3 class="text-xl font-bold text-heading transition-colors duration-200">
                                 {{ $class->name }}
                             </h3>
                             
-                            <!-- Actions (Using Flowbite Dropdown component, stopping propagation to avoid card click event) -->
-                            <div class="flex items-center gap-1" onclick="event.stopPropagation()">
-                                <button id="dropdownButton-{{ $class->id }}" data-dropdown-toggle="dropdown-{{ $class->id }}" class="inline-block text-body hover:bg-neutral-secondary-soft focus:ring-4 focus:outline-none focus:ring-neutral-tertiary rounded-lg text-sm p-1.5 transition-colors duration-150 cursor-pointer" type="button">
-                                    <span class="sr-only">Open options</span>
-                                    <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 16 3">
-                                        <path d="M2 0a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Zm6.041 0a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3ZM14 0a1.5 1.5 0 1 1 0 3 1.5 1.5 0 0 1 0-3Z"/>
+                            <!-- Actions -->
+                            <div class="flex items-center gap-1">
+                                <!-- View Students Button -->
+                                <button type="button" onclick="showClassStudents({{ $class->id }})" class="inline-block text-brand hover:bg-brand/10 rounded-lg text-sm p-1.5 transition-colors duration-150 cursor-pointer" title="Lihat Siswa">
+                                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                                    </svg>
+                                </button>
+
+                                <!-- Edit Button directly on card -->
+                                <button type="button" onclick="prepareEditClass({{ json_encode($class) }})" data-modal-target="edit-class-modal" data-modal-toggle="edit-class-modal" class="inline-block text-body hover:bg-neutral-secondary-soft dark:hover:bg-neutral-tertiary rounded-lg text-sm p-1.5 transition-colors duration-150 cursor-pointer" title="Ubah Kelas">
+                                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
                                     </svg>
                                 </button>
                                 
-                                <!-- Dropdown menu -->
-                                <div id="dropdown-{{ $class->id }}" class="z-20 hidden bg-white divide-y divide-gray-100 rounded-lg shadow-md w-32 dark:bg-neutral-primary-soft dark:divide-neutral-tertiary border border-default" onclick="event.stopPropagation()">
-                                    <ul class="py-2 text-sm text-heading" aria-labelledby="dropdownButton-{{ $class->id }}">
-                                        <li>
-                                            <button type="button" onclick="prepareEditClass({{ json_encode($class) }})" data-modal-target="class-modal" data-modal-toggle="class-modal" class="block w-full text-left px-4 py-2 hover:bg-neutral-secondary-soft dark:hover:bg-neutral-tertiary transition-colors duration-150 cursor-pointer">
-                                                Ubah
-                                            </button>
-                                        </li>
-                                        <li>
-                                            <form action="{{ route('classes.delete', $class->id) }}" method="POST" onsubmit="return confirm('Apakah Anda yakin ingin menghapus kelas ini? Semua siswa di kelas ini juga akan terhapus.')" class="block w-full">
-                                                @csrf
-                                                @method('DELETE')
-                                                <button type="submit" class="block w-full text-left px-4 py-2 text-fg-danger-strong hover:bg-danger-soft/20 transition-colors duration-150 cursor-pointer">
-                                                    Hapus
-                                                </button>
-                                            </form>
-                                        </li>
-                                    </ul>
-                                </div>
+                                <!-- Delete Button directly on card -->
+                                <button type="button" onclick="confirmDeleteClass({{ $class->id }}, {{ json_encode($class->name) }})" class="inline-block text-fg-danger-strong hover:bg-danger-soft/20 rounded-lg text-sm p-1.5 transition-colors duration-150 cursor-pointer flex items-center justify-center" title="Hapus Kelas">
+                                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                    </svg>
+                                </button>
                             </div>
                         </div>
 
@@ -253,6 +248,68 @@
     </div>
 </div>
 
+<!-- Modal Dialog 3: Edit Class using Flowbite component structure -->
+<div id="edit-class-modal" tabindex="-1" aria-hidden="true" class="fixed top-0 left-0 right-0 z-50 hidden w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] max-h-full flex items-center justify-center bg-black/50 backdrop-blur-xs">
+    <div class="relative w-full max-w-md max-h-full">
+        <!-- Modal content -->
+        <div class="relative bg-white rounded-base shadow-lg dark:bg-neutral-primary-soft border border-default">
+            <!-- Modal header -->
+            <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t border-default">
+                <h3 class="text-lg font-bold text-heading">
+                    Ubah Kelas
+                </h3>
+                <button type="button" class="text-body bg-transparent hover:bg-neutral-secondary-soft hover:text-heading rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-neutral-tertiary cursor-pointer" data-modal-hide="edit-class-modal">
+                    <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+                    </svg>
+                    <span class="sr-only">Close modal</span>
+                </button>
+            </div>
+            <!-- Modal body -->
+            <form id="edit-class-form" method="POST" class="p-4 md:p-5 space-y-4">
+                @csrf
+                @method('PUT')
+
+                <!-- Academic Year Select -->
+                <div>
+                    <label for="edit_modal_academic_year_id" class="block mb-2 text-sm font-semibold text-heading">Tahun Ajaran</label>
+                    <select name="academic_year_id" id="edit_modal_academic_year_id" required
+                            class="bg-neutral-secondary-medium border border-default text-heading text-sm rounded-base focus:ring-brand focus:border-brand block w-full p-2.5">
+                        <option value="" disabled selected>-- Pilih Tahun Ajaran --</option>
+                        @foreach($academicYears as $year)
+                            <option value="{{ $year->id }}">{{ $year->year }} - {{ $year->semester }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <!-- Class Name Input -->
+                <div>
+                    <label for="edit_modal_name" class="block mb-2 text-sm font-semibold text-heading">Nama Kelas</label>
+                    <input type="text" name="name" id="edit_modal_name" required
+                           class="bg-neutral-secondary-medium border border-default text-heading text-sm rounded-base focus:ring-brand focus:border-brand block w-full p-2.5"
+                           placeholder="contoh: VII A">
+                </div>
+
+                <!-- Modal Action Buttons -->
+                <div class="flex items-center justify-end gap-3 border-t border-default pt-4 mt-6">
+                    <button type="button" data-modal-hide="edit-class-modal" class="px-5 py-2.5 text-sm font-semibold border border-default hover:bg-neutral-tertiary text-body rounded-base transition-all duration-200 cursor-pointer">
+                        Batal
+                    </button>
+                    <button type="submit" class="bg-brand hover:bg-brand-strong text-white px-5 py-2.5 rounded-base text-sm font-bold shadow-md shadow-brand/10 transition-all duration-200 cursor-pointer">
+                        Simpan
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Hidden Form for Class Deletion -->
+<form id="delete-class-form" method="POST" class="hidden">
+    @csrf
+    @method('DELETE')
+</form>
+
 <!-- Hidden trigger button for programmatically opening the student modal via Flowbite JS -->
 <button id="trigger-student-modal" type="button" data-modal-target="student-modal" data-modal-toggle="student-modal" class="hidden"></button>
 
@@ -397,12 +454,9 @@
 
     // Open Modal for Edit Class
     function prepareEditClass(classData) {
-        document.getElementById('modal-title').innerText = 'Ubah Kelas';
-        document.getElementById('class-form').action = `/classes/${classData.id}`;
-        document.getElementById('modal-method-container').innerHTML = '@method("PUT")';
-
-        document.getElementById('modal_academic_year_id').value = classData.academic_year_id;
-        document.getElementById('modal_name').value = classData.name;
+        document.getElementById('edit-class-form').action = `/classes/${classData.id}`;
+        document.getElementById('edit_modal_academic_year_id').value = classData.academic_year_id;
+        document.getElementById('edit_modal_name').value = classData.name;
     }
 
     // Open Modal for Add Student
@@ -715,6 +769,15 @@
         .catch(errors => {
             alert(errors.message || 'Gagal menghapus siswa. Silakan coba lagi.');
         });
+    }
+
+    // Confirm and Delete Class programmatically
+    function confirmDeleteClass(classId, className) {
+        if (confirm(`Apakah Anda yakin ingin menghapus kelas ${className}? Semua siswa di kelas ini juga akan terhapus.`)) {
+            const form = document.getElementById('delete-class-form');
+            form.action = `/classes/${classId}`;
+            form.submit();
+        }
     }
 
 
