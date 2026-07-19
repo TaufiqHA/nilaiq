@@ -166,7 +166,6 @@
             </div>
         </div>
     </div>
-    </div>
 
     <!-- Section 2: Attendances Fill Section (Hidden by Default) -->
     <div id="attendance-fill-section" class="hidden transition-all duration-300">
