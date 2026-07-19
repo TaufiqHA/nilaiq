@@ -45,6 +45,7 @@ Route::middleware('auth')->group(function () {
     Route::resource('classes', ClassesController::class);
     Route::delete('classes/{class}/delete', [ClassesController::class, 'delete'])->name('classes.delete');
 
+    Route::post('students/import', [StudentsController::class, 'import'])->name('students.import');
     Route::resource('students', StudentsController::class);
     Route::delete('students/{student}/delete', [StudentsController::class, 'delete'])->name('students.delete');
 

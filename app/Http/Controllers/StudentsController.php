@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Students;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class StudentsController extends Controller
 {
@@ -74,6 +75,46 @@ class StudentsController extends Controller
     public function delete(Students $student): JsonResponse
     {
         return $this->destroy($student);
+    }
+
+    /**
+     * Import multiple students.
+     */
+    public function import(Request $request): JsonResponse
+    {
+        $validated = $request->validate([
+            'class_id' => ['required', 'exists:classes,id'],
+            'students' => ['required', 'array', 'min:1'],
+            'students.*.nis' => ['required', 'string', 'max:50', 'distinct', 'unique:students,nis'],
+            'students.*.nisn' => ['required', 'string', 'max:50', 'distinct', 'unique:students,nisn'],
+            'students.*.name' => ['required', 'string', 'max:255'],
+            'students.*.gender' => ['required', 'string', 'in:L,P'],
+            'students.*.birth_place' => ['required', 'string', 'max:255'],
+            'students.*.birth_date' => ['required', 'date'],
+            'students.*.address' => ['required', 'string'],
+            'students.*.parent_name' => ['required', 'string', 'max:255'],
+            'students.*.parent_phone' => ['required', 'string', 'max:50'],
+            'students.*.status' => ['required', 'string', 'in:ACTIVE,INACTIVE'],
+        ], [
+            'students.*.nis.unique' => 'NIS :value sudah terdaftar di sistem.',
+            'students.*.nisn.unique' => 'NISN :value sudah terdaftar di sistem.',
+            'students.*.nis.distinct' => 'NIS :value duplikat di dalam file import.',
+            'students.*.nisn.distinct' => 'NISN :value duplikat di dalam file import.',
+        ]);
+
+        DB::transaction(function () use ($validated) {
+            foreach ($validated['students'] as $studentData) {
+                $studentData['class_id'] = $validated['class_id'];
+                Students::create($studentData);
+            }
+        });
+
+        $updatedStudents = Students::with('class')->where('class_id', $validated['class_id'])->get();
+
+        return response()->json([
+            'message' => count($validated['students']).' siswa berhasil diimport.',
+            'data' => $updatedStudents,
+        ]);
     }
 
     /**

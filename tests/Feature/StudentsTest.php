@@ -232,4 +232,131 @@ class StudentsTest extends TestCase
             'id' => $student->id,
         ]);
     }
+
+    /**
+     * Test authenticated user can import students.
+     */
+    public function test_authenticated_user_can_import_students(): void
+    {
+        /** @var User $user */
+        $user = User::factory()->create();
+        $class = Classes::factory()->create();
+
+        $importData = [
+            'class_id' => $class->id,
+            'students' => [
+                [
+                    'nis' => '88888',
+                    'nisn' => '99999',
+                    'name' => 'Imported Student 1',
+                    'gender' => 'L',
+                    'birth_place' => 'Bandung',
+                    'birth_date' => '2010-09-20',
+                    'address' => 'Jl. Kebon Kawung',
+                    'parent_name' => 'Wali 1',
+                    'parent_phone' => '08211111',
+                    'status' => 'ACTIVE',
+                ],
+                [
+                    'nis' => '88889',
+                    'nisn' => '99998',
+                    'name' => 'Imported Student 2',
+                    'gender' => 'P',
+                    'birth_place' => 'Jakarta',
+                    'birth_date' => '2011-01-10',
+                    'address' => 'Jl. Sudirman',
+                    'parent_name' => 'Wali 2',
+                    'parent_phone' => '08211112',
+                    'status' => 'ACTIVE',
+                ],
+            ],
+        ];
+
+        $response = $this->actingAs($user)->postJson(route('students.import'), $importData);
+
+        $response->assertStatus(200);
+        $response->assertJsonPath('message', '2 siswa berhasil diimport.');
+
+        $this->assertDatabaseHas('students', ['nis' => '88888', 'class_id' => $class->id]);
+        $this->assertDatabaseHas('students', ['nis' => '88889', 'class_id' => $class->id]);
+    }
+
+    /**
+     * Test import validates uniqueness in database.
+     */
+    public function test_import_students_validates_uniqueness_in_database(): void
+    {
+        /** @var User $user */
+        $user = User::factory()->create();
+        $class = Classes::factory()->create();
+        Students::factory()->create(['nis' => '88888']);
+
+        $importData = [
+            'class_id' => $class->id,
+            'students' => [
+                [
+                    'nis' => '88888', // Duplicate of existing student
+                    'nisn' => '99999',
+                    'name' => 'Imported Student 1',
+                    'gender' => 'L',
+                    'birth_place' => 'Bandung',
+                    'birth_date' => '2010-09-20',
+                    'address' => 'Jl. Kebon Kawung',
+                    'parent_name' => 'Wali 1',
+                    'parent_phone' => '08211111',
+                    'status' => 'ACTIVE',
+                ],
+            ],
+        ];
+
+        $response = $this->actingAs($user)->postJson(route('students.import'), $importData);
+
+        $response->assertStatus(422);
+        $response->assertJsonValidationErrors(['students.0.nis']);
+    }
+
+    /**
+     * Test import validates distinctness in payload.
+     */
+    public function test_import_students_validates_distinctness_in_payload(): void
+    {
+        /** @var User $user */
+        $user = User::factory()->create();
+        $class = Classes::factory()->create();
+
+        $importData = [
+            'class_id' => $class->id,
+            'students' => [
+                [
+                    'nis' => '88888',
+                    'nisn' => '99999',
+                    'name' => 'Imported Student 1',
+                    'gender' => 'L',
+                    'birth_place' => 'Bandung',
+                    'birth_date' => '2010-09-20',
+                    'address' => 'Jl. Kebon Kawung',
+                    'parent_name' => 'Wali 1',
+                    'parent_phone' => '08211111',
+                    'status' => 'ACTIVE',
+                ],
+                [
+                    'nis' => '88888', // Duplicate in payload
+                    'nisn' => '99998',
+                    'name' => 'Imported Student 2',
+                    'gender' => 'P',
+                    'birth_place' => 'Jakarta',
+                    'birth_date' => '2011-01-10',
+                    'address' => 'Jl. Sudirman',
+                    'parent_name' => 'Wali 2',
+                    'parent_phone' => '08211112',
+                    'status' => 'ACTIVE',
+                ],
+            ],
+        ];
+
+        $response = $this->actingAs($user)->postJson(route('students.import'), $importData);
+
+        $response->assertStatus(422);
+        $response->assertJsonValidationErrors(['students.0.nis', 'students.1.nis']);
+    }
 }
