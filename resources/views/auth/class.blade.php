@@ -479,6 +479,11 @@
             return result;
         })
         .then(result => {
+            console.log("Server response:", result);
+            if (!result || !result.data) {
+                throw new Error("Respon server tidak valid. Data siswa tidak ditemukan.");
+            }
+
             submitBtn.disabled = false;
             submitBtn.innerText = originalText;
             
@@ -589,7 +594,10 @@
         const emptyState = document.getElementById('students-empty');
         tableBody.innerHTML = '';
 
-        if (studentsList.length === 0) {
+        // Filter out any undefined or null values to be safe
+        const cleanList = (studentsList || []).filter(student => student !== undefined && student !== null);
+
+        if (cleanList.length === 0) {
             tableContainer.classList.add('hidden');
             emptyState.classList.remove('hidden');
             return;
@@ -599,7 +607,7 @@
         emptyState.classList.add('hidden');
 
         // Sort alphabetically by name
-        const sortedList = [...studentsList].sort((a, b) => a.name.localeCompare(b.name));
+        const sortedList = [...cleanList].sort((a, b) => a.name.localeCompare(b.name));
 
         sortedList.forEach((student, index) => {
             const indexStr = String(index + 1).padStart(2, '0');
