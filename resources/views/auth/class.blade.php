@@ -176,6 +176,7 @@
                             <th scope="col" class="px-6 py-3.5">Tempat, Tanggal Lahir</th>
                             <th scope="col" class="px-6 py-3.5">Wali / No. HP</th>
                             <th scope="col" class="px-6 py-3.5 text-center">Status</th>
+                            <th scope="col" class="px-6 py-3.5 text-center">Aksi</th>
                         </tr>
                     </thead>
                     <tbody id="students-table-body" class="divide-y divide-default">
@@ -252,6 +253,9 @@
     </div>
 </div>
 
+<!-- Hidden trigger button for programmatically opening the student modal via Flowbite JS -->
+<button id="trigger-student-modal" type="button" data-modal-target="student-modal" data-modal-toggle="student-modal" class="hidden"></button>
+
 <!-- Modal Dialog 2: Add Student using Flowbite component structure -->
 <div id="student-modal" tabindex="-1" aria-hidden="true" class="fixed top-0 left-0 right-0 z-50 hidden w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] max-h-full flex items-center justify-center bg-black/50 backdrop-blur-xs">
     <div class="relative w-full max-w-2xl max-h-full">
@@ -259,7 +263,7 @@
         <div class="relative bg-white rounded-base shadow-lg dark:bg-neutral-primary-soft border border-default">
             <!-- Modal header -->
             <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t border-default">
-                <h3 class="text-lg font-bold text-heading">
+                <h3 id="student-modal-title" class="text-lg font-bold text-heading">
                     Tambah Siswa Baru
                 </h3>
                 <button type="button" class="text-body bg-transparent hover:bg-neutral-secondary-soft hover:text-heading rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-neutral-tertiary cursor-pointer" data-modal-hide="student-modal">
@@ -271,6 +275,7 @@
             </div>
             <!-- Modal body -->
             <form id="student-form" onsubmit="submitStudentForm(event)" class="p-4 md:p-5">
+                <input type="hidden" name="id" id="student_id">
                 <input type="hidden" name="class_id" id="student_class_id">
                 
                 <!-- Validation Errors Container -->
@@ -402,10 +407,43 @@
 
     // Open Modal for Add Student
     function prepareAddStudent() {
+        document.getElementById('student-modal-title').innerText = 'Tambah Siswa Baru';
+        document.getElementById('btn-submit-student').innerText = 'Simpan Siswa';
+        
+        document.getElementById('student_id').value = '';
         document.getElementById('student_class_id').value = currentClassId;
         document.getElementById('student-form').reset();
         document.getElementById('student-form-errors').classList.add('hidden');
         document.getElementById('errors-list').innerHTML = '';
+    }
+
+    // Open Modal for Edit Student
+    function prepareEditStudent(studentId) {
+        const student = currentClassStudents.find(s => s.id === studentId);
+        if (!student) return;
+
+        document.getElementById('student-modal-title').innerText = 'Ubah Siswa';
+        document.getElementById('btn-submit-student').innerText = 'Simpan Perubahan';
+        
+        document.getElementById('student_id').value = student.id;
+        document.getElementById('student_class_id').value = currentClassId;
+        
+        document.getElementById('student_name').value = student.name;
+        document.getElementById('student_status').value = student.status;
+        document.getElementById('student_nis').value = student.nis;
+        document.getElementById('student_nisn').value = student.nisn;
+        document.getElementById('student_gender').value = student.gender;
+        document.getElementById('student_birth_place').value = student.birth_place;
+        document.getElementById('student_birth_date').value = student.birth_date ? student.birth_date.split('T')[0] : '';
+        document.getElementById('student_parent_name').value = student.parent_name;
+        document.getElementById('student_parent_phone').value = student.parent_phone;
+        document.getElementById('student_address').value = student.address;
+
+        document.getElementById('student-form-errors').classList.add('hidden');
+        document.getElementById('errors-list').innerHTML = '';
+
+        // Trigger Flowbite modal show programmatically
+        document.getElementById('trigger-student-modal').click();
     }
 
     // Submit Student Form via AJAX
@@ -417,10 +455,15 @@
         
         const submitBtn = document.getElementById('btn-submit-student');
         submitBtn.disabled = true;
+        const originalText = submitBtn.innerText;
         submitBtn.innerText = 'Menyimpan...';
 
-        fetch("{{ route('students.store') }}", {
-            method: 'POST',
+        const studentId = document.getElementById('student_id').value;
+        const url = studentId ? `/students/${studentId}` : "{{ route('students.store') }}";
+        const method = studentId ? 'PUT' : 'POST';
+
+        fetch(url, {
+            method: method,
             headers: {
                 'Content-Type': 'application/json',
                 'Accept': 'application/json',
@@ -437,15 +480,23 @@
         })
         .then(result => {
             submitBtn.disabled = false;
-            submitBtn.innerText = 'Simpan Siswa';
+            submitBtn.innerText = originalText;
             
-            // Add student to the local array
+            // Add or update student in local array
             const targetClass = classesData.find(c => c.id === currentClassId);
             if (targetClass) {
                 if (!targetClass.students) {
                     targetClass.students = [];
                 }
-                targetClass.students.push(result.data);
+                
+                if (studentId) {
+                    const idx = targetClass.students.findIndex(s => s.id === parseInt(studentId));
+                    if (idx !== -1) {
+                        targetClass.students[idx] = result.data;
+                    }
+                } else {
+                    targetClass.students.push(result.data);
+                }
                 
                 // Update class card count text
                 const countEl = document.getElementById(`student-count-${currentClassId}`);
@@ -464,11 +515,11 @@
             }
 
             // Show Flowbite Toast success notification
-            showToast('Siswa baru berhasil ditambahkan.');
+            showToast(studentId ? 'Perubahan data siswa berhasil disimpan.' : 'Siswa baru berhasil ditambahkan.');
         })
         .catch(errors => {
             submitBtn.disabled = false;
-            submitBtn.innerText = 'Simpan Siswa';
+            submitBtn.innerText = originalText;
             
             const errorsContainer = document.getElementById('student-form-errors');
             const errorsList = document.getElementById('errors-list');
@@ -586,6 +637,18 @@
                         ${student.status}
                     </span>
                 </td>
+                <td class="px-6 py-4 text-center whitespace-nowrap">
+                    <button type="button" onclick="prepareEditStudent(${student.id})" class="text-brand hover:bg-brand/10 p-2 rounded-lg transition-colors duration-150 cursor-pointer inline-flex items-center justify-center mr-1" title="Ubah Siswa">
+                        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                        </svg>
+                    </button>
+                    <button type="button" onclick="deleteStudent(${student.id}, '${student.name.replace(/'/g, "\\'")}')" class="text-fg-danger-strong hover:bg-danger-soft/20 p-2 rounded-lg transition-colors duration-150 cursor-pointer inline-flex items-center justify-center" title="Hapus Siswa">
+                        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                        </svg>
+                    </button>
+                </td>
             `;
             tableBody.appendChild(row);
         });
@@ -599,6 +662,53 @@
         });
         renderStudents(filtered);
     }
+
+    // Delete student via AJAX
+    function deleteStudent(studentId, studentName) {
+        if (!confirm(`Apakah Anda yakin ingin menghapus siswa ${studentName}?`)) {
+            return;
+        }
+
+        fetch(`/students/${studentId}`, {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            }
+        })
+        .then(async response => {
+            const result = await response.json();
+            if (!response.ok) {
+                throw result;
+            }
+            return result;
+        })
+        .then(result => {
+            // Remove student from the local array
+            const targetClass = classesData.find(c => c.id === currentClassId);
+            if (targetClass && targetClass.students) {
+                targetClass.students = targetClass.students.filter(s => s.id !== studentId);
+                currentClassStudents = targetClass.students;
+
+                // Update class card count text
+                const countEl = document.getElementById(`student-count-${currentClassId}`);
+                if (countEl) {
+                    countEl.innerText = `${targetClass.students.length} Siswa`;
+                }
+
+                // Refresh the students table view
+                renderStudents(currentClassStudents);
+            }
+
+            // Show success toast
+            showToast('Siswa berhasil dihapus.');
+        })
+        .catch(errors => {
+            alert(errors.message || 'Gagal menghapus siswa. Silakan coba lagi.');
+        });
+    }
+
 
     // Auto-hide success alert after 3 seconds
     document.addEventListener('DOMContentLoaded', () => {
