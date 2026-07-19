@@ -6,7 +6,7 @@
 <div class="max-w-4xl mx-auto py-8 px-4">
     <!-- Header -->
     <div class="mb-8">
-        <h1 class="text-3xl font-extrabold text-heading tracking-tight mb-2">Pengaturan Master Data</h1>
+        <h1 class="hidden sm:block text-3xl font-extrabold text-heading tracking-tight mb-2">Pengaturan Master Data</h1>
         <p class="text-body">Kelola profil sekolah, identitas guru, spesifikasi mata pelajaran, dan bobot nilai.</p>
     </div>
 

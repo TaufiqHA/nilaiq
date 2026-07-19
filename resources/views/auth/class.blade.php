@@ -9,7 +9,7 @@
         <!-- Header -->
         <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
             <div>
-                <h1 class="text-3xl font-extrabold text-heading tracking-tight mb-2">Kelas</h1>
+                <h1 class="hidden sm:block text-3xl font-extrabold text-heading tracking-tight mb-2">Kelas</h1>
                 <p class="text-body">Kelola data kelas dan lihat daftar siswa di setiap kelas.</p>
             </div>
             <div>
@@ -159,19 +159,19 @@
         </div>
 
         <!-- Student Content Table Card (Flowbite Table Component) -->
-        <div class="bg-white dark:bg-neutral-primary-soft border border-default rounded-base p-6 shadow-sm">
-            <div class="relative overflow-x-auto border border-default rounded-base bg-white dark:bg-neutral-primary-soft" id="students-table-container">
+        <div class="bg-transparent sm:bg-white dark:sm:bg-neutral-primary-soft border-0 sm:border border-default rounded-none sm:rounded-base p-0 sm:p-6 shadow-none sm:shadow-sm">
+            <div class="relative overflow-x-auto border border-default rounded-base bg-transparent sm:bg-white dark:sm:bg-neutral-primary-soft" id="students-table-container">
                 <table class="w-full text-sm text-left text-body">
                     <thead class="text-xs font-bold text-heading uppercase bg-neutral-secondary-medium border-b border-default select-none">
                         <tr>
-                            <th scope="col" class="px-6 py-3.5 w-12 text-center">No</th>
-                            <th scope="col" class="px-6 py-3.5">Nama Lengkap</th>
-                            <th scope="col" class="px-6 py-3.5">NIS / NISN</th>
-                            <th scope="col" class="px-6 py-3.5 text-center">L/P</th>
-                            <th scope="col" class="px-6 py-3.5">Tempat, Tanggal Lahir</th>
-                            <th scope="col" class="px-6 py-3.5">Wali / No. HP</th>
-                            <th scope="col" class="px-6 py-3.5 text-center">Status</th>
-                            <th scope="col" class="px-6 py-3.5 text-center">Aksi</th>
+                            <th scope="col" class="px-6 py-3.5 min-w-[50px] w-12 text-center">No</th>
+                            <th scope="col" class="px-6 py-3.5 min-w-[200px]">Nama Lengkap</th>
+                            <th scope="col" class="px-6 py-3.5 min-w-[120px]">NIS / NISN</th>
+                            <th scope="col" class="px-6 py-3.5 min-w-[80px] text-center">L/P</th>
+                            <th scope="col" class="px-6 py-3.5 min-w-[180px]">Tempat, Tanggal Lahir</th>
+                            <th scope="col" class="px-6 py-3.5 min-w-[160px]">Wali / No. HP</th>
+                            <th scope="col" class="px-6 py-3.5 min-w-[100px] text-center">Status</th>
+                            <th scope="col" class="px-6 py-3.5 min-w-[120px] text-center">Aksi</th>
                         </tr>
                     </thead>
                     <tbody id="students-table-body" class="divide-y divide-default">
@@ -315,11 +315,11 @@
 
 <!-- Modal Dialog 2: Add Student using Flowbite component structure -->
 <div id="student-modal" tabindex="-1" aria-hidden="true" class="fixed top-0 left-0 right-0 z-50 hidden w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] max-h-full flex items-center justify-center bg-black/50 backdrop-blur-xs">
-    <div class="relative w-full max-w-2xl max-h-full">
+    <div class="relative w-full max-w-2xl max-h-full flex items-center justify-center">
         <!-- Modal content -->
-        <div class="relative bg-white rounded-base shadow-lg dark:bg-neutral-primary-soft border border-default">
+        <div class="relative w-full bg-white rounded-base shadow-lg dark:bg-neutral-primary-soft border border-default flex flex-col max-h-[90vh] sm:max-h-[85vh]">
             <!-- Modal header -->
-            <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t border-default">
+            <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t border-default shrink-0">
                 <h3 id="student-modal-title" class="text-lg font-bold text-heading">
                     Tambah Siswa Baru
                 </h3>
@@ -331,82 +331,84 @@
                 </button>
             </div>
             <!-- Modal body -->
-            <form id="student-form" onsubmit="submitStudentForm(event)" class="p-4 md:p-5">
+            <form id="student-form" onsubmit="submitStudentForm(event)" class="flex flex-col min-h-0 flex-1">
                 <input type="hidden" name="id" id="student_id">
                 <input type="hidden" name="class_id" id="student_class_id">
                 
-                <!-- Validation Errors Container -->
-                <div id="student-form-errors" class="mb-4 text-sm text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950/20 p-3.5 rounded-base border border-red-200 dark:border-red-900/30 hidden">
-                    <ul class="list-disc pl-5 space-y-1" id="errors-list"></ul>
-                </div>
-
-                <div class="grid gap-4 mb-4 grid-cols-1 md:grid-cols-2">
-                    <!-- Name -->
-                    <div class="col-span-2 md:col-span-1">
-                        <label for="student_name" class="block mb-2 text-sm font-semibold text-heading">Nama Lengkap</label>
-                        <input type="text" name="name" id="student_name" required class="bg-neutral-secondary-medium border border-default text-heading text-sm rounded-base focus:ring-brand focus:border-brand block w-full p-2.5" placeholder="Nama lengkap siswa">
-                    </div>
-                    <!-- Status -->
-                    <div class="col-span-2 md:col-span-1">
-                        <label for="student_status" class="block mb-2 text-sm font-semibold text-heading">Status</label>
-                        <select name="status" id="student_status" required class="bg-neutral-secondary-medium border border-default text-heading text-sm rounded-base focus:ring-brand focus:border-brand block w-full p-2.5">
-                            <option value="ACTIVE" selected>ACTIVE</option>
-                            <option value="INACTIVE">INACTIVE</option>
-                        </select>
+                <div class="p-4 md:p-5 overflow-y-auto flex-1 min-h-0">
+                    <!-- Validation Errors Container -->
+                    <div id="student-form-errors" class="mb-4 text-sm text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950/20 p-3.5 rounded-base border border-red-200 dark:border-red-900/30 hidden">
+                        <ul class="list-disc pl-5 space-y-1" id="errors-list"></ul>
                     </div>
 
-                    <!-- NIS -->
-                    <div>
-                        <label for="student_nis" class="block mb-2 text-sm font-semibold text-heading">NIS</label>
-                        <input type="text" name="nis" id="student_nis" required class="bg-neutral-secondary-medium border border-default text-heading text-sm rounded-base focus:ring-brand focus:border-brand block w-full p-2.5" placeholder="Nomor Induk Siswa">
-                    </div>
-                    <!-- NISN -->
-                    <div>
-                        <label for="student_nisn" class="block mb-2 text-sm font-semibold text-heading">NISN</label>
-                        <input type="text" name="nisn" id="student_nisn" required class="bg-neutral-secondary-medium border border-default text-heading text-sm rounded-base focus:ring-brand focus:border-brand block w-full p-2.5" placeholder="Nomor Induk Siswa Nasional">
-                    </div>
+                    <div class="grid gap-4 mb-4 grid-cols-1">
+                        <!-- Name -->
+                        <div>
+                            <label for="student_name" class="block mb-2 text-sm font-semibold text-heading">Nama Lengkap</label>
+                            <input type="text" name="name" id="student_name" required class="bg-neutral-secondary-medium border border-default text-heading text-sm rounded-base focus:ring-brand focus:border-brand block w-full p-2.5" placeholder="Nama lengkap siswa">
+                        </div>
+                        <!-- Status -->
+                        <div>
+                            <label for="student_status" class="block mb-2 text-sm font-semibold text-heading">Status</label>
+                            <select name="status" id="student_status" required class="bg-neutral-secondary-medium border border-default text-heading text-sm rounded-base focus:ring-brand focus:border-brand block w-full p-2.5">
+                                <option value="ACTIVE" selected>ACTIVE</option>
+                                <option value="INACTIVE">INACTIVE</option>
+                            </select>
+                        </div>
 
-                    <!-- Gender -->
-                    <div>
-                        <label for="student_gender" class="block mb-2 text-sm font-semibold text-heading">Jenis Kelamin</label>
-                        <select name="gender" id="student_gender" required class="bg-neutral-secondary-medium border border-default text-heading text-sm rounded-base focus:ring-brand focus:border-brand block w-full p-2.5">
-                            <option value="" disabled selected>-- Pilih Jenis Kelamin --</option>
-                            <option value="L">Laki-laki (L)</option>
-                            <option value="P">Perempuan (P)</option>
-                        </select>
-                    </div>
-                    <!-- Birth Place -->
-                    <div>
-                        <label for="student_birth_place" class="block mb-2 text-sm font-semibold text-heading">Tempat Lahir</label>
-                        <input type="text" name="birth_place" id="student_birth_place" required class="bg-neutral-secondary-medium border border-default text-heading text-sm rounded-base focus:ring-brand focus:border-brand block w-full p-2.5" placeholder="Kota lahir">
-                    </div>
+                        <!-- NIS -->
+                        <div>
+                            <label for="student_nis" class="block mb-2 text-sm font-semibold text-heading">NIS</label>
+                            <input type="text" name="nis" id="student_nis" required class="bg-neutral-secondary-medium border border-default text-heading text-sm rounded-base focus:ring-brand focus:border-brand block w-full p-2.5" placeholder="Nomor Induk Siswa">
+                        </div>
+                        <!-- NISN -->
+                        <div>
+                            <label for="student_nisn" class="block mb-2 text-sm font-semibold text-heading">NISN</label>
+                            <input type="text" name="nisn" id="student_nisn" required class="bg-neutral-secondary-medium border border-default text-heading text-sm rounded-base focus:ring-brand focus:border-brand block w-full p-2.5" placeholder="Nomor Induk Siswa Nasional">
+                        </div>
 
-                    <!-- Birth Date -->
-                    <div>
-                        <label for="student_birth_date" class="block mb-2 text-sm font-semibold text-heading">Tanggal Lahir</label>
-                        <input type="date" name="birth_date" id="student_birth_date" required class="bg-neutral-secondary-medium border border-default text-heading text-sm rounded-base focus:ring-brand focus:border-brand block w-full p-2.5">
-                    </div>
-                    <!-- Parent Name -->
-                    <div>
-                        <label for="student_parent_name" class="block mb-2 text-sm font-semibold text-heading">Nama Wali / Orang Tua</label>
-                        <input type="text" name="parent_name" id="student_parent_name" required class="bg-neutral-secondary-medium border border-default text-heading text-sm rounded-base focus:ring-brand focus:border-brand block w-full p-2.5" placeholder="Nama ayah/ibu/wali">
-                    </div>
+                        <!-- Gender -->
+                        <div>
+                            <label for="student_gender" class="block mb-2 text-sm font-semibold text-heading">Jenis Kelamin</label>
+                            <select name="gender" id="student_gender" required class="bg-neutral-secondary-medium border border-default text-heading text-sm rounded-base focus:ring-brand focus:border-brand block w-full p-2.5">
+                                <option value="" disabled selected>-- Pilih Jenis Kelamin --</option>
+                                <option value="L">Laki-laki (L)</option>
+                                <option value="P">Perempuan (P)</option>
+                            </select>
+                        </div>
+                        <!-- Birth Place -->
+                        <div>
+                            <label for="student_birth_place" class="block mb-2 text-sm font-semibold text-heading">Tempat Lahir</label>
+                            <input type="text" name="birth_place" id="student_birth_place" required class="bg-neutral-secondary-medium border border-default text-heading text-sm rounded-base focus:ring-brand focus:border-brand block w-full p-2.5" placeholder="Kota lahir">
+                        </div>
 
-                    <!-- Parent Phone -->
-                    <div>
-                        <label for="student_parent_phone" class="block mb-2 text-sm font-semibold text-heading">No. HP Orang Tua</label>
-                        <input type="text" name="parent_phone" id="student_parent_phone" required class="bg-neutral-secondary-medium border border-default text-heading text-sm rounded-base focus:ring-brand focus:border-brand block w-full p-2.5" placeholder="contoh: 08123456789">
-                    </div>
-                    
-                    <!-- Address -->
-                    <div class="col-span-2">
-                        <label for="student_address" class="block mb-2 text-sm font-semibold text-heading">Alamat</label>
-                        <textarea name="address" id="student_address" rows="3" required class="bg-neutral-secondary-medium border border-default text-heading text-sm rounded-base focus:ring-brand focus:border-brand block w-full p-2.5" placeholder="Alamat lengkap tempat tinggal siswa"></textarea>
+                        <!-- Birth Date -->
+                        <div>
+                            <label for="student_birth_date" class="block mb-2 text-sm font-semibold text-heading">Tanggal Lahir</label>
+                            <input type="date" name="birth_date" id="student_birth_date" required class="bg-neutral-secondary-medium border border-default text-heading text-sm rounded-base focus:ring-brand focus:border-brand block w-full p-2.5">
+                        </div>
+                        <!-- Parent Name -->
+                        <div>
+                            <label for="student_parent_name" class="block mb-2 text-sm font-semibold text-heading">Nama Wali / Orang Tua</label>
+                            <input type="text" name="parent_name" id="student_parent_name" required class="bg-neutral-secondary-medium border border-default text-heading text-sm rounded-base focus:ring-brand focus:border-brand block w-full p-2.5" placeholder="Nama ayah/ibu/wali">
+                        </div>
+
+                        <!-- Parent Phone -->
+                        <div>
+                            <label for="student_parent_phone" class="block mb-2 text-sm font-semibold text-heading">No. HP Orang Tua</label>
+                            <input type="text" name="parent_phone" id="student_parent_phone" required class="bg-neutral-secondary-medium border border-default text-heading text-sm rounded-base focus:ring-brand focus:border-brand block w-full p-2.5" placeholder="contoh: 08123456789">
+                        </div>
+                        
+                        <!-- Address -->
+                        <div>
+                            <label for="student_address" class="block mb-2 text-sm font-semibold text-heading">Alamat</label>
+                            <textarea name="address" id="student_address" rows="3" required class="bg-neutral-secondary-medium border border-default text-heading text-sm rounded-base focus:ring-brand focus:border-brand block w-full p-2.5" placeholder="Alamat lengkap tempat tinggal siswa"></textarea>
+                        </div>
                     </div>
                 </div>
 
                 <!-- Modal Action Buttons -->
-                <div class="flex items-center justify-end gap-3 border-t border-default pt-4 mt-6">
+                <div class="flex items-center justify-end gap-3 border-t border-default p-4 md:p-5 rounded-b shrink-0">
                     <button type="button" data-modal-hide="student-modal" class="px-5 py-2.5 text-sm font-semibold border border-default hover:bg-neutral-tertiary text-body rounded-base transition-all duration-200 cursor-pointer">
                         Batal
                     </button>

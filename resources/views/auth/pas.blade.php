@@ -9,7 +9,7 @@
         <!-- Header -->
         <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
             <div>
-                <h1 class="text-3xl font-extrabold text-heading tracking-tight mb-2">Penilaian Akhir Semester (PAS)</h1>
+                <h1 class="hidden sm:block text-3xl font-extrabold text-heading tracking-tight mb-2">Penilaian Akhir Semester (PAS)</h1>
                 <p class="text-body">Kelola ujian akhir semester dan isi nilai siswa di setiap kelas.</p>
             </div>
             <div>
@@ -42,7 +42,7 @@
         @endif
 
         <!-- Exams Table -->
-        <div class="bg-white dark:bg-neutral-primary-soft border border-default rounded-base p-6 shadow-sm">
+        <div class="bg-transparent sm:bg-white dark:sm:bg-neutral-primary-soft border-0 sm:border border-default rounded-none sm:rounded-base p-0 sm:p-6 shadow-none sm:shadow-sm">
             <!-- Search & Filter Controls -->
             <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
                 <!-- Search Input -->
@@ -79,17 +79,17 @@
                 </div>
             </div>
 
-            <div class="relative overflow-x-auto border border-default rounded-base bg-white dark:bg-neutral-primary-soft" id="exams-table-container">
+            <div class="relative overflow-x-auto border-0 sm:border border-default rounded-none sm:rounded-base bg-transparent sm:bg-white dark:sm:bg-neutral-primary-soft" id="exams-table-container">
                 <table class="w-full text-sm text-left text-body">
                     <thead class="text-xs font-bold text-heading uppercase bg-neutral-secondary-medium border-b border-default select-none">
                         <tr>
-                            <th scope="col" class="px-6 py-3.5 w-12 text-center hidden sm:table-cell">No</th>
-                            <th scope="col" class="px-6 py-3.5">Nama Ujian</th>
-                            <th scope="col" class="px-6 py-3.5">Kelas</th>
-                            <th scope="col" class="px-6 py-3.5 hidden md:table-cell">Tanggal Ujian</th>
-                            <th scope="col" class="px-6 py-3.5 hidden lg:table-cell">Deskripsi</th>
-                            <th scope="col" class="px-6 py-3.5 text-center whitespace-nowrap">Status Terisi</th>
-                            <th scope="col" class="px-6 py-3.5 text-center whitespace-nowrap" style="width: 170px;">Aksi</th>
+                            <th scope="col" class="px-6 py-3.5 min-w-[50px] w-12 text-center hidden sm:table-cell">No</th>
+                            <th scope="col" class="px-6 py-3.5 min-w-[180px]">Nama Ujian</th>
+                            <th scope="col" class="px-6 py-3.5 min-w-[80px]">Kelas</th>
+                            <th scope="col" class="px-6 py-3.5 min-w-[160px] hidden md:table-cell">Tanggal Ujian</th>
+                            <th scope="col" class="px-6 py-3.5 min-w-[160px] hidden lg:table-cell">Deskripsi</th>
+                            <th scope="col" class="px-6 py-3.5 min-w-[120px] text-center whitespace-nowrap">Status Terisi</th>
+                            <th scope="col" class="px-6 py-3.5 min-w-[140px] text-center whitespace-nowrap" style="width: 170px;">Aksi</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-default">
@@ -204,16 +204,16 @@
         </div>
 
         <!-- Student Score Table Card -->
-        <div class="bg-white dark:bg-neutral-primary-soft border border-default rounded-base p-6 shadow-sm">
-            <div class="relative overflow-x-auto border border-default rounded-base bg-white dark:bg-neutral-primary-soft" id="scores-table-container">
+        <div class="bg-transparent sm:bg-white dark:sm:bg-neutral-primary-soft border-0 sm:border border-default rounded-none sm:rounded-base p-0 sm:p-6 shadow-none sm:shadow-sm">
+            <div class="relative overflow-x-auto border-0 sm:border border-default rounded-none sm:rounded-base bg-transparent sm:bg-white dark:sm:bg-neutral-primary-soft" id="scores-table-container">
                 <table class="w-full text-sm text-left text-body">
                     <thead class="text-xs font-bold text-heading uppercase bg-neutral-secondary-medium border-b border-default select-none">
                         <tr>
-                            <th scope="col" class="px-6 py-3.5 w-12 text-center hidden sm:table-cell">No</th>
-                            <th scope="col" class="px-6 py-3.5">Nama Lengkap</th>
-                            <th scope="col" class="px-6 py-3.5 text-center hidden sm:table-cell">L/P</th>
-                            <th scope="col" class="px-6 py-3.5 text-center" style="width: 180px;">Nilai (0-100)</th>
-                            <th scope="col" class="px-6 py-3.5 text-center whitespace-nowrap" style="width: 120px;">Aksi</th>
+                            <th scope="col" class="px-6 py-3.5 min-w-[50px] w-12 text-center hidden sm:table-cell">No</th>
+                            <th scope="col" class="px-6 py-3.5 min-w-[200px]">Nama Lengkap</th>
+                            <th scope="col" class="px-6 py-3.5 min-w-[60px] text-center hidden sm:table-cell">L/P</th>
+                            <th scope="col" class="px-6 py-3.5 min-w-[180px] text-center" style="width: 180px;">Nilai (0-100)</th>
+                            <th scope="col" class="px-6 py-3.5 min-w-[100px] text-center whitespace-nowrap" style="width: 120px;">Aksi</th>
                         </tr>
                     </thead>
                     <tbody id="scores-table-body" class="divide-y divide-default">

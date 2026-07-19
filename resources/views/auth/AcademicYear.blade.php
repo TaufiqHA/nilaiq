@@ -7,7 +7,7 @@
     <!-- Header -->
     <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
         <div>
-            <h1 class="text-3xl font-extrabold text-heading tracking-tight mb-2">Tahun Ajaran</h1>
+            <h1 class="hidden sm:block text-3xl font-extrabold text-heading tracking-tight mb-2">Tahun Ajaran</h1>
             <p class="text-body">Kelola tahun ajaran aktif dan semester (Ganjil/Genap) untuk sistem penilaian.</p>
         </div>
     </div>
@@ -22,9 +22,9 @@
     </div>
     @endif
 
-    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 sm:gap-8">
         <!-- 1. Form Card (1 Column wide on lg) -->
-        <div class="bg-neutral-primary-soft border border-default rounded-base p-6 shadow-sm self-start">
+        <div class="w-full bg-transparent sm:bg-neutral-primary-soft border-0 sm:border border-default rounded-none sm:rounded-base p-0 sm:p-6 shadow-none sm:shadow-sm self-start">
             <h3 class="text-lg font-bold text-heading border-b border-default pb-3 mb-4" id="form-title">Tambah Tahun Ajaran</h3>
             
             <form id="academic-year-form" action="{{ route('academic-years.store') }}" method="POST" class="space-y-4">
@@ -77,17 +77,17 @@
         </div>
 
         <!-- 2. List Card (2 Columns wide on lg) -->
-        <div class="lg:col-span-2 bg-neutral-primary-soft border border-default rounded-base p-6 shadow-sm">
+        <div class="lg:col-span-2 bg-transparent sm:bg-neutral-primary-soft border-0 sm:border border-default rounded-none sm:rounded-base p-0 sm:p-6 shadow-none sm:shadow-sm">
             <h3 class="text-lg font-bold text-heading border-b border-default pb-3 mb-4">Daftar Tahun Ajaran</h3>
             
             <div class="overflow-x-auto">
                 <table class="w-full text-left border-collapse">
                     <thead>
                         <tr class="border-b border-default">
-                            <th class="pb-3 text-xs font-bold text-heading uppercase tracking-wider">Tahun Ajaran</th>
-                            <th class="pb-3 text-xs font-bold text-heading uppercase tracking-wider">Semester</th>
-                            <th class="pb-3 text-xs font-bold text-heading uppercase tracking-wider">Status</th>
-                            <th class="pb-3 text-xs font-bold text-heading uppercase tracking-wider text-right">Aksi</th>
+                            <th class="pb-3 text-xs font-bold text-heading uppercase tracking-wider min-w-[150px]">Tahun Ajaran</th>
+                            <th class="pb-3 text-xs font-bold text-heading uppercase tracking-wider min-w-[120px]">Semester</th>
+                            <th class="pb-3 text-xs font-bold text-heading uppercase tracking-wider min-w-[120px]">Status</th>
+                            <th class="pb-3 text-xs font-bold text-heading uppercase tracking-wider text-right min-w-[150px]">Aksi</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-default">

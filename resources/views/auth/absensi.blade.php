@@ -9,7 +9,7 @@
         <!-- Header -->
         <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
             <div>
-                <h1 class="text-3xl font-extrabold text-heading tracking-tight mb-2">Absensi</h1>
+                <h1 class="hidden sm:block text-3xl font-extrabold text-heading tracking-tight mb-2">Absensi</h1>
                 <p class="text-body">Kelola pertemuan dan isi absensi siswa di setiap kelas.</p>
             </div>
             <div>
@@ -42,7 +42,7 @@
         @endif
 
         <!-- Meetings Table -->
-        <div class="bg-white dark:bg-neutral-primary-soft border border-default rounded-base p-6 shadow-sm">
+        <div class="bg-transparent sm:bg-white dark:sm:bg-neutral-primary-soft border-0 sm:border border-default rounded-none sm:rounded-base p-0 sm:p-6 shadow-none sm:shadow-sm">
             <!-- Search & Filter Controls -->
             <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-6">
                 <!-- Search Input -->
@@ -79,17 +79,17 @@
                 </div>
             </div>
 
-            <div class="relative overflow-x-auto border border-default rounded-base bg-white dark:bg-neutral-primary-soft" id="meetings-table-container">
+            <div class="relative overflow-x-auto border-0 sm:border border-default rounded-none sm:rounded-base bg-transparent sm:bg-white dark:sm:bg-neutral-primary-soft" id="meetings-table-container">
                 <table class="w-full text-sm text-left text-body">
                     <thead class="text-xs font-bold text-heading uppercase bg-neutral-secondary-medium border-b border-default select-none">
                         <tr>
-                            <th scope="col" class="px-6 py-3.5 w-12 text-center hidden sm:table-cell">No</th>
-                            <th scope="col" class="px-6 py-3.5">Nama Pertemuan</th>
-                            <th scope="col" class="px-6 py-3.5">Kelas</th>
-                            <th scope="col" class="px-6 py-3.5 hidden md:table-cell">Tanggal Pertemuan</th>
-                            <th scope="col" class="px-6 py-3.5 hidden lg:table-cell">Deskripsi</th>
-                            <th scope="col" class="px-6 py-3.5 text-center whitespace-nowrap">Status Terisi</th>
-                            <th scope="col" class="px-6 py-3.5 text-center whitespace-nowrap" style="width: 170px;">Aksi</th>
+                            <th scope="col" class="px-6 py-3.5 min-w-[50px] w-12 text-center hidden sm:table-cell">No</th>
+                            <th scope="col" class="px-6 py-3.5 min-w-[180px]">Nama Pertemuan</th>
+                            <th scope="col" class="px-6 py-3.5 min-w-[80px]">Kelas</th>
+                            <th scope="col" class="px-6 py-3.5 min-w-[160px] hidden md:table-cell">Tanggal Pertemuan</th>
+                            <th scope="col" class="px-6 py-3.5 min-w-[160px] hidden lg:table-cell">Deskripsi</th>
+                            <th scope="col" class="px-6 py-3.5 min-w-[120px] text-center whitespace-nowrap">Status Terisi</th>
+                            <th scope="col" class="px-6 py-3.5 min-w-[140px] text-center whitespace-nowrap" style="width: 170px;">Aksi</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-default">
@@ -205,17 +205,17 @@
         </div>
 
         <!-- Student Attendance Table Card -->
-        <div class="bg-white dark:bg-neutral-primary-soft border border-default rounded-base p-6 shadow-sm">
-            <div class="relative overflow-x-auto border border-default rounded-base bg-white dark:bg-neutral-primary-soft" id="attendances-table-container">
+        <div class="bg-transparent sm:bg-white dark:sm:bg-neutral-primary-soft border-0 sm:border border-default rounded-none sm:rounded-base p-0 sm:p-6 shadow-none sm:shadow-sm">
+            <div class="relative overflow-x-auto border-0 sm:border border-default rounded-none sm:rounded-base bg-transparent sm:bg-white dark:sm:bg-neutral-primary-soft" id="attendances-table-container">
                 <table class="w-full text-sm text-left text-body">
                     <thead class="text-xs font-bold text-heading uppercase bg-neutral-secondary-medium border-b border-default select-none">
                         <tr>
-                            <th scope="col" class="px-6 py-3.5 w-12 text-center hidden sm:table-cell">No</th>
-                            <th scope="col" class="px-6 py-3.5">Nama Lengkap</th>
-                            <th scope="col" class="px-6 py-3.5 text-center hidden sm:table-cell">L/P</th>
-                            <th scope="col" class="px-6 py-3.5 whitespace-nowrap" style="width: 170px;">Status Absensi</th>
-                            <th scope="col" class="px-6 py-3.5">Catatan</th>
-                            <th scope="col" class="px-6 py-3.5 text-center whitespace-nowrap" style="width: 120px;">Aksi</th>
+                            <th scope="col" class="px-6 py-3.5 min-w-[50px] w-12 text-center hidden sm:table-cell">No</th>
+                            <th scope="col" class="px-6 py-3.5 min-w-[200px]">Nama Lengkap</th>
+                            <th scope="col" class="px-6 py-3.5 min-w-[60px] text-center hidden sm:table-cell">L/P</th>
+                            <th scope="col" class="px-6 py-3.5 min-w-[170px] whitespace-nowrap" style="width: 170px;">Status Absensi</th>
+                            <th scope="col" class="px-6 py-3.5 min-w-[150px]">Catatan</th>
+                            <th scope="col" class="px-6 py-3.5 min-w-[100px] text-center whitespace-nowrap" style="width: 120px;">Aksi</th>
                         </tr>
                     </thead>
                     <tbody id="attendances-table-body" class="divide-y divide-default">

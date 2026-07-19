@@ -85,7 +85,7 @@
         <!-- Header -->
         <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
             <div>
-                <h1 class="text-3xl font-extrabold text-heading tracking-tight mb-2">Rekap Nilai</h1>
+                <h1 class="hidden sm:block text-3xl font-extrabold text-heading tracking-tight mb-2">Rekap Nilai</h1>
                 <p class="text-body">Pilih kelas di bawah ini untuk melihat rekap nilai lengkap seluruh siswa.</p>
             </div>
         </div>
@@ -188,7 +188,7 @@
         </div>
 
         <!-- Score Recap Table Card -->
-        <div class="bg-white dark:bg-neutral-primary-soft border border-default rounded-base p-6 shadow-sm relative">
+        <div class="bg-transparent sm:bg-white dark:sm:bg-neutral-primary-soft border-0 sm:border border-default rounded-none sm:rounded-base p-0 sm:p-6 shadow-none sm:shadow-sm relative">
             <!-- Loading Indicator -->
             <div id="rekap-loader" class="absolute inset-0 bg-white/70 dark:bg-neutral-primary-soft/75 backdrop-blur-xs flex items-center justify-center z-10 rounded-base">
                 <div class="text-center">
@@ -201,22 +201,22 @@
             </div>
 
             <!-- Table Container -->
-            <div class="relative overflow-x-auto border border-default rounded-base bg-white dark:bg-neutral-primary-soft hidden" id="rekap-table-container">
+            <div class="relative overflow-x-auto border-0 sm:border border-default rounded-none sm:rounded-base bg-transparent sm:bg-white dark:sm:bg-neutral-primary-soft hidden" id="rekap-table-container">
                 <table class="w-full text-sm text-left text-body">
                     <thead class="text-xs font-bold text-heading uppercase bg-neutral-secondary-medium border-b border-default select-none text-center">
                         <tr>
-                            <th scope="col" class="px-4 py-3.5 w-12 text-center" rowspan="2">No</th>
-                            <th scope="col" class="px-6 py-3.5 text-left" rowspan="2">Nama Lengkap</th>
-                            <th scope="col" class="px-4 py-3.5" id="komponen-nilai-header" colspan="4">Komponen Nilai</th>
-                            <th scope="col" class="px-4 py-3.5 bg-neutral-secondary-soft/50" rowspan="2">Jumlah</th>
-                            <th scope="col" class="px-4 py-3.5 bg-neutral-secondary-soft" rowspan="2">Rata-rata</th>
-                            <th scope="col" class="px-4 py-3.5 w-24" rowspan="2">Peringkat</th>
+                            <th scope="col" class="px-4 py-3.5 min-w-[50px] w-12 text-center" rowspan="2">No</th>
+                            <th scope="col" class="px-6 py-3.5 min-w-[200px] text-left" rowspan="2">Nama Lengkap</th>
+                            <th scope="col" class="px-4 py-3.5 min-w-[400px]" id="komponen-nilai-header" colspan="4">Komponen Nilai</th>
+                            <th scope="col" class="px-4 py-3.5 min-w-[80px] bg-neutral-secondary-soft/50" rowspan="2">Jumlah</th>
+                            <th scope="col" class="px-4 py-3.5 min-w-[80px] bg-neutral-secondary-soft" rowspan="2">Rata-rata</th>
+                            <th scope="col" class="px-4 py-3.5 min-w-[80px] w-24" rowspan="2">Peringkat</th>
                         </tr>
                         <tr class="border-t border-default bg-neutral-secondary-medium/70" id="sub-headers-row">
-                            <th scope="col" class="px-3 py-2 w-28">Ulangan Harian</th>
-                            <th scope="col" class="px-3 py-2 w-28">Tugas</th>
-                            <th scope="col" class="px-3 py-2 w-28">PTS</th>
-                            <th scope="col" class="px-3 py-2 w-28">PAS</th>
+                            <th scope="col" class="px-3 py-2 min-w-[100px] w-28">Ulangan Harian</th>
+                            <th scope="col" class="px-3 py-2 min-w-[100px] w-28">Tugas</th>
+                            <th scope="col" class="px-3 py-2 min-w-[100px] w-28">PTS</th>
+                            <th scope="col" class="px-3 py-2 min-w-[100px] w-28">PAS</th>
                         </tr>
                     </thead>
                     <tbody id="rekap-table-body" class="divide-y divide-default">
