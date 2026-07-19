@@ -166,7 +166,7 @@
                     <div class="grid grid-cols-2 gap-4">
                         <div>
                             <label for="daily_test_weight" class="block text-xs font-bold text-heading uppercase tracking-wider mb-1.5">Bobot Nilai Harian</label>
-                            <input type="number" step="0.01" name="daily_test_weight" id="daily_test_weight" value="{{ old('daily_test_weight', $setting->daily_test_weight ?? 0.30) }}" class="w-full bg-neutral-secondary-medium border border-default rounded-base px-3 py-2 text-sm text-heading placeholder-neutral-400 focus:outline-none focus:border-brand @error('daily_test_weight') border-fg-danger-strong @enderror" oninput="calculateTotalWeights()">
+                            <input type="number" step="1" min="0" max="100" name="daily_test_weight" id="daily_test_weight" value="{{ old('daily_test_weight', isset($setting->daily_test_weight) ? ($setting->daily_test_weight <= 1.0 ? $setting->daily_test_weight * 100 : $setting->daily_test_weight) : 30) }}" class="w-full bg-neutral-secondary-medium border border-default rounded-base px-3 py-2 text-sm text-heading placeholder-neutral-400 focus:outline-none focus:border-brand @error('daily_test_weight') border-fg-danger-strong @enderror" oninput="calculateTotalWeights()">
                             @error('daily_test_weight')
                                 <p class="text-xs text-fg-danger-strong mt-1">{{ $message }}</p>
                             @enderror
@@ -174,7 +174,7 @@
 
                         <div>
                             <label for="assignment_weight" class="block text-xs font-bold text-heading uppercase tracking-wider mb-1.5">Bobot Nilai Tugas</label>
-                            <input type="number" step="0.01" name="assignment_weight" id="assignment_weight" value="{{ old('assignment_weight', $setting->assignment_weight ?? 0.20) }}" class="w-full bg-neutral-secondary-medium border border-default rounded-base px-3 py-2 text-sm text-heading placeholder-neutral-400 focus:outline-none focus:border-brand @error('assignment_weight') border-fg-danger-strong @enderror" oninput="calculateTotalWeights()">
+                            <input type="number" step="1" min="0" max="100" name="assignment_weight" id="assignment_weight" value="{{ old('assignment_weight', isset($setting->assignment_weight) ? ($setting->assignment_weight <= 1.0 ? $setting->assignment_weight * 100 : $setting->assignment_weight) : 20) }}" class="w-full bg-neutral-secondary-medium border border-default rounded-base px-3 py-2 text-sm text-heading placeholder-neutral-400 focus:outline-none focus:border-brand @error('assignment_weight') border-fg-danger-strong @enderror" oninput="calculateTotalWeights()">
                             @error('assignment_weight')
                                 <p class="text-xs text-fg-danger-strong mt-1">{{ $message }}</p>
                             @enderror
@@ -182,7 +182,7 @@
 
                         <div>
                             <label for="midterm_weight" class="block text-xs font-bold text-heading uppercase tracking-wider mb-1.5">Bobot Nilai UTS</label>
-                            <input type="number" step="0.01" name="midterm_weight" id="midterm_weight" value="{{ old('midterm_weight', $setting->midterm_weight ?? 0.25) }}" class="w-full bg-neutral-secondary-medium border border-default rounded-base px-3 py-2 text-sm text-heading placeholder-neutral-400 focus:outline-none focus:border-brand @error('midterm_weight') border-fg-danger-strong @enderror" oninput="calculateTotalWeights()">
+                            <input type="number" step="1" min="0" max="100" name="midterm_weight" id="midterm_weight" value="{{ old('midterm_weight', isset($setting->midterm_weight) ? ($setting->midterm_weight <= 1.0 ? $setting->midterm_weight * 100 : $setting->midterm_weight) : 25) }}" class="w-full bg-neutral-secondary-medium border border-default rounded-base px-3 py-2 text-sm text-heading placeholder-neutral-400 focus:outline-none focus:border-brand @error('midterm_weight') border-fg-danger-strong @enderror" oninput="calculateTotalWeights()">
                             @error('midterm_weight')
                                 <p class="text-xs text-fg-danger-strong mt-1">{{ $message }}</p>
                             @enderror
@@ -190,7 +190,7 @@
 
                         <div>
                             <label for="final_weight" class="block text-xs font-bold text-heading uppercase tracking-wider mb-1.5">Bobot Nilai UAS</label>
-                            <input type="number" step="0.01" name="final_weight" id="final_weight" value="{{ old('final_weight', $setting->final_weight ?? 0.25) }}" class="w-full bg-neutral-secondary-medium border border-default rounded-base px-3 py-2 text-sm text-heading placeholder-neutral-400 focus:outline-none focus:border-brand @error('final_weight') border-fg-danger-strong @enderror" oninput="calculateTotalWeights()">
+                            <input type="number" step="1" min="0" max="100" name="final_weight" id="final_weight" value="{{ old('final_weight', isset($setting->final_weight) ? ($setting->final_weight <= 1.0 ? $setting->final_weight * 100 : $setting->final_weight) : 25) }}" class="w-full bg-neutral-secondary-medium border border-default rounded-base px-3 py-2 text-sm text-heading placeholder-neutral-400 focus:outline-none focus:border-brand @error('final_weight') border-fg-danger-strong @enderror" oninput="calculateTotalWeights()">
                             @error('final_weight')
                                 <p class="text-xs text-fg-danger-strong mt-1">{{ $message }}</p>
                             @enderror

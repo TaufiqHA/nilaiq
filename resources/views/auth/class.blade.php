@@ -122,20 +122,22 @@
         </div>
     </div>
 
-    <!-- Section 2: Students List Section (Hidden by Default) -->
     <div id="student-list-section" class="hidden transition-all duration-300">
+        <!-- Back Button -->
+        <div class="mb-5">
+            <button type="button" onclick="backToClasses()" class="inline-flex items-center gap-2 text-sm font-semibold text-body hover:text-brand transition-colors duration-200 cursor-pointer group">
+                <svg class="w-4 h-4 transform group-hover:-translate-x-1 transition-transform duration-200" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                </svg>
+                Kembali ke Daftar Kelas
+            </button>
+        </div>
+
         <!-- Header -->
         <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
-            <div class="flex items-center gap-3">
-                <button type="button" onclick="backToClasses()" class="text-body hover:text-brand p-2 rounded-base hover:bg-neutral-secondary-soft border border-default hover:border-brand transition-all duration-200 cursor-pointer flex items-center justify-center shrink-0" title="Kembali ke Daftar Kelas">
-                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-                    </svg>
-                </button>
-                <div>
-                    <h1 id="student-title" class="text-3xl font-extrabold text-heading tracking-tight">Siswa VII A</h1>
-                    <p class="text-body">Daftar siswa yang terdaftar di kelas ini.</p>
-                </div>
+            <div>
+                <h1 id="student-title" class="text-3xl font-extrabold text-heading tracking-tight mb-2">Siswa VII A</h1>
+                <p class="text-body">Daftar siswa yang terdaftar di kelas ini.</p>
             </div>
             
             <!-- Search & Actions -->

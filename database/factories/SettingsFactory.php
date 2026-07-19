@@ -29,10 +29,10 @@ class SettingsFactory extends Factory
             'teacher_phone' => fake()->phoneNumber(),
             'subject_name' => fake()->randomElement(['Matematika', 'Fisika', 'Kimia', 'Biologi', 'Bahasa Indonesia', 'Bahasa Inggris', 'Sejarah']),
             'minimum_score' => fake()->randomFloat(2, 60, 85),
-            'daily_test_weight' => 0.30,
-            'assignment_weight' => 0.20,
-            'midterm_weight' => 0.25,
-            'final_weight' => 0.25,
+            'daily_test_weight' => 30,
+            'assignment_weight' => 20,
+            'midterm_weight' => 25,
+            'final_weight' => 25,
         ];
     }
 }

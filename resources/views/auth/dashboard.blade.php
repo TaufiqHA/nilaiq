@@ -162,10 +162,10 @@
                </svg>
                <div>
                   Bobot penilaian aktif saat ini: 
-                  <strong>Ulangan Harian</strong> ({{ $settings?->daily_test_weight ? number_format($settings->daily_test_weight * 100, 0) : '0' }}%), 
-                  <strong>Tugas</strong> ({{ $settings?->assignment_weight ? number_format($settings->assignment_weight * 100, 0) : '0' }}%), 
-                  <strong>UTS</strong> ({{ $settings?->midterm_weight ? number_format($settings->midterm_weight * 100, 0) : '0' }}%), 
-                  <strong>UAS</strong> ({{ $settings?->final_weight ? number_format($settings->final_weight * 100, 0) : '0' }}%).
+                  <strong>Ulangan Harian</strong> ({{ $settings?->daily_test_weight ? number_format($settings->daily_test_weight <= 1.0 ? $settings->daily_test_weight * 100 : $settings->daily_test_weight, 0) : '0' }}%), 
+                  <strong>Tugas</strong> ({{ $settings?->assignment_weight ? number_format($settings->assignment_weight <= 1.0 ? $settings->assignment_weight * 100 : $settings->assignment_weight, 0) : '0' }}%), 
+                  <strong>UTS</strong> ({{ $settings?->midterm_weight ? number_format($settings->midterm_weight <= 1.0 ? $settings->midterm_weight * 100 : $settings->midterm_weight, 0) : '0' }}%), 
+                  <strong>UAS</strong> ({{ $settings?->final_weight ? number_format($settings->final_weight <= 1.0 ? $settings->final_weight * 100 : $settings->final_weight, 0) : '0' }}%).
                </div>
             </div>
          </div>
