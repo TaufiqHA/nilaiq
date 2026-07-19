@@ -604,7 +604,7 @@
                     <div>
                         <label class="block mb-2 text-sm font-semibold text-heading">Pilih File Spreadsheet</label>
                         <div class="flex items-center justify-center w-full">
-                            <label for="import-file-input"
+                            <label id="import-dropzone" for="import-file-input"
                                 class="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-default rounded-base cursor-pointer bg-neutral-secondary-medium/20 hover:bg-neutral-secondary-medium/40 transition-colors duration-150">
                                 <div class="flex flex-col items-center justify-center pt-5 pb-6">
                                     <svg class="w-8 h-8 mb-2.5 text-neutral-400" aria-hidden="true"
@@ -1105,9 +1105,20 @@
         // Handle file selection
         function handleFileSelect(event) {
             const file = event.target.files[0];
+            processFile(file);
+        }
+
+        // Process file logic
+        function processFile(file) {
             if (!file) return;
 
             const fileExt = file.name.split('.').pop().toLowerCase();
+            const maxSizeBytes = 5 * 1024 * 1024; // 5MB
+
+            if (file.size > maxSizeBytes) {
+                alert('Ukuran file melebihi batas 5MB.');
+                return;
+            }
 
             if (fileExt === 'csv') {
                 const reader = new FileReader();
@@ -1116,7 +1127,7 @@
                     parseCSVData(text);
                 };
                 reader.readAsText(file);
-            } else {
+            } else if (fileExt === 'xlsx' || fileExt === 'xls') {
                 loadSheetJS(() => {
                     const reader = new FileReader();
                     reader.onload = function (e) {
@@ -1134,6 +1145,8 @@
                     };
                     reader.readAsArrayBuffer(file);
                 });
+            } else {
+                alert('Format file tidak didukung. Harap pilih file XLSX, XLS, atau CSV.');
             }
         }
 
@@ -1498,6 +1511,49 @@
                         successAlert.classList.add('hidden');
                     }, 500);
                 }, 3000);
+            }
+
+            // Drag and drop spreadsheet upload functionality
+            const dropzone = document.getElementById('import-dropzone');
+            const fileInput = document.getElementById('import-file-input');
+
+            if (dropzone && fileInput) {
+                // Prevent default drag behaviors for window & dropzone
+                ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                    dropzone.addEventListener(eventName, preventDefaults, false);
+                    document.body.addEventListener(eventName, preventDefaults, false);
+                });
+
+                // Highlight dropzone on drag enter & over
+                ['dragenter', 'dragover'].forEach(eventName => {
+                    dropzone.addEventListener(eventName, () => {
+                        dropzone.classList.remove('border-default', 'bg-neutral-secondary-medium/20', 'hover:bg-neutral-secondary-medium/40');
+                        dropzone.classList.add('border-brand', 'bg-brand/10');
+                    }, false);
+                });
+
+                // Unhighlight dropzone on drag leave, drag end, and drop
+                ['dragleave', 'dragend', 'drop'].forEach(eventName => {
+                    dropzone.addEventListener(eventName, () => {
+                        dropzone.classList.remove('border-brand', 'bg-brand/10');
+                        dropzone.classList.add('border-default', 'bg-neutral-secondary-medium/20', 'hover:bg-neutral-secondary-medium/40');
+                    }, false);
+                });
+
+                // Handle file drop
+                dropzone.addEventListener('drop', (e) => {
+                    const dt = e.dataTransfer;
+                    const files = dt.files;
+                    if (files && files.length > 0) {
+                        fileInput.files = files; // Synchronize file input value
+                        processFile(files[0]);
+                    }
+                }, false);
+            }
+
+            function preventDefaults(e) {
+                e.preventDefault();
+                e.stopPropagation();
             }
         });
     </script>
