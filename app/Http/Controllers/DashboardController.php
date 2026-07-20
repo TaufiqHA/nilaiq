@@ -10,6 +10,7 @@ use App\Models\DailyTestMeetings;
 use App\Models\FinalExams;
 use App\Models\MidtermExams;
 use App\Models\Settings;
+use App\Models\SettingsWaliKelas;
 use App\Models\Students;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -132,5 +133,29 @@ class DashboardController extends Controller
         }
 
         return view('auth.dashboard', $data);
+    }
+
+    /**
+     * Display the Wali Kelas dashboard.
+     */
+    public function waliKelas(Request $request): View|JsonResponse
+    {
+        $activeAcademicYear = AcademicYear::where('is_active', true)->first();
+        $settingsWaliKelas = SettingsWaliKelas::first();
+        $totalStudents = Students::where('status', 'ACTIVE')->count();
+
+        $totalAttendances = Attendances::count();
+        $presentAttendances = Attendances::where('status', 'HADIR')->count();
+        $attendanceRate = $totalAttendances > 0
+            ? round(($presentAttendances / $totalAttendances) * 100, 2)
+            : 0;
+
+        $data = compact('activeAcademicYear', 'settingsWaliKelas', 'totalStudents', 'attendanceRate');
+
+        if ($request->wantsJson()) {
+            return response()->json($data);
+        }
+
+        return view('auth.waliKelas.dashboard', $data);
     }
 }
