@@ -16,6 +16,7 @@ use App\Http\Controllers\MidtermExamsController;
 use App\Http\Controllers\MidtermScoresController;
 use App\Http\Controllers\RekapController;
 use App\Http\Controllers\SettingsController;
+use App\Http\Controllers\SettingsWaliKelasController;
 use App\Http\Controllers\StudentsController;
 use Illuminate\Support\Facades\Route;
 
@@ -78,6 +79,9 @@ Route::middleware('auth')->group(function () {
 
     Route::resource('final-scores', FinalScoresController::class);
     Route::delete('final-scores/{final_score}/delete', [FinalScoresController::class, 'delete'])->name('final-scores.delete');
+
+    Route::resource('settings-wali-kelas', SettingsWaliKelasController::class)->parameters(['settings-wali-kelas' => 'settings_wali_kelas']);
+    Route::delete('settings-wali-kelas/{settings_wali_kelas}/delete', [SettingsWaliKelasController::class, 'delete'])->name('settings-wali-kelas.delete');
 
     Route::get('/rekap', [RekapController::class, 'index'])->name('rekap.index');
     Route::get('/rekap/data/{class}', [RekapController::class, 'getClassRekapData'])->name('rekap.data');
