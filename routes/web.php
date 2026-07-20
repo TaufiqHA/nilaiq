@@ -131,5 +131,6 @@ Route::middleware('auth')->group(function () {
 
         Route::resource('ekskuls', EkskulController::class);
         Route::delete('ekskuls/{ekskul}/delete', [EkskulController::class, 'delete'])->name('ekskuls.delete');
+        Route::get('/ekstrakurikuler', [EkskulController::class, 'index'])->name('ekstrakurikuler');
     });
 });

@@ -1,0 +1,385 @@
+@extends('layouts.waliKelas')
+
+@section('title', 'Ekstrakurikuler')
+
+@section('content')
+<!-- Container Utama Ekstrakurikuler -->
+<div class="p-0 sm:p-6 border-0 sm:border border-default border-dashed rounded-none sm:rounded-base bg-transparent sm:bg-white/40 dark:sm:bg-neutral-secondary-medium/20 backdrop-blur-none sm:backdrop-blur-md space-y-4 sm:space-y-6 w-full">
+
+    <!-- Header Section & Breadcrumb -->
+    <div class="border-b border-default pb-4 flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div>
+            <!-- Breadcrumb -->
+            <nav class="flex mb-1" aria-label="Breadcrumb">
+                <ol class="inline-flex items-center space-x-1 md:space-x-2 rtl:space-x-reverse text-xs">
+                    <li class="inline-flex items-center">
+                        <a href="{{ Route::has('wali-kelas.dashboard') ? route('wali-kelas.dashboard') : '#' }}" class="inline-flex items-center text-xs font-medium text-body hover:text-fg-brand">
+                            <svg class="w-4 h-4 me-1.5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m4 12 8-8 8 8M6 10.5V19a1 1 0 0 0 1 1h3v-3a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v3h3a1 1 0 0 0 1-1v-8.5"/></svg>
+                            Wali Kelas
+                        </a>
+                    </li>
+                    <li aria-current="page">
+                        <div class="flex items-center space-x-1.5">
+                            <svg class="w-3.5 h-3.5 rtl:rotate-180 text-body" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m9 5 7 7-7 7"/></svg>
+                            <span class="inline-flex items-center text-xs font-bold text-heading">Ekstrakurikuler</span>
+                        </div>
+                    </li>
+                </ol>
+            </nav>
+            <h1 class="text-2xl font-extrabold tracking-tight text-heading">Ekstrakurikuler Siswa</h1>
+            <p class="text-xs text-body mt-0.5">Kelola data kegiatan ekstrakurikuler yang diikuti oleh siswa di kelas Anda.</p>
+        </div>
+
+        <!-- Class Badge Banner -->
+        <div class="flex items-center gap-3 p-3 bg-white dark:bg-neutral-primary-soft border border-default shadow-xs rounded-base">
+            <div class="p-2.5 bg-brand text-white rounded-lg shadow-xs shrink-0">
+                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 13a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"/>
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2m0 14v2m9-9h-2M5 12H3m15.364-6.364l-1.414 1.414M7.05 16.95l-1.414 1.414M18.364 18.364l-1.414-1.414M7.05 7.05L5.636 5.636"/>
+                </svg>
+            </div>
+            <div>
+                <span class="text-[10px] uppercase font-extrabold tracking-wider text-body">Kelas yang Diampu</span>
+                <p class="text-sm font-extrabold text-heading">
+                    {{ $classWaliKelas ? $classWaliKelas->name : 'Belum Dikonfigurasi' }}
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Alert Container -->
+    <div id="page-alert-container" class="w-full space-y-3">
+        @if(session('success'))
+            <div class="flex items-start sm:items-center p-4 text-sm text-fg-success-strong bg-success-soft border border-emerald-300/40 dark:bg-emerald-950/90 dark:text-emerald-300 dark:border-emerald-700/80 shadow-xs rounded-base w-full transition-all duration-500 opacity-100" role="alert">
+                <svg class="w-4 h-4 me-2 shrink-0 mt-0.5 sm:mt-0" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 11h2v5m-2 0h4m-2.592-8.5h.01M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg>
+                <p class="flex-1">{{ session('success') }}</p>
+                <button type="button" onclick="dismissAlert(this.closest('[role=alert]'))" class="ms-auto text-emerald-600 hover:text-emerald-800 p-1 rounded-base transition-colors cursor-pointer" aria-label="Close">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+        @endif
+
+        @if(session('error') || session('danger'))
+            <div class="flex items-start sm:items-center p-4 text-sm text-fg-danger-strong bg-danger-soft border border-red-300/40 dark:bg-red-950/90 dark:text-red-300 dark:border-red-700/80 shadow-xs rounded-base w-full transition-all duration-500 opacity-100" role="alert">
+                <svg class="w-4 h-4 me-2 shrink-0 mt-0.5 sm:mt-0" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 11h2v5m-2 0h4m-2.592-8.5h.01M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/></svg>
+                <p class="flex-1">{{ session('error') ?? session('danger') }}</p>
+                <button type="button" onclick="dismissAlert(this.closest('[role=alert]'))" class="ms-auto text-red-600 hover:text-red-800 p-1 rounded-base transition-colors cursor-pointer" aria-label="Close">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+        @endif
+
+        @if($errors->any())
+            <div class="p-4 text-sm text-fg-danger-strong bg-danger-soft border border-red-300/40 dark:bg-red-950/90 dark:text-red-300 dark:border-red-700/80 shadow-xs rounded-base w-full transition-all duration-500 opacity-100" role="alert">
+                <div class="flex items-center justify-between mb-1">
+                    <div class="font-bold">Terjadi kesalahan validasi:</div>
+                    <button type="button" onclick="dismissAlert(this.closest('[role=alert]'))" class="text-red-600 hover:text-red-800 p-1 rounded-base transition-colors cursor-pointer" aria-label="Close">
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                    </button>
+                </div>
+                <ul class="list-disc list-inside text-xs space-y-0.5">
+                    @foreach($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
+
+        @if(!$classWaliKelas)
+            <div class="p-4 text-sm text-amber-800 bg-amber-50 border border-amber-300 rounded-base flex items-center justify-between">
+                <div class="flex items-center gap-2">
+                    <svg class="w-5 h-5 text-amber-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"/></svg>
+                    <span>Anda belum mengatur informasi kelas. Silakan atur informasi kelas terlebih dahulu.</span>
+                </div>
+                <a href="{{ route('wali-kelas.informasi-kelas') }}" class="px-3 py-1.5 bg-amber-600 text-white text-xs font-bold rounded-base hover:bg-amber-700 transition-colors">Atur Kelas</a>
+            </div>
+        @endif
+    </div>
+
+    <!-- Statistics Chips -->
+    @php
+        $totalStudents = $students->count();
+        $hasEkskulCount = $students->filter(fn($s) => $s->ekskul && ($s->ekskul->ekskul1 || $s->ekskul->ekskul2 || $s->ekskul->ekskul3))->count();
+        $noEkskulCount = $totalStudents - $hasEkskulCount;
+    @endphp
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+        <div class="p-3.5 bg-white dark:bg-neutral-primary-soft border border-default rounded-base shadow-xs flex items-center gap-3">
+            <div class="p-2 bg-brand-soft text-fg-brand rounded-lg">
+                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                </svg>
+            </div>
+            <div>
+                <p class="text-[11px] font-bold text-body uppercase tracking-wider">Total Siswa</p>
+                <p class="text-lg font-extrabold text-heading">{{ $totalStudents }} <span class="text-xs font-normal text-body">siswa</span></p>
+            </div>
+        </div>
+
+        <div class="p-3.5 bg-white dark:bg-neutral-primary-soft border border-default rounded-base shadow-xs flex items-center gap-3">
+            <div class="p-2 bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300 rounded-lg">
+                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+            </div>
+            <div>
+                <p class="text-[11px] font-bold text-body uppercase tracking-wider">Mengikuti Ekskul</p>
+                <p class="text-lg font-extrabold text-heading">{{ $hasEkskulCount }} <span class="text-xs font-normal text-body">siswa</span></p>
+            </div>
+        </div>
+
+        <div class="p-3.5 bg-white dark:bg-neutral-primary-soft border border-default rounded-base shadow-xs flex items-center gap-3">
+            <div class="p-2 bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300 rounded-lg">
+                <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                </svg>
+            </div>
+            <div>
+                <p class="text-[11px] font-bold text-body uppercase tracking-wider">Belum Ada Ekskul</p>
+                <p class="text-lg font-extrabold text-heading">{{ $noEkskulCount }} <span class="text-xs font-normal text-body">siswa</span></p>
+            </div>
+        </div>
+    </div>
+
+    <!-- Action Toolbar (Search & Filter) -->
+    <div class="p-4 rounded-base bg-white dark:bg-neutral-primary-soft border border-default shadow-xs flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+        <!-- Search Input -->
+        <div class="flex items-center gap-3 w-full md:w-auto flex-1">
+            <div class="relative w-full sm:max-w-md">
+                <div class="absolute inset-y-0 start-0 flex items-center ps-3 pointer-events-none text-body">
+                    <svg class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-width="2" d="m21 21-3.5-3.5M17 10a7 7 0 1 1-14 0 7 7 0 0 1 14 0Z"/></svg>
+                </div>
+                <input type="text" id="ekskul-search" oninput="filterEkskulTable()" class="bg-neutral-secondary-medium border border-default text-heading text-sm rounded-base focus:ring-brand focus:border-brand block w-full ps-9 p-2.5 placeholder:text-body" placeholder="Cari NIS, nama siswa, atau ekskul..." />
+            </div>
+        </div>
+    </div>
+
+    <!-- Data Table Container -->
+    <div class="rounded-base bg-white dark:bg-neutral-primary-soft border border-default shadow-xs overflow-hidden">
+        <div class="overflow-x-auto">
+            <table id="ekskul-table" class="w-full text-xs md:text-sm text-left text-body">
+                <thead class="text-[11px] md:text-xs font-bold text-heading uppercase bg-neutral-tertiary border-b border-default">
+                    <tr>
+                        <th scope="col" class="px-4 py-3 text-center w-12">No</th>
+                        <th scope="col" class="px-4 py-3">NIS / NISN</th>
+                        <th scope="col" class="px-4 py-3">Nama Siswa</th>
+                        <th scope="col" class="px-4 py-3">Ekstrakurikuler 1</th>
+                        <th scope="col" class="px-4 py-3">Ekstrakurikuler 2</th>
+                        <th scope="col" class="px-4 py-3">Ekstrakurikuler 3</th>
+                        <th scope="col" class="px-4 py-3 text-center w-36">Aksi</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-default">
+                    @forelse($students as $index => $student)
+                        @php
+                            $ekskul = $student->ekskul;
+                        @endphp
+                        <tr class="student-row hover:bg-neutral-secondary-medium/50 transition-colors"
+                            data-search="{{ strtolower($student->name . ' ' . $student->nis . ' ' . $student->nisn . ' ' . ($ekskul->ekskul1 ?? '') . ' ' . ($ekskul->ekskul2 ?? '') . ' ' . ($ekskul->ekskul3 ?? '')) }}">
+                            <td class="px-4 py-3 text-center font-bold text-heading">{{ $index + 1 }}</td>
+                            <td class="px-4 py-3 whitespace-nowrap">
+                                <div class="font-bold text-heading">{{ $student->nis ?? '-' }}</div>
+                                <div class="text-[11px] text-body/70">{{ $student->nisn ?? '-' }}</div>
+                            </td>
+                            <td class="px-4 py-3 font-extrabold text-heading whitespace-nowrap">
+                                {{ $student->name }}
+                            </td>
+                            <!-- Ekskul 1 -->
+                            <td class="px-4 py-3 whitespace-nowrap">
+                                @if(!empty($ekskul->ekskul1))
+                                    <span class="inline-flex items-center px-2.5 py-1 rounded-base text-xs font-bold bg-brand-soft text-fg-brand border border-brand/20">
+                                        <svg class="w-3 h-3 me-1 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+                                        </svg>
+                                        {{ $ekskul->ekskul1 }}
+                                    </span>
+                                @else
+                                    <span class="text-body/50 italic text-xs">-</span>
+                                @endif
+                            </td>
+                            <!-- Ekskul 2 -->
+                            <td class="px-4 py-3 whitespace-nowrap">
+                                @if(!empty($ekskul->ekskul2))
+                                    <span class="inline-flex items-center px-2.5 py-1 rounded-base text-xs font-bold bg-emerald-50 dark:bg-emerald-950/60 text-emerald-700 dark:text-emerald-300 border border-emerald-300/40">
+                                        <svg class="w-3 h-3 me-1 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+                                        </svg>
+                                        {{ $ekskul->ekskul2 }}
+                                    </span>
+                                @else
+                                    <span class="text-body/50 italic text-xs">-</span>
+                                @endif
+                            </td>
+                            <!-- Ekskul 3 -->
+                            <td class="px-4 py-3 whitespace-nowrap">
+                                @if(!empty($ekskul->ekskul3))
+                                    <span class="inline-flex items-center px-2.5 py-1 rounded-base text-xs font-bold bg-amber-50 dark:bg-amber-950/60 text-amber-700 dark:text-amber-300 border border-amber-300/40">
+                                        <svg class="w-3 h-3 me-1 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+                                        </svg>
+                                        {{ $ekskul->ekskul3 }}
+                                    </span>
+                                @else
+                                    <span class="text-body/50 italic text-xs">-</span>
+                                @endif
+                            </td>
+                            <!-- Action Buttons -->
+                            <td class="px-4 py-3 text-center whitespace-nowrap">
+                                <div class="flex items-center justify-center gap-1.5">
+                                    <button type="button"
+                                        onclick="openEditEkskulModal({{ $student->id }}, '{{ addslashes($student->name) }}', '{{ addslashes($ekskul->ekskul1 ?? '') }}', '{{ addslashes($ekskul->ekskul2 ?? '') }}', '{{ addslashes($ekskul->ekskul3 ?? '') }}', {{ $ekskul->id ?? 'null' }})"
+                                        class="px-2.5 py-1.5 text-xs font-bold text-white bg-brand hover:bg-brand-strong rounded-base shadow-xs transition-colors cursor-pointer inline-flex items-center gap-1"
+                                        title="Kelola Ekstrakurikuler">
+                                        <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                                        </svg>
+                                        <span>Kelola</span>
+                                    </button>
+
+                                    @if($ekskul)
+                                        <form action="{{ route('wali-kelas.ekskuls.destroy', $ekskul->id) }}" method="POST" class="inline" onsubmit="return confirm('Apakah Anda yakin ingin menghapus data ekstrakurikuler siswa ini?');">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="p-1.5 text-red-600 hover:text-white hover:bg-red-600 border border-red-300 dark:border-red-800 rounded-base transition-colors cursor-pointer" title="Hapus Data Ekskul">
+                                                <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                                    <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                                </svg>
+                                            </button>
+                                        </form>
+                                    @endif
+                                </div>
+                            </td>
+                        </tr>
+                    @empty
+                        <tr>
+                            <td colspan="7" class="px-4 py-8 text-center text-body">
+                                <div class="flex flex-col items-center justify-center space-y-2">
+                                    <svg class="w-10 h-10 text-body/40" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 13a3 3 0 1 0 0-6 3 3 0 0 0 0 6Z"/>
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v2m0 14v2m9-9h-2M5 12H3m15.364-6.364l-1.414 1.414M7.05 16.95l-1.414 1.414M18.364 18.364l-1.414-1.414M7.05 7.05L5.636 5.636"/>
+                                    </svg>
+                                    <p class="font-bold text-heading">Belum Ada Data Siswa</p>
+                                    <p class="text-xs text-body">Tambahkan data siswa terlebih dahulu di menu <strong>Data Siswa</strong>.</p>
+                                </div>
+                            </td>
+                        </tr>
+                    @endforelse
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Form Input / Edit Ekskul -->
+<div id="ekskul-modal" tabindex="-1" aria-hidden="true" class="fixed top-0 left-0 right-0 z-50 hidden w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] max-h-full flex items-center justify-center bg-black/50 backdrop-blur-xs">
+    <div class="relative w-full max-w-lg max-h-full">
+        <!-- Modal content -->
+        <div class="relative bg-white dark:bg-neutral-primary-soft rounded-base shadow-lg border border-default overflow-hidden">
+            <!-- Modal header -->
+            <div class="flex items-center justify-between p-4 border-b border-default bg-neutral-tertiary">
+                <div class="flex items-center gap-2">
+                    <div class="p-2 bg-brand-soft text-fg-brand rounded-lg">
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M11.049 2.927c.3-.921 1.603-.921 1.902 0l1.519 4.674a1 1 0 00.95.69h4.915c.969 0 1.371 1.24.588 1.81l-3.976 2.888a1 1 0 00-.363 1.118l1.518 4.674c.3.922-.755 1.688-1.538 1.118l-3.976-2.888a1 1 0 00-1.176 0l-3.976 2.888c-.783.57-1.838-.197-1.538-1.118l1.518-4.674a1 1 0 00-.363-1.118l-3.976-2.888c-.784-.57-.38-1.81.588-1.81h4.914a1 1 0 00.951-.69l1.519-4.674z" />
+                        </svg>
+                    </div>
+                    <div>
+                        <h3 class="text-base font-bold text-heading">Kelola Ekstrakurikuler</h3>
+                        <p id="modal-student-name" class="text-xs font-semibold text-fg-brand">Nama Siswa</p>
+                    </div>
+                </div>
+                <button type="button" onclick="closeEkskulModal()" class="text-body hover:text-heading rounded-base p-1.5 transition-colors cursor-pointer">
+                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+
+            <!-- Modal body -->
+            <form id="ekskul-form" action="{{ route('wali-kelas.ekskuls.store') }}" method="POST" class="p-4 space-y-4">
+                @csrf
+                <input type="hidden" id="form-student-id" name="student_id" value="">
+
+                <!-- Input Ekstrakurikuler 1 -->
+                <div>
+                    <label for="ekskul1" class="block mb-1 text-xs font-bold text-heading">Ekstrakurikuler 1</label>
+                    <input type="text" id="ekskul1" name="ekskul1" placeholder="Contoh: Pramuka" class="bg-neutral-secondary-medium border border-default text-heading text-sm rounded-base focus:ring-brand focus:border-brand block w-full p-2.5 transition-colors">
+                </div>
+
+                <!-- Input Ekstrakurikuler 2 -->
+                <div>
+                    <label for="ekskul2" class="block mb-1 text-xs font-bold text-heading">Ekstrakurikuler 2 (Opsional)</label>
+                    <input type="text" id="ekskul2" name="ekskul2" placeholder="Contoh: PMR" class="bg-neutral-secondary-medium border border-default text-heading text-sm rounded-base focus:ring-brand focus:border-brand block w-full p-2.5 transition-colors">
+                </div>
+
+                <!-- Input Ekstrakurikuler 3 -->
+                <div>
+                    <label for="ekskul3" class="block mb-1 text-xs font-bold text-heading">Ekstrakurikuler 3 (Opsional)</label>
+                    <input type="text" id="ekskul3" name="ekskul3" placeholder="Contoh: Futsal" class="bg-neutral-secondary-medium border border-default text-heading text-sm rounded-base focus:ring-brand focus:border-brand block w-full p-2.5 transition-colors">
+                </div>
+
+                <!-- Modal footer -->
+                <div class="flex items-center justify-end gap-2 border-t border-default pt-3 mt-4">
+                    <button type="button" onclick="closeEkskulModal()" class="px-4 py-2 text-xs font-bold text-body bg-neutral-secondary-medium hover:bg-neutral-tertiary rounded-base border border-default transition-colors cursor-pointer">
+                        Batal
+                    </button>
+                    <button type="submit" class="px-4 py-2 text-xs font-bold text-white bg-brand hover:bg-brand-strong rounded-base shadow-xs transition-colors cursor-pointer inline-flex items-center gap-1.5">
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
+                        <span>Simpan Perubahan</span>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    function dismissAlert(alertEl) {
+        if (alertEl) {
+            alertEl.classList.add('opacity-0', 'transition-opacity', 'duration-300');
+            setTimeout(() => alertEl.remove(), 300);
+        }
+    }
+
+    function filterEkskulTable() {
+        const query = document.getElementById('ekskul-search').value.toLowerCase().trim();
+        const rows = document.querySelectorAll('.student-row');
+
+        rows.forEach(row => {
+            const searchText = row.getAttribute('data-search') || '';
+            if (searchText.includes(query)) {
+                row.style.display = '';
+            } else {
+                row.style.display = 'none';
+            }
+        });
+    }
+
+    function openEditEkskulModal(studentId, studentName, ekskul1, ekskul2, ekskul3, ekskulId) {
+        document.getElementById('form-student-id').value = studentId;
+        document.getElementById('modal-student-name').textContent = studentName;
+        document.getElementById('ekskul1').value = ekskul1 || '';
+        document.getElementById('ekskul2').value = ekskul2 || '';
+        document.getElementById('ekskul3').value = ekskul3 || '';
+
+        const modal = document.getElementById('ekskul-modal');
+        modal.classList.remove('hidden');
+    }
+
+    function closeEkskulModal() {
+        const modal = document.getElementById('ekskul-modal');
+        modal.classList.add('hidden');
+    }
+
+    function applySuggestion(value) {
+        const field1 = document.getElementById('ekskul1');
+        const field2 = document.getElementById('ekskul2');
+        const field3 = document.getElementById('ekskul3');
+
+        if (!field1.value) {
+            field1.value = value;
+        } else if (!field2.value && field1.value !== value) {
+            field2.value = value;
+        } else if (!field3.value && field1.value !== value && field2.value !== value) {
+            field3.value = value;
+        }
+    }
+</script>
+@endsection

@@ -2,39 +2,62 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ClassWaliKelas;
 use App\Models\Ekskul;
+use App\Models\StudentWaliKelas;
+use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 
 class EkskulController extends Controller
 {
     /**
-     * Display a listing of the ekskuls.
+     * Display a listing of the ekskuls or render blade view.
      */
-    public function index(Request $request): JsonResponse
+    public function index(Request $request): View|JsonResponse
     {
-        $query = Ekskul::with('student');
+        if ($request->wantsJson()) {
+            $query = Ekskul::with('student');
 
-        if ($request->has('student_id')) {
-            $query->where('student_id', $request->input('student_id'));
+            if ($request->has('student_id')) {
+                $query->where('student_id', $request->input('student_id'));
+            }
+
+            return response()->json($query->get());
         }
 
-        return response()->json($query->get());
+        $userId = auth()->id();
+        $classWaliKelas = ClassWaliKelas::where('user_id', $userId)->first();
+
+        $students = collect();
+        if ($classWaliKelas) {
+            $students = StudentWaliKelas::where('class_id', $classWaliKelas->id)->with('ekskul')->get();
+        }
+
+        return view('auth.waliKelas.ekskul', compact('students', 'classWaliKelas'));
     }
 
     /**
-     * Store a newly created ekskul in storage.
+     * Store a newly created or updated ekskul in storage.
      */
-    public function store(Request $request): JsonResponse
+    public function store(Request $request): RedirectResponse|JsonResponse
     {
         $validated = $request->validate($this->validationRules());
 
-        $ekskul = Ekskul::create($validated);
+        $ekskul = Ekskul::updateOrCreate(
+            ['student_id' => $validated['student_id']],
+            $validated
+        );
 
-        return response()->json([
-            'message' => 'Ekskul created successfully.',
-            'data' => $ekskul->load('student'),
-        ], 201);
+        if ($request->wantsJson()) {
+            return response()->json([
+                'message' => 'Ekskul created successfully.',
+                'data' => $ekskul->load('student'),
+            ], 201);
+        }
+
+        return redirect()->back()->with('success', 'Data ekstrakurikuler berhasil disimpan.');
     }
 
     /**
@@ -48,36 +71,44 @@ class EkskulController extends Controller
     /**
      * Update the specified ekskul in storage.
      */
-    public function update(Request $request, Ekskul $ekskul): JsonResponse
+    public function update(Request $request, Ekskul $ekskul): RedirectResponse|JsonResponse
     {
         $validated = $request->validate($this->validationRules());
 
         $ekskul->update($validated);
 
-        return response()->json([
-            'message' => 'Ekskul updated successfully.',
-            'data' => $ekskul->load('student'),
-        ]);
+        if ($request->wantsJson()) {
+            return response()->json([
+                'message' => 'Ekskul updated successfully.',
+                'data' => $ekskul->load('student'),
+            ]);
+        }
+
+        return redirect()->back()->with('success', 'Data ekstrakurikuler berhasil diperbarui.');
     }
 
     /**
      * Remove the specified ekskul from storage.
      */
-    public function destroy(Ekskul $ekskul): JsonResponse
+    public function destroy(Request $request, Ekskul $ekskul): RedirectResponse|JsonResponse
     {
         $ekskul->delete();
 
-        return response()->json([
-            'message' => 'Ekskul deleted successfully.',
-        ]);
+        if ($request->wantsJson()) {
+            return response()->json([
+                'message' => 'Ekskul deleted successfully.',
+            ]);
+        }
+
+        return redirect()->back()->with('success', 'Data ekstrakurikuler berhasil dihapus.');
     }
 
     /**
      * Alias for destroy method to support explicit 'delete' request.
      */
-    public function delete(Ekskul $ekskul): JsonResponse
+    public function delete(Request $request, Ekskul $ekskul): RedirectResponse|JsonResponse
     {
-        return $this->destroy($ekskul);
+        return $this->destroy($request, $ekskul);
     }
 
     /**

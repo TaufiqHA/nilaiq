@@ -240,4 +240,49 @@ class EkskulTest extends TestCase
         $response->assertStatus(422)
             ->assertJsonValidationErrors(['student_id']);
     }
+
+    /**
+     * Test authenticated wali_kelas user can render ekskul blade view via web route.
+     */
+    public function test_wali_kelas_can_render_ekskul_blade_view(): void
+    {
+        $user = User::factory()->create(['role' => 'wali_kelas']);
+        $student = $this->createStudent($user);
+        Ekskul::factory()->create(['student_id' => $student->id, 'ekskul1' => 'Pramuka']);
+
+        $response = $this->actingAs($user)->get(route('wali-kelas.ekstrakurikuler'));
+
+        $response->assertStatus(200)
+            ->assertViewIs('auth.waliKelas.ekskul')
+            ->assertViewHas('students')
+            ->assertSee('Ekstrakurikuler Siswa')
+            ->assertSee('Pramuka');
+    }
+
+    /**
+     * Test authenticated wali_kelas user can store ekskul via web form submission.
+     */
+    public function test_wali_kelas_can_store_ekskul_via_web_form(): void
+    {
+        $user = User::factory()->create(['role' => 'wali_kelas']);
+        $student = $this->createStudent($user);
+
+        $payload = [
+            'student_id' => $student->id,
+            'ekskul1' => 'Basket',
+            'ekskul2' => 'PMR',
+            'ekskul3' => null,
+        ];
+
+        $response = $this->actingAs($user)->post(route('wali-kelas.ekskuls.store'), $payload);
+
+        $response->assertStatus(302)
+            ->assertSessionHas('success', 'Data ekstrakurikuler berhasil disimpan.');
+
+        $this->assertDatabaseHas('ekskuls', [
+            'student_id' => $student->id,
+            'ekskul1' => 'Basket',
+            'ekskul2' => 'PMR',
+        ]);
+    }
 }
