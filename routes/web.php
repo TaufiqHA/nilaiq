@@ -12,6 +12,7 @@ use App\Http\Controllers\DailyTestScoresController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\FinalExamsController;
 use App\Http\Controllers\FinalScoresController;
+use App\Http\Controllers\MapelSettingsController;
 use App\Http\Controllers\MidtermExamsController;
 use App\Http\Controllers\MidtermScoresController;
 use App\Http\Controllers\RekapController;
@@ -110,6 +111,9 @@ Route::middleware('auth')->group(function () {
 
             return view('auth.waliKelas.dashboard', $data);
         })->name('dashboard');
+
+        Route::resource('mapel-settings', MapelSettingsController::class)->parameters(['mapel-settings' => 'mapel_setting']);
+        Route::delete('mapel-settings/{mapel_setting}/delete', [MapelSettingsController::class, 'delete'])->name('mapel-settings.delete');
     });
 
     Route::get('/rekap', [RekapController::class, 'index'])->name('rekap.index');
