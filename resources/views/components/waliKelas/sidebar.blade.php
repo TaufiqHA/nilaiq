@@ -17,15 +17,23 @@
          
          <!-- Navigation Links Grouped -->
          <div class="space-y-5">
-            <!-- Group 1: Informasi -->
+            <!-- Group 1: Utama -->
             <div>
                <span class="px-2 mb-2 block text-[11px] font-bold uppercase tracking-wider text-body/60">Utama</span>
                <ul class="space-y-1 font-medium">
                   <li>
-                     <a href="{{ Route::has('wali-kelas.informasi-kelas') ? route('wali-kelas.informasi-kelas') : (Route::has('informasi-kelas.index') ? route('informasi-kelas.index') : '#') }}" class="flex items-center px-2 py-1.5 {{ request()->routeIs('informasi-kelas.*', 'wali-kelas.informasi-kelas.*') ? 'bg-neutral-tertiary text-fg-brand font-bold' : 'text-body hover:bg-neutral-tertiary hover:text-fg-brand' }} rounded-base group transition-all duration-200">
-                        <svg class="w-5 h-5 shrink-0 transition duration-75 {{ request()->routeIs('informasi-kelas.*', 'wali-kelas.informasi-kelas.*') ? 'text-fg-brand' : 'group-hover:text-fg-brand' }}" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                     <a href="{{ Route::has('wali-kelas.dashboard') ? route('wali-kelas.dashboard') : (Route::has('dashboard') ? route('dashboard') : '#') }}" class="flex items-center px-2 py-1.5 {{ request()->routeIs('dashboard', 'wali-kelas.dashboard') ? 'bg-neutral-tertiary text-fg-brand font-bold' : 'text-body hover:bg-neutral-tertiary hover:text-fg-brand' }} rounded-base group transition-all duration-200">
+                        <svg class="w-5 h-5 shrink-0 transition duration-75 {{ request()->routeIs('dashboard', 'wali-kelas.dashboard') ? 'text-fg-brand' : 'group-hover:text-fg-brand' }}" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6.025A7.5 7.5 0 1 0 17.975 14H10V6.025Z"/>
                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.5 3c-.169 0-.334.014-.5.025V11h7.975c.011-.166.025-.331.025-.5A7.5 7.5 0 0 0 13.5 3Z"/>
+                        </svg>
+                        <span class="ms-3">Dashboard</span>
+                     </a>
+                  </li>
+                  <li>
+                     <a href="{{ Route::has('wali-kelas.informasi-kelas') ? route('wali-kelas.informasi-kelas') : (Route::has('informasi-kelas.index') ? route('informasi-kelas.index') : '#') }}" class="flex items-center px-2 py-1.5 {{ request()->routeIs('informasi-kelas', 'informasi-kelas.*', 'wali-kelas.informasi-kelas', 'wali-kelas.informasi-kelas.*', 'wali-kelas.class-wali-kelas.*') ? 'bg-neutral-tertiary text-fg-brand font-bold' : 'text-body hover:bg-neutral-tertiary hover:text-fg-brand' }} rounded-base group transition-all duration-200">
+                        <svg class="w-5 h-5 shrink-0 transition duration-75 {{ request()->routeIs('informasi-kelas', 'informasi-kelas.*', 'wali-kelas.informasi-kelas', 'wali-kelas.informasi-kelas.*', 'wali-kelas.class-wali-kelas.*') ? 'text-fg-brand' : 'group-hover:text-fg-brand' }}" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                           <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1v5m-4 0h4"/>
                         </svg>
                         <span class="ms-3">Informasi Kelas</span>
                      </a>
