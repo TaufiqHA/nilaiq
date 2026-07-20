@@ -46,8 +46,8 @@
                <span class="px-2 mb-2 block text-[11px] font-bold uppercase tracking-wider text-body/60">Data Siswa</span>
                <ul class="space-y-1 font-medium">
                   <li>
-                     <a href="{{ Route::has('wali-kelas.siswa') ? route('wali-kelas.siswa') : (Route::has('students.index') ? route('students.index') : '#') }}" class="flex items-center px-2 py-1.5 {{ request()->routeIs('siswa.*', 'students.*', 'wali-kelas.siswa.*') ? 'bg-neutral-tertiary text-fg-brand font-bold' : 'text-body hover:bg-neutral-tertiary hover:text-fg-brand' }} rounded-base group transition-all duration-200">
-                        <svg class="shrink-0 w-5 h-5 transition duration-75 {{ request()->routeIs('siswa.*', 'students.*', 'wali-kelas.siswa.*') ? 'text-fg-brand' : 'group-hover:text-fg-brand' }}" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                     <a href="{{ Route::has('wali-kelas.siswa') ? route('wali-kelas.siswa') : (Route::has('students.index') ? route('students.index') : '#') }}" class="flex items-center px-2 py-1.5 {{ request()->routeIs('siswa', 'siswa.*', 'students.*', 'wali-kelas.siswa', 'wali-kelas.siswa.*', 'wali-kelas.student-wali-kelas.*') ? 'bg-neutral-tertiary text-fg-brand font-bold' : 'text-body hover:bg-neutral-tertiary hover:text-fg-brand' }} rounded-base group transition-all duration-200">
+                        <svg class="shrink-0 w-5 h-5 transition duration-75 {{ request()->routeIs('siswa', 'siswa.*', 'students.*', 'wali-kelas.siswa', 'wali-kelas.siswa.*', 'wali-kelas.student-wali-kelas.*') ? 'text-fg-brand' : 'group-hover:text-fg-brand' }}" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12h4m-2 2v-4M4 18v-1a3 3 0 0 1 3-3h4a3 3 0 0 1 3 3v1a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1Zm8-10a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z"/>
                         </svg>
                         <span class="flex-1 ms-3 whitespace-nowrap">Siswa</span>

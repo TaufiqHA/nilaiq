@@ -2,44 +2,63 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\ClassWaliKelas;
 use App\Models\StudentWaliKelas;
+use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
+use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Validation\Rule;
 
 class StudentWaliKelasController extends Controller
 {
     /**
-     * Display a listing of student wali kelas.
+     * Display a listing of student wali kelas or render blade view.
      */
-    public function index(Request $request): JsonResponse
+    public function index(Request $request): View|JsonResponse
     {
-        $query = StudentWaliKelas::with('classWaliKelas');
+        if ($request->wantsJson()) {
+            $query = StudentWaliKelas::with('classWaliKelas');
 
-        if ($request->has('class_id')) {
-            $query->where('class_id', $request->input('class_id'));
+            if ($request->has('class_id')) {
+                $query->where('class_id', $request->input('class_id'));
+            }
+
+            if ($request->has('status')) {
+                $query->where('status', $request->input('status'));
+            }
+
+            return response()->json($query->get());
         }
 
-        if ($request->has('status')) {
-            $query->where('status', $request->input('status'));
+        $userId = auth()->id();
+        $classWaliKelas = ClassWaliKelas::where('user_id', $userId)->first();
+
+        $students = collect();
+        if ($classWaliKelas) {
+            $students = StudentWaliKelas::where('class_id', $classWaliKelas->id)->get();
         }
 
-        return response()->json($query->get());
+        return view('auth.waliKelas.siswa', compact('students', 'classWaliKelas'));
     }
 
     /**
      * Store a newly created student wali kelas in storage.
      */
-    public function store(Request $request): JsonResponse
+    public function store(Request $request): RedirectResponse|JsonResponse
     {
         $validated = $request->validate($this->validationRules());
 
         $studentWaliKelas = StudentWaliKelas::create($validated);
 
-        return response()->json([
-            'message' => 'Student wali kelas created successfully.',
-            'data' => $studentWaliKelas->load('classWaliKelas'),
-        ], 201);
+        if ($request->wantsJson()) {
+            return response()->json([
+                'message' => 'Student wali kelas created successfully.',
+                'data' => $studentWaliKelas->load('classWaliKelas'),
+            ], 201);
+        }
+
+        return redirect()->back()->with('success', 'Data siswa berhasil ditambahkan.');
     }
 
     /**
@@ -53,36 +72,44 @@ class StudentWaliKelasController extends Controller
     /**
      * Update the specified student wali kelas in storage.
      */
-    public function update(Request $request, StudentWaliKelas $studentWaliKelas): JsonResponse
+    public function update(Request $request, StudentWaliKelas $studentWaliKelas): RedirectResponse|JsonResponse
     {
         $validated = $request->validate($this->validationRules($studentWaliKelas->id));
 
         $studentWaliKelas->update($validated);
 
-        return response()->json([
-            'message' => 'Student wali kelas updated successfully.',
-            'data' => $studentWaliKelas->load('classWaliKelas'),
-        ]);
+        if ($request->wantsJson()) {
+            return response()->json([
+                'message' => 'Student wali kelas updated successfully.',
+                'data' => $studentWaliKelas->load('classWaliKelas'),
+            ]);
+        }
+
+        return redirect()->back()->with('success', 'Data siswa berhasil diperbarui.');
     }
 
     /**
      * Remove the specified student wali kelas from storage.
      */
-    public function destroy(StudentWaliKelas $studentWaliKelas): JsonResponse
+    public function destroy(Request $request, StudentWaliKelas $studentWaliKelas): RedirectResponse|JsonResponse
     {
         $studentWaliKelas->delete();
 
-        return response()->json([
-            'message' => 'Student wali kelas deleted successfully.',
-        ]);
+        if ($request->wantsJson()) {
+            return response()->json([
+                'message' => 'Student wali kelas deleted successfully.',
+            ]);
+        }
+
+        return redirect()->back()->with('success', 'Data siswa berhasil dihapus.');
     }
 
     /**
      * Alias for destroy method to support explicit 'delete' request.
      */
-    public function delete(StudentWaliKelas $studentWaliKelas): JsonResponse
+    public function delete(Request $request, StudentWaliKelas $studentWaliKelas): RedirectResponse|JsonResponse
     {
-        return $this->destroy($studentWaliKelas);
+        return $this->destroy($request, $studentWaliKelas);
     }
 
     /**

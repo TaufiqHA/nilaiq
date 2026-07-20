@@ -123,6 +123,7 @@ Route::middleware('auth')->group(function () {
 
         Route::resource('student-wali-kelas', StudentWaliKelasController::class)->parameters(['student-wali-kelas' => 'student_wali_kelas']);
         Route::delete('student-wali-kelas/{student_wali_kelas}/delete', [StudentWaliKelasController::class, 'delete'])->name('student-wali-kelas.delete');
+        Route::get('/siswa', [StudentWaliKelasController::class, 'index'])->name('siswa');
     });
 
     Route::get('/rekap', [RekapController::class, 'index'])->name('rekap.index');
