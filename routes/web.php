@@ -20,6 +20,7 @@ use App\Http\Controllers\RekapController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\SettingsWaliKelasController;
 use App\Http\Controllers\StudentsController;
+use App\Http\Controllers\StudentWaliKelasController;
 use App\Http\Middleware\WaliKelasMiddleware;
 use App\Models\AcademicYear;
 use App\Models\Attendances;
@@ -119,6 +120,9 @@ Route::middleware('auth')->group(function () {
         Route::resource('class-wali-kelas', ClassWaliKelasController::class)->parameters(['class-wali-kelas' => 'class_wali_kelas']);
         Route::delete('class-wali-kelas/{class_wali_kelas}/delete', [ClassWaliKelasController::class, 'delete'])->name('class-wali-kelas.delete');
         Route::get('/informasi-kelas', [ClassWaliKelasController::class, 'index'])->name('informasi-kelas');
+
+        Route::resource('student-wali-kelas', StudentWaliKelasController::class)->parameters(['student-wali-kelas' => 'student_wali_kelas']);
+        Route::delete('student-wali-kelas/{student_wali_kelas}/delete', [StudentWaliKelasController::class, 'delete'])->name('student-wali-kelas.delete');
     });
 
     Route::get('/rekap', [RekapController::class, 'index'])->name('rekap.index');

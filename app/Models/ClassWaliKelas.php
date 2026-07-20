@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 #[Fillable([
     'academic_year_id',
@@ -39,5 +40,13 @@ class ClassWaliKelas extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class, 'user_id');
+    }
+
+    /**
+     * Get the students for the class (wali kelas).
+     */
+    public function students(): HasMany
+    {
+        return $this->hasMany(StudentWaliKelas::class, 'class_id');
     }
 }
