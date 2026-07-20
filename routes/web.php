@@ -7,6 +7,7 @@ use App\Http\Controllers\AttendanceMeetingsController;
 use App\Http\Controllers\AttendancesController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\ClassesController;
+use App\Http\Controllers\ClassWaliKelasController;
 use App\Http\Controllers\DailyTestMeetingsController;
 use App\Http\Controllers\DailyTestScoresController;
 use App\Http\Controllers\DashboardController;
@@ -114,6 +115,9 @@ Route::middleware('auth')->group(function () {
 
         Route::resource('mapel-settings', MapelSettingsController::class)->parameters(['mapel-settings' => 'mapel_setting']);
         Route::delete('mapel-settings/{mapel_setting}/delete', [MapelSettingsController::class, 'delete'])->name('mapel-settings.delete');
+
+        Route::resource('class-wali-kelas', ClassWaliKelasController::class)->parameters(['class-wali-kelas' => 'class_wali_kelas']);
+        Route::delete('class-wali-kelas/{class_wali_kelas}/delete', [ClassWaliKelasController::class, 'delete'])->name('class-wali-kelas.delete');
     });
 
     Route::get('/rekap', [RekapController::class, 'index'])->name('rekap.index');
