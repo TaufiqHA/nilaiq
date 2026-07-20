@@ -18,6 +18,12 @@ use App\Http\Controllers\RekapController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\SettingsWaliKelasController;
 use App\Http\Controllers\StudentsController;
+use App\Http\Middleware\WaliKelasMiddleware;
+use App\Models\AcademicYear;
+use App\Models\Attendances;
+use App\Models\SettingsWaliKelas;
+use App\Models\Students;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 Route::middleware('guest')->group(function () {
@@ -82,6 +88,29 @@ Route::middleware('auth')->group(function () {
 
     Route::resource('settings-wali-kelas', SettingsWaliKelasController::class)->parameters(['settings-wali-kelas' => 'settings_wali_kelas']);
     Route::delete('settings-wali-kelas/{settings_wali_kelas}/delete', [SettingsWaliKelasController::class, 'delete'])->name('settings-wali-kelas.delete');
+
+    // Routes khusus Wali Kelas
+    Route::middleware([WaliKelasMiddleware::class])->prefix('wali-kelas')->name('wali-kelas.')->group(function () {
+        Route::get('/dashboard', function (Request $request) {
+            $activeAcademicYear = AcademicYear::where('is_active', true)->first();
+            $settingsWaliKelas = SettingsWaliKelas::first();
+            $totalStudents = Students::where('status', 'ACTIVE')->count();
+
+            $totalAttendances = Attendances::count();
+            $presentAttendances = Attendances::where('status', 'HADIR')->count();
+            $attendanceRate = $totalAttendances > 0
+                ? round(($presentAttendances / $totalAttendances) * 100, 2)
+                : 0;
+
+            $data = compact('activeAcademicYear', 'settingsWaliKelas', 'totalStudents', 'attendanceRate');
+
+            if ($request->wantsJson()) {
+                return response()->json($data);
+            }
+
+            return view('auth.waliKelas.dashboard', $data);
+        })->name('dashboard');
+    });
 
     Route::get('/rekap', [RekapController::class, 'index'])->name('rekap.index');
     Route::get('/rekap/data/{class}', [RekapController::class, 'getClassRekapData'])->name('rekap.data');

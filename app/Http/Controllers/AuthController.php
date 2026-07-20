@@ -22,11 +22,17 @@ class AuthController extends Controller
         if (Auth::attempt($credentials, $request->boolean('remember', true))) {
             $request->session()->regenerate();
 
+            $user = $request->user();
+
             if ($request->wantsJson()) {
-                return response()->json($request->user());
+                return response()->json($user);
             }
 
-            return redirect()->intended(route('dashboard'));
+            $targetRoute = $user->role === 'wali_kelas'
+                ? route('wali-kelas.dashboard')
+                : route('dashboard');
+
+            return redirect()->intended($targetRoute);
         }
 
         if ($request->wantsJson()) {

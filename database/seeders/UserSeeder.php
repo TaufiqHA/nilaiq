@@ -19,5 +19,12 @@ class UserSeeder extends Seeder
             'password' => Hash::make('password'),
             'role' => 'mapel',
         ]);
+
+        User::factory()->create([
+            'name' => 'Wali Kelas',
+            'email' => 'wali@nilaiq.com',
+            'password' => Hash::make('password'),
+            'role' => 'wali_kelas',
+        ]);
     }
 }
