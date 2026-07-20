@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasOne;
 
 #[Fillable([
     'class_id',
@@ -67,5 +68,13 @@ class StudentWaliKelas extends Model
     public function classWaliKelas(): BelongsTo
     {
         return $this->belongsTo(ClassWaliKelas::class, 'class_id');
+    }
+
+    /**
+     * Get the ekskul record associated with the student.
+     */
+    public function ekskul(): HasOne
+    {
+        return $this->hasOne(Ekskul::class, 'student_id');
     }
 }

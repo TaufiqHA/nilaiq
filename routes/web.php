@@ -11,6 +11,7 @@ use App\Http\Controllers\ClassWaliKelasController;
 use App\Http\Controllers\DailyTestMeetingsController;
 use App\Http\Controllers\DailyTestScoresController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\EkskulController;
 use App\Http\Controllers\FinalExamsController;
 use App\Http\Controllers\FinalScoresController;
 use App\Http\Controllers\MapelSettingsController;
@@ -127,5 +128,8 @@ Route::middleware('auth')->group(function () {
         Route::resource('student-wali-kelas', StudentWaliKelasController::class)->parameters(['student-wali-kelas' => 'student_wali_kelas']);
         Route::delete('student-wali-kelas/{student_wali_kelas}/delete', [StudentWaliKelasController::class, 'delete'])->name('student-wali-kelas.delete');
         Route::get('/siswa', [StudentWaliKelasController::class, 'index'])->name('siswa');
+
+        Route::resource('ekskuls', EkskulController::class);
+        Route::delete('ekskuls/{ekskul}/delete', [EkskulController::class, 'delete'])->name('ekskuls.delete');
     });
 });
