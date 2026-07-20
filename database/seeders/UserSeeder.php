@@ -17,6 +17,7 @@ class UserSeeder extends Seeder
             'name' => 'Admin NilaiQ',
             'email' => 'admin@nilaiq.com',
             'password' => Hash::make('password'),
+            'role' => 'mapel',
         ]);
     }
 }
