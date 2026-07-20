@@ -23,6 +23,7 @@ use Illuminate\Database\Eloquent\Model;
     'assignment_weight',
     'midterm_weight',
     'final_weight',
+    'user_id',
 ])]
 class Settings extends Model
 {
