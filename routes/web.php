@@ -17,6 +17,7 @@ use App\Http\Controllers\FinalScoresController;
 use App\Http\Controllers\MapelSettingsController;
 use App\Http\Controllers\MidtermExamsController;
 use App\Http\Controllers\MidtermScoresController;
+use App\Http\Controllers\PrestasiController;
 use App\Http\Controllers\RekapController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\SettingsWaliKelasController;
@@ -132,5 +133,9 @@ Route::middleware('auth')->group(function () {
         Route::resource('ekskuls', EkskulController::class);
         Route::delete('ekskuls/{ekskul}/delete', [EkskulController::class, 'delete'])->name('ekskuls.delete');
         Route::get('/ekstrakurikuler', [EkskulController::class, 'index'])->name('ekstrakurikuler');
+
+        Route::resource('prestasis', PrestasiController::class);
+        Route::delete('prestasis/{prestasi}/delete', [PrestasiController::class, 'delete'])->name('prestasis.delete');
+        Route::get('/prestasi', [PrestasiController::class, 'index'])->name('prestasi');
     });
 });

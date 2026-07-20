@@ -77,4 +77,12 @@ class StudentWaliKelas extends Model
     {
         return $this->hasOne(Ekskul::class, 'student_id');
     }
+
+    /**
+     * Get the prestasi record associated with the student.
+     */
+    public function prestasi(): HasOne
+    {
+        return $this->hasOne(Prestasi::class, 'student_id');
+    }
 }
