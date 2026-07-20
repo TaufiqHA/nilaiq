@@ -8,6 +8,7 @@ use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Validation\Rule;
 
 class StudentWaliKelasController extends Controller
@@ -102,6 +103,70 @@ class StudentWaliKelasController extends Controller
         }
 
         return redirect()->back()->with('success', 'Data siswa berhasil dihapus.');
+    }
+
+    /**
+     * Import multiple student wali kelas records.
+     */
+    public function import(Request $request): JsonResponse|RedirectResponse
+    {
+        $validated = $request->validate([
+            'class_id' => ['required', 'exists:class_wali_kelas,id'],
+            'students' => ['required', 'array', 'min:1'],
+            'students.*.nis' => ['required', 'string', 'max:255', 'distinct', 'unique:student_wali_kelas,nis'],
+            'students.*.nisn' => ['nullable', 'string', 'max:255', 'distinct', 'unique:student_wali_kelas,nisn'],
+            'students.*.name' => ['required', 'string', 'max:255'],
+            'students.*.gender' => ['required', 'string', Rule::in(['L', 'P'])],
+            'students.*.birth_place' => ['required', 'string', 'max:255'],
+            'students.*.birth_date' => ['required', 'date'],
+            'students.*.religion' => ['nullable', 'string', 'max:255'],
+            'students.*.family_status' => ['nullable', 'string', 'max:255'],
+            'students.*.child_order' => ['nullable', 'string', 'max:255'],
+            'students.*.address' => ['required', 'string'],
+            'students.*.previous_school' => ['nullable', 'string', 'max:255'],
+            'students.*.registration_status' => ['nullable', 'string', 'max:255'],
+            'students.*.accepted_class' => ['nullable', 'string', 'max:255'],
+            'students.*.accepted_date' => ['nullable', 'date'],
+            'students.*.father_name' => ['nullable', 'string', 'max:255'],
+            'students.*.father_job' => ['nullable', 'string', 'max:255'],
+            'students.*.mother_name' => ['nullable', 'string', 'max:255'],
+            'students.*.mother_job' => ['nullable', 'string', 'max:255'],
+            'students.*.parent_address' => ['nullable', 'string'],
+            'students.*.parent_phone' => ['nullable', 'string', 'max:255'],
+            'students.*.guardian_name' => ['nullable', 'string', 'max:255'],
+            'students.*.guardian_job' => ['nullable', 'string', 'max:255'],
+            'students.*.guardian_address' => ['nullable', 'string'],
+            'students.*.guardian_phone' => ['nullable', 'string', 'max:255'],
+            'students.*.status' => ['nullable', Rule::in(['ACTIVE', 'INACTIVE'])],
+        ], [
+            'students.*.nis.unique' => 'NIS :value sudah terdaftar di sistem.',
+            'students.*.nisn.unique' => 'NISN :value sudah terdaftar di sistem.',
+            'students.*.nis.distinct' => 'NIS :value duplikat di dalam file import.',
+            'students.*.nisn.distinct' => 'NISN :value duplikat di dalam file import.',
+        ]);
+
+        DB::transaction(function () use ($validated) {
+            foreach ($validated['students'] as $studentData) {
+                $studentData['class_id'] = $validated['class_id'];
+                $studentData['religion'] = $studentData['religion'] ?? 'Islam';
+                $studentData['family_status'] = $studentData['family_status'] ?? 'Anak Kandung';
+                $studentData['child_order'] = $studentData['child_order'] ?? '1';
+                $studentData['status'] = $studentData['status'] ?? 'ACTIVE';
+
+                StudentWaliKelas::create($studentData);
+            }
+        });
+
+        $updatedStudents = StudentWaliKelas::where('class_id', $validated['class_id'])->get();
+
+        if ($request->wantsJson()) {
+            return response()->json([
+                'message' => count($validated['students']).' data siswa berhasil diimport.',
+                'data' => $updatedStudents,
+            ]);
+        }
+
+        return redirect()->back()->with('success', count($validated['students']).' data siswa berhasil diimport.');
     }
 
     /**

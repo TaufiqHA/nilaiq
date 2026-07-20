@@ -121,6 +121,7 @@ Route::middleware('auth')->group(function () {
         Route::delete('class-wali-kelas/{class_wali_kelas}/delete', [ClassWaliKelasController::class, 'delete'])->name('class-wali-kelas.delete');
         Route::get('/informasi-kelas', [ClassWaliKelasController::class, 'index'])->name('informasi-kelas');
 
+        Route::post('student-wali-kelas/import', [StudentWaliKelasController::class, 'import'])->name('student-wali-kelas.import');
         Route::resource('student-wali-kelas', StudentWaliKelasController::class)->parameters(['student-wali-kelas' => 'student_wali_kelas']);
         Route::delete('student-wali-kelas/{student_wali_kelas}/delete', [StudentWaliKelasController::class, 'delete'])->name('student-wali-kelas.delete');
         Route::get('/siswa', [StudentWaliKelasController::class, 'index'])->name('siswa');

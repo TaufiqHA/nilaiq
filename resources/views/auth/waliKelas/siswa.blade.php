@@ -120,12 +120,20 @@
             </select>
         </div>
 
-        <!-- Add Button -->
+        <!-- Action Buttons (Import & Tambah Siswa) -->
         @if($classWaliKelas)
-            <button type="button" onclick="openCreateModal()" data-modal-target="student-form-modal" data-modal-toggle="student-form-modal" class="w-full md:w-auto text-white bg-brand hover:bg-brand-strong box-border border border-transparent focus:ring-4 focus:ring-brand-medium shadow-xs font-medium leading-5 rounded-base text-sm px-4 py-2.5 focus:outline-none cursor-pointer inline-flex items-center justify-center gap-2">
-                <svg class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14m-7 7V5"/></svg>
-                <span>Tambah Siswa</span>
-            </button>
+            <div class="flex items-center gap-2 w-full md:w-auto">
+                <button type="button" onclick="prepareImportStudents()" data-modal-target="student-import-modal" data-modal-toggle="student-import-modal" class="w-full md:w-auto text-white bg-emerald-600 hover:bg-emerald-700 box-border border border-transparent focus:ring-4 focus:ring-emerald-300 shadow-xs font-medium leading-5 rounded-base text-sm px-4 py-2.5 focus:outline-none cursor-pointer inline-flex items-center justify-center gap-2">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
+                    </svg>
+                    <span>Import Excel</span>
+                </button>
+                <button type="button" onclick="openCreateModal()" data-modal-target="student-form-modal" data-modal-toggle="student-form-modal" class="w-full md:w-auto text-white bg-brand hover:bg-brand-strong box-border border border-transparent focus:ring-4 focus:ring-brand-medium shadow-xs font-medium leading-5 rounded-base text-sm px-4 py-2.5 focus:outline-none cursor-pointer inline-flex items-center justify-center gap-2">
+                    <svg class="w-4 h-4" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24"><path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12h14m-7 7V5"/></svg>
+                    <span>Tambah Siswa</span>
+                </button>
+            </div>
         @endif
     </div>
 
@@ -164,9 +172,9 @@
                             </td>
                             <td class="px-4 py-3 text-center">
                                 @if($student->gender === 'L')
-                                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-100 text-blue-700">L</span>
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold bg-blue-100 text-blue-700">Laki-laki</span>
                                 @else
-                                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-purple-100 text-purple-700">P</span>
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-black">Perempuan</span>
                                 @endif
                             </td>
                             <td class="px-4 py-3">
@@ -175,12 +183,12 @@
                             <td class="px-4 py-3">{{ $student->religion }}</td>
                             <td class="px-4 py-3 text-center">
                                 @if($student->status === 'ACTIVE')
-                                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-800">
-                                        <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> Aktif
+                                    <span class="inline-flex items-center justify-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-100 text-black">
+                                        <span>Aktif</span>
                                     </span>
                                 @else
-                                    <span class="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-rose-100 text-rose-800">
-                                        <span class="w-1.5 h-1.5 rounded-full bg-rose-500"></span> Nonaktif
+                                    <span class="inline-flex items-center justify-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-bold bg-rose-100 text-rose-800">
+                                        <span>Nonaktif</span>
                                     </span>
                                 @endif
                             </td>
@@ -546,6 +554,119 @@
     </div>
 </div>
 
+<!-- ========================================================================= -->
+<!-- MODAL IMPORT SISWA VIA EXCEL / CSV -->
+<!-- ========================================================================= -->
+<div id="student-import-modal" tabindex="-1" aria-hidden="true" class="fixed top-0 left-0 right-0 z-50 hidden w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] max-h-full flex items-center justify-center bg-black/50 backdrop-blur-xs">
+    <div class="relative p-4 w-full max-w-4xl max-h-full">
+        <!-- Modal content -->
+        <div class="relative bg-white rounded-base shadow-lg dark:bg-neutral-primary-soft border border-default p-4 md:p-6 flex flex-col max-h-[90vh]">
+            <!-- Modal header -->
+            <div class="flex items-center justify-between border-b border-default pb-4 md:pb-5 shrink-0">
+                <h3 id="import-modal-title" class="text-lg font-bold text-heading">
+                    Import Siswa via Excel / CSV
+                </h3>
+                <button type="button" onclick="closeModal('student-import-modal')" data-modal-hide="student-import-modal" class="text-body bg-transparent hover:bg-neutral-secondary-soft hover:text-heading rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-neutral-tertiary cursor-pointer">
+                    <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+                    </svg>
+                    <span class="sr-only">Close modal</span>
+                </button>
+            </div>
+            <!-- Modal body -->
+            <div class="py-4 md:py-6 overflow-y-auto flex-1 space-y-6">
+                <!-- Instructions and Template download -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-start bg-neutral-secondary-medium/50 dark:bg-neutral-primary-soft border border-default p-4 rounded-base">
+                    <div>
+                        <h4 class="font-bold text-heading text-sm mb-2">Petunjuk Penggunaan:</h4>
+                        <ul class="list-disc pl-5 text-xs text-body space-y-1">
+                            <li>Format file harus berupa Excel (<strong>.xlsx</strong> / <strong>.xls</strong>) atau <strong>.csv</strong>.</li>
+                            <li>Pastikan baris pertama berisi nama kolom (header) seperti: <strong>nis</strong>, <strong>nisn</strong>, <strong>nama</strong>, <strong>jenis_kelamin</strong> (L/P), <strong>tempat_lahir</strong>, <strong>tanggal_lahir</strong> (Format: YYYY-MM-DD), <strong>agama</strong>, <strong>alamat</strong>, <strong>status</strong> (ACTIVE/INACTIVE).</li>
+                            <li>Kolom opsional: <strong>status_keluarga</strong>, <strong>anak_ke</strong>, <strong>sekolah_asal</strong>, <strong>nama_ayah</strong>, <strong>pekerjaan_ayah</strong>, <strong>nama_ibu</strong>, <strong>pekerjaan_ibu</strong>, <strong>no_hp_ortu</strong>, <strong>nama_wali</strong>, <strong>no_hp_wali</strong>.</li>
+                        </ul>
+                    </div>
+                    <div class="flex flex-col justify-center items-center h-full border-t md:border-t-0 md:border-l border-default pt-4 md:pt-0 md:pl-6 text-center">
+                        <p class="text-xs text-body mb-3 font-semibold">Gunakan template di bawah untuk memastikan struktur kolom benar:</p>
+                        <button type="button" onclick="downloadTemplate()" class="inline-flex items-center gap-2 px-4 py-2 border border-default bg-neutral-secondary-medium dark:bg-neutral-primary-soft text-heading hover:bg-neutral-tertiary-medium dark:hover:bg-neutral-tertiary text-xs font-bold rounded-base transition-colors duration-150 shadow-xs cursor-pointer">
+                            <svg class="w-4 h-4 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                            </svg>
+                            Unduh Template CSV
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Dropzone / File input -->
+                <div>
+                    <label class="block mb-2 text-sm font-semibold text-heading">Pilih File Spreadsheet</label>
+                    <div class="flex items-center justify-center w-full">
+                        <label id="import-dropzone" for="import-file-input" class="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-default rounded-base cursor-pointer bg-neutral-secondary-medium/20 hover:bg-neutral-secondary-medium/40 transition-colors duration-150">
+                            <div class="flex flex-col items-center justify-center pt-5 pb-6">
+                                <svg class="w-8 h-8 mb-2.5 text-neutral-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
+                                    <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2" />
+                                </svg>
+                                <p class="mb-1 text-xs text-body"><span class="font-bold">Klik untuk unggah</span> atau drag and drop</p>
+                                <p class="text-[10px] text-body opacity-80">XLSX, XLS, atau CSV (Maks. 5MB)</p>
+                            </div>
+                            <input id="import-file-input" type="file" accept=".xlsx, .xls, .csv" class="hidden" onchange="handleFileSelect(event)" />
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Backend/Frontend Validation Warnings Container -->
+                <div id="import-errors-container" class="hidden text-sm text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950/20 p-4 rounded-base border border-red-200 dark:border-red-900/30">
+                    <div class="flex items-center gap-1.5 mb-2 font-bold">
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                        </svg>
+                        <span>Ditemukan beberapa kesalahan:</span>
+                    </div>
+                    <ul class="list-disc pl-5 space-y-1 text-xs" id="import-errors-list"></ul>
+                </div>
+
+                <!-- Preview Table Container -->
+                <div id="import-preview-section" class="hidden space-y-3">
+                    <div class="flex items-center justify-between">
+                        <h4 class="font-bold text-heading text-sm">Preview Data Yang Akan Diimport:</h4>
+                        <span id="preview-count" class="px-2 py-0.5 rounded text-xs font-bold bg-brand/10 text-brand border border-brand/20">0 Siswa</span>
+                    </div>
+                    <div class="relative overflow-x-auto border border-default rounded-base max-h-[30vh]">
+                        <table class="w-full text-xs text-left text-body">
+                            <thead class="text-[10px] font-bold text-heading uppercase bg-neutral-secondary-medium border-b border-default select-none sticky top-0">
+                                <tr>
+                                    <th scope="col" class="px-4 py-2.5 text-center w-10">Baris</th>
+                                    <th scope="col" class="px-4 py-2.5 min-w-[150px]">Nama Lengkap</th>
+                                    <th scope="col" class="px-4 py-2.5 min-w-[80px]">NIS</th>
+                                    <th scope="col" class="px-4 py-2.5 min-w-[80px]">NISN</th>
+                                    <th scope="col" class="px-4 py-2.5 text-center min-w-[50px]">L/P</th>
+                                    <th scope="col" class="px-4 py-2.5 min-w-[150px]">Tempat, Tgl Lahir</th>
+                                    <th scope="col" class="px-4 py-2.5 min-w-[120px]">Agama</th>
+                                    <th scope="col" class="px-4 py-2.5 min-w-[150px]">Alamat</th>
+                                    <th scope="col" class="px-4 py-2.5 text-center min-w-[80px]">Status</th>
+                                    <th scope="col" class="px-4 py-2.5 min-w-[150px]">Status Validasi</th>
+                                </tr>
+                            </thead>
+                            <tbody id="import-preview-body" class="divide-y divide-default">
+                                <!-- JS will render preview rows -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            <!-- Modal footer -->
+            <div class="flex items-center justify-end gap-3 border-t border-default pt-4 md:pt-5 shrink-0">
+                <button onclick="closeModal('student-import-modal')" data-modal-hide="student-import-modal" type="button" class="text-body bg-neutral-secondary-medium box-border border border-default-medium hover:bg-neutral-tertiary-medium hover:text-heading focus:ring-4 focus:ring-neutral-tertiary shadow-xs font-semibold leading-5 rounded-base text-sm px-5 py-2.5 focus:outline-none cursor-pointer">Batal</button>
+                <button type="button" onclick="submitImport()" id="btn-confirm-import" class="inline-flex items-center text-white bg-brand hover:bg-brand-strong box-border border border-transparent focus:ring-4 focus:ring-brand-medium shadow-xs font-bold leading-5 rounded-base text-sm px-5 py-2.5 focus:outline-none cursor-pointer disabled:bg-neutral-tertiary disabled:text-fg-disabled disabled:cursor-not-allowed" disabled>
+                    <svg class="w-4 h-4 me-1.5 -ms-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v6m3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    Mulai Import
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
     // Tab switching inside create/edit modal
     function switchFormTab(tabId) {
@@ -689,5 +810,475 @@
             emptyRow.style.display = visibleCount === 0 ? '' : 'none';
         }
     }
+
+    // Setup and state for Bulk Import
+    const currentClassWaliKelasId = {{ $classWaliKelas ? $classWaliKelas->id : 'null' }};
+    let studentsToImport = [];
+
+    function prepareImportStudents() {
+        studentsToImport = [];
+        document.getElementById('import-file-input').value = '';
+        document.getElementById('import-errors-container').classList.add('hidden');
+        document.getElementById('import-errors-list').innerHTML = '';
+        document.getElementById('import-preview-section').classList.add('hidden');
+        document.getElementById('import-preview-body').innerHTML = '';
+
+        const confirmBtn = document.getElementById('btn-confirm-import');
+        confirmBtn.disabled = true;
+        confirmBtn.innerText = 'Mulai Import';
+        document.getElementById('student-import-modal').classList.remove('hidden');
+    }
+
+    function downloadTemplate() {
+        const csvContent = "\uFEFFnis,nisn,nama,jenis_kelamin,tempat_lahir,tanggal_lahir,agama,status_keluarga,anak_ke,alamat,sekolah_asal,nama_ayah,pekerjaan_ayah,nama_ibu,pekerjaan_ibu,no_hp_ortu,nama_wali,pekerjaan_wali,no_hp_wali,status\n" +
+            "2024001,0012345678,Ahmad Fauzi,L,Jakarta,2010-08-15,Islam,Anak Kandung,1,Jl. Mawar No. 5,SMP 1 Jakarta,Budi,PNS,Siti,Ibu Rumah Tangga,08123456789,,,ACTIVE\n" +
+            "2024002,0012345679,Siti Aminah,P,Surabaya,2011-04-12,Islam,Anak Kandung,2,Jl. Melati No. 12,SMP 2 Surabaya,Agus,Wiraswasta,Dewi,Karyawan,08987654321,,,ACTIVE";
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        link.setAttribute("href", url);
+        link.setAttribute("download", "template_import_siswa_wali_kelas.csv");
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+
+    function loadSheetJS(callback) {
+        if (typeof XLSX !== 'undefined') {
+            callback();
+            return;
+        }
+        const script = document.createElement('script');
+        script.src = 'https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js';
+        script.onload = callback;
+        script.onerror = () => {
+            alert('Gagal memuat library parser Excel. Harap pastikan koneksi internet Anda aktif.');
+        };
+        document.head.appendChild(script);
+    }
+
+    function handleFileSelect(event) {
+        const file = event.target.files[0];
+        processFile(file);
+    }
+
+    function processFile(file) {
+        if (!file) return;
+
+        const fileExt = file.name.split('.').pop().toLowerCase();
+        const maxSizeBytes = 5 * 1024 * 1024; // 5MB
+
+        if (file.size > maxSizeBytes) {
+            alert('Ukuran file melebihi batas 5MB.');
+            return;
+        }
+
+        if (fileExt === 'csv') {
+            const reader = new FileReader();
+            reader.onload = function (e) {
+                const text = e.target.result;
+                parseCSVData(text);
+            };
+            reader.readAsText(file);
+        } else if (fileExt === 'xlsx' || fileExt === 'xls') {
+            loadSheetJS(() => {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    const data = new Uint8Array(e.target.result);
+                    try {
+                        const workbook = XLSX.read(data, { type: 'array', cellDates: true });
+                        const firstSheetName = workbook.SheetNames[0];
+                        const worksheet = workbook.Sheets[firstSheetName];
+                        const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+                        parseExcelData(jsonData);
+                    } catch (err) {
+                        console.error(err);
+                        alert('Gagal membaca file Excel. Harap pastikan file tidak rusak.');
+                    }
+                };
+                reader.readAsArrayBuffer(file);
+            });
+        } else {
+            alert('Format file tidak didukung. Harap pilih file XLSX, XLS, atau CSV.');
+        }
+    }
+
+    function parseCSVData(text) {
+        const rows = [];
+        let row = [''];
+        let inQuotes = false;
+
+        for (let i = 0; i < text.length; i++) {
+            const c = text[i];
+            const next = text[i + 1];
+
+            if (c === '"') {
+                if (inQuotes && next === '"') {
+                    row[row.length - 1] += '"';
+                    i++;
+                } else {
+                    inQuotes = !inQuotes;
+                }
+            } else if (c === ',' && !inQuotes) {
+                row.push('');
+            } else if ((c === '\r' || c === '\n') && !inQuotes) {
+                if (c === '\r' && next === '\n') {
+                    i++;
+                }
+                rows.push(row);
+                row = [''];
+            } else {
+                row[row.length - 1] += c;
+            }
+        }
+        if (row.length > 1 || row[0] !== '') {
+            rows.push(row);
+        }
+
+        parseExcelData(rows);
+    }
+
+    function parseExcelData(rawData) {
+        if (!rawData || rawData.length < 2) {
+            alert('File kosong atau tidak memiliki data siswa.');
+            return;
+        }
+
+        const headers = rawData[0].map(h => String(h || '').trim().toLowerCase());
+        const rows = rawData.slice(1);
+
+        const headerMap = {
+            'nis': ['nis', 'no. induk', 'nomor induk'],
+            'nisn': ['nisn', 'nomor induk nasional'],
+            'name': ['name', 'nama', 'nama lengkap', 'nama siswa'],
+            'gender': ['gender', 'jenis_kelamin', 'l/p', 'jk', 'sex'],
+            'birth_place': ['birth_place', 'tempat lahir', 'tempat_lahir'],
+            'birth_date': ['birth_date', 'tanggal lahir', 'tanggal_lahir', 'tgl lahir', 'tgl_lahir'],
+            'religion': ['religion', 'agama'],
+            'family_status': ['family_status', 'status keluarga', 'status_keluarga'],
+            'child_order': ['child_order', 'anak ke', 'anak_ke'],
+            'address': ['address', 'alamat', 'alamat tinggal'],
+            'previous_school': ['previous_school', 'sekolah asal', 'sekolah_asal'],
+            'father_name': ['father_name', 'nama ayah', 'nama_ayah'],
+            'father_job': ['father_job', 'pekerjaan ayah', 'pekerjaan_ayah'],
+            'mother_name': ['mother_name', 'nama ibu', 'nama_ibu'],
+            'mother_job': ['mother_job', 'pekerjaan ibu', 'pekerjaan_ibu'],
+            'parent_phone': ['parent_phone', 'no hp ortu', 'no_hp_ortu', 'no hp orang tua', 'telepon ortu'],
+            'guardian_name': ['guardian_name', 'nama wali', 'nama_wali'],
+            'guardian_job': ['guardian_job', 'pekerjaan wali', 'pekerjaan_wali'],
+            'guardian_phone': ['guardian_phone', 'no hp wali', 'no_hp_wali'],
+            'status': ['status']
+        };
+
+        const indexMap = {};
+        Object.keys(headerMap).forEach(key => {
+            indexMap[key] = headers.findIndex(h => headerMap[key].includes(h));
+        });
+
+        if (indexMap.name === -1) {
+            alert('Kolom "Nama" / "Name" tidak ditemukan di file. Pastikan header kolom sudah benar sesuai template.');
+            return;
+        }
+
+        const parsedStudents = [];
+        let hasValidationErrors = false;
+
+        rows.forEach((row, i) => {
+            if (!row || row.length === 0 || row.every(val => val === null || val === undefined || String(val).trim() === '')) {
+                return;
+            }
+
+            const getVal = (key) => {
+                const idx = indexMap[key];
+                if (idx === -1 || idx === undefined || row[idx] === undefined || row[idx] === null) return '';
+                return String(row[idx]).trim();
+            };
+
+            let rawDate = '';
+            const dateIdx = indexMap['birth_date'];
+            if (dateIdx !== -1 && row[dateIdx]) {
+                const dateVal = row[dateIdx];
+                if (dateVal instanceof Date) {
+                    rawDate = dateVal.toISOString().split('T')[0];
+                } else {
+                    const dateStr = String(dateVal).trim();
+                    if (!isNaN(dateStr) && dateStr.length >= 5) {
+                        const excelEpoch = new Date(Date.UTC(1899, 11, 30));
+                        const days = parseInt(dateStr);
+                        excelEpoch.setDate(excelEpoch.getDate() + days);
+                        rawDate = excelEpoch.toISOString().split('T')[0];
+                    } else {
+                        rawDate = dateStr;
+                    }
+                }
+            }
+
+            let gender = getVal('gender').toUpperCase();
+            if (gender.startsWith('L') || gender === 'LAKI' || gender === 'LAKI-LAKI') {
+                gender = 'L';
+            } else if (gender.startsWith('P') || gender === 'PEREMPUAN') {
+                gender = 'P';
+            }
+
+            let status = getVal('status').toUpperCase();
+            if (status !== 'ACTIVE' && status !== 'INACTIVE') {
+                if (status === 'AKTIF' || status === '1' || status === 'TRUE' || status === '') {
+                    status = 'ACTIVE';
+                } else {
+                    status = 'INACTIVE';
+                }
+            }
+
+            const student = {
+                rowNum: i + 2,
+                nis: getVal('nis'),
+                nisn: getVal('nisn'),
+                name: getVal('name'),
+                gender: gender,
+                birth_place: getVal('birth_place'),
+                birth_date: rawDate,
+                religion: getVal('religion') || 'Islam',
+                family_status: getVal('family_status') || 'Anak Kandung',
+                child_order: getVal('child_order') || '1',
+                address: getVal('address'),
+                previous_school: getVal('previous_school'),
+                father_name: getVal('father_name'),
+                father_job: getVal('father_job'),
+                mother_name: getVal('mother_name'),
+                mother_job: getVal('mother_job'),
+                parent_phone: getVal('parent_phone'),
+                guardian_name: getVal('guardian_name'),
+                guardian_job: getVal('guardian_job'),
+                guardian_phone: getVal('guardian_phone'),
+                status: status,
+                errors: []
+            };
+
+            if (!student.name) student.errors.push('Nama wajib diisi');
+            if (!student.nis) student.errors.push('NIS wajib diisi');
+            if (!['L', 'P'].includes(student.gender)) student.errors.push('Jenis kelamin harus L/P');
+            if (!student.birth_place) student.errors.push('Tempat lahir wajib diisi');
+            if (!student.birth_date) {
+                student.errors.push('Tanggal lahir wajib diisi');
+            } else {
+                const d = new Date(student.birth_date);
+                if (isNaN(d.getTime())) {
+                    student.errors.push('Format tgl lahir tidak valid (gunakan YYYY-MM-DD)');
+                }
+            }
+            if (!student.address) student.errors.push('Alamat wajib diisi');
+
+            if (student.errors.length > 0) {
+                hasValidationErrors = true;
+            }
+
+            parsedStudents.push(student);
+        });
+
+        studentsToImport = parsedStudents;
+        displayImportPreview(parsedStudents, hasValidationErrors);
+    }
+
+    function displayImportPreview(parsedStudents, hasValidationErrors) {
+        const previewSection = document.getElementById('import-preview-section');
+        const previewCount = document.getElementById('preview-count');
+        const previewBody = document.getElementById('import-preview-body');
+        const confirmBtn = document.getElementById('btn-confirm-import');
+        const errorsContainer = document.getElementById('import-errors-container');
+        const errorsList = document.getElementById('import-errors-list');
+
+        previewBody.innerHTML = '';
+        errorsList.innerHTML = '';
+        errorsContainer.classList.add('hidden');
+
+        previewCount.innerText = `${parsedStudents.length} Siswa`;
+        previewSection.classList.remove('hidden');
+
+        parsedStudents.forEach(student => {
+            const row = document.createElement('tr');
+            const hasErr = student.errors.length > 0;
+            row.className = hasErr
+                ? 'bg-red-50/50 dark:bg-red-950/20 text-red-900 dark:text-red-300 border-b border-red-200 dark:border-red-900/30'
+                : 'hover:bg-neutral-secondary-soft dark:hover:bg-neutral-tertiary border-b border-default';
+
+            const validationStatus = hasErr
+                ? `<span class="font-bold text-red-600 dark:text-red-400">${student.errors.join(', ')}</span>`
+                : '<span class="text-emerald-600 dark:text-emerald-400 font-semibold">Valid</span>';
+
+            const genderBadgeColor = student.gender === 'L' ? 'text-sky-600 bg-sky-50 dark:bg-sky-950/20 border-sky-100 dark:border-sky-900/30' : 'text-rose-600 bg-rose-50 dark:bg-rose-950/20 border-rose-100 dark:border-rose-900/30';
+            const genderLabel = student.gender === 'L' ? 'Laki-laki' : 'Perempuan';
+
+            const birthDateFormatted = student.birth_date ? student.birth_date : '-';
+            const birthDetails = `${student.birth_place || '-'}, ${birthDateFormatted}`;
+
+            row.innerHTML = `
+                <td class="px-4 py-3 text-center font-semibold select-none">${student.rowNum}</td>
+                <td class="px-4 py-3 font-bold whitespace-nowrap">${student.name || '-'}</td>
+                <td class="px-4 py-3 font-mono">${student.nis || '-'}</td>
+                <td class="px-4 py-3 font-mono">${student.nisn || '-'}</td>
+                <td class="px-4 py-3 text-center">
+                    <span class="px-2 py-0.5 rounded border text-[10px] font-semibold ${genderBadgeColor}" title="${genderLabel}">
+                        ${student.gender || '-'}
+                    </span>
+                </td>
+                <td class="px-4 py-3 whitespace-nowrap">${birthDetails}</td>
+                <td class="px-4 py-3 whitespace-nowrap">${student.religion || '-'}</td>
+                <td class="px-4 py-3 max-w-xs truncate" title="${student.address}">${student.address || '-'}</td>
+                <td class="px-4 py-3 text-center">
+                    <span class="px-2 py-0.5 rounded border text-[10px] font-bold ${student.status === 'ACTIVE' ? 'bg-emerald-100 dark:bg-emerald-950/20 text-emerald-800 dark:text-emerald-300' : 'bg-neutral-secondary-medium text-fg-disabled border-default'}">
+                        ${student.status}
+                    </span>
+                </td>
+                <td class="px-4 py-3 whitespace-nowrap">${validationStatus}</td>
+            `;
+            previewBody.appendChild(row);
+        });
+
+        if (hasValidationErrors) {
+            confirmBtn.disabled = true;
+            parsedStudents.forEach(student => {
+                if (student.errors.length > 0) {
+                    const li = document.createElement('li');
+                    li.innerText = `Baris ${student.rowNum} (${student.name || 'Tanpa Nama'}): ${student.errors.join(', ')}`;
+                    errorsList.appendChild(li);
+                }
+            });
+            errorsContainer.classList.remove('hidden');
+        } else {
+            confirmBtn.disabled = false;
+        }
+    }
+
+    function submitImport() {
+        if (studentsToImport.length === 0 || !currentClassWaliKelasId) return;
+
+        const importBtn = document.getElementById('btn-confirm-import');
+        importBtn.disabled = true;
+        const originalText = importBtn.innerText;
+        importBtn.innerText = 'Mengimport...';
+
+        const payload = {
+            class_id: currentClassWaliKelasId,
+            students: studentsToImport.map(s => ({
+                nis: s.nis,
+                nisn: s.nisn,
+                name: s.name,
+                gender: s.gender,
+                birth_place: s.birth_place,
+                birth_date: s.birth_date,
+                religion: s.religion,
+                family_status: s.family_status,
+                child_order: s.child_order,
+                address: s.address,
+                previous_school: s.previous_school,
+                father_name: s.father_name,
+                father_job: s.father_job,
+                mother_name: s.mother_name,
+                mother_job: s.mother_job,
+                parent_phone: s.parent_phone,
+                guardian_name: s.guardian_name,
+                guardian_job: s.guardian_job,
+                guardian_phone: s.guardian_phone,
+                status: s.status
+            }))
+        };
+
+        fetch("{{ route('wali-kelas.student-wali-kelas.import') }}", {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Accept': 'application/json',
+                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+            },
+            body: JSON.stringify(payload)
+        })
+            .then(async response => {
+                const result = await response.json();
+                if (!response.ok) {
+                    throw result;
+                }
+                return result;
+            })
+            .then(result => {
+                importBtn.disabled = false;
+                importBtn.innerText = originalText;
+                closeModal('student-import-modal');
+                window.location.reload();
+            })
+            .catch(errors => {
+                importBtn.disabled = false;
+                importBtn.innerText = originalText;
+
+                const errorContainer = document.getElementById('import-errors-container');
+                const errorList = document.getElementById('import-errors-list');
+                errorList.innerHTML = '';
+
+                if (errors.errors) {
+                    Object.keys(errors.errors).forEach(key => {
+                        const match = key.match(/students\.(\d+)\.(\w+)/);
+                        let rowMsg = '';
+                        if (match) {
+                            const idx = parseInt(match[1]);
+                            const studentName = studentsToImport[idx] ? studentsToImport[idx].name : '';
+                            rowMsg = `Baris ${idx + 2} (${studentName}): `;
+                        }
+
+                        errors.errors[key].forEach(err => {
+                            const li = document.createElement('li');
+                            li.innerText = rowMsg + err;
+                            errorList.appendChild(li);
+                        });
+                    });
+                    errorContainer.classList.remove('hidden');
+                    errorContainer.scrollIntoView({ behavior: 'smooth' });
+                } else {
+                    const li = document.createElement('li');
+                    li.innerText = errors.message || 'Terjadi kesalahan sistem.';
+                    errorList.appendChild(li);
+                    errorContainer.classList.remove('hidden');
+                    errorContainer.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const dropzone = document.getElementById('import-dropzone');
+        const fileInput = document.getElementById('import-file-input');
+
+        if (dropzone && fileInput) {
+            ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                dropzone.addEventListener(eventName, preventDefaults, false);
+                document.body.addEventListener(eventName, preventDefaults, false);
+            });
+
+            ['dragenter', 'dragover'].forEach(eventName => {
+                dropzone.addEventListener(eventName, () => {
+                    dropzone.classList.remove('border-default', 'bg-neutral-secondary-medium/20', 'hover:bg-neutral-secondary-medium/40');
+                    dropzone.classList.add('border-brand', 'bg-brand/10');
+                }, false);
+            });
+
+            ['dragleave', 'dragend', 'drop'].forEach(eventName => {
+                dropzone.addEventListener(eventName, () => {
+                    dropzone.classList.remove('border-brand', 'bg-brand/10');
+                    dropzone.classList.add('border-default', 'bg-neutral-secondary-medium/20', 'hover:bg-neutral-secondary-medium/40');
+                }, false);
+            });
+
+            dropzone.addEventListener('drop', (e) => {
+                const dt = e.dataTransfer;
+                const files = dt.files;
+                if (files && files.length > 0) {
+                    fileInput.files = files;
+                    processFile(files[0]);
+                }
+            }, false);
+        }
+
+        function preventDefaults(e) {
+            e.preventDefault();
+            e.stopPropagation();
+        }
+    });
 </script>
 @endsection

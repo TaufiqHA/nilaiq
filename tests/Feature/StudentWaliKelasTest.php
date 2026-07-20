@@ -253,4 +253,105 @@ class StudentWaliKelasTest extends TestCase
             'id' => $student->id,
         ]);
     }
+
+    /**
+     * Test authenticated wali_kelas user can import multiple students via import endpoint.
+     */
+    public function test_wali_kelas_can_import_students(): void
+    {
+        $user = User::factory()->create(['role' => 'wali_kelas']);
+        $academicYear = AcademicYear::factory()->create(['user_id' => $user->id]);
+        $classWaliKelas = ClassWaliKelas::factory()->create([
+            'academic_year_id' => $academicYear->id,
+            'user_id' => $user->id,
+        ]);
+
+        $payload = [
+            'class_id' => $classWaliKelas->id,
+            'students' => [
+                [
+                    'nis' => '888001',
+                    'nisn' => '00888001',
+                    'name' => 'Siswa Import Satu',
+                    'gender' => 'L',
+                    'birth_place' => 'Bandung',
+                    'birth_date' => '2011-03-10',
+                    'religion' => 'Islam',
+                    'family_status' => 'Anak Kandung',
+                    'child_order' => '1',
+                    'address' => 'Jl. Asia Afrika No. 1',
+                    'status' => 'ACTIVE',
+                ],
+                [
+                    'nis' => '888002',
+                    'nisn' => '00888002',
+                    'name' => 'Siswa Import Dua',
+                    'gender' => 'P',
+                    'birth_place' => 'Surabaya',
+                    'birth_date' => '2011-07-20',
+                    'religion' => 'Islam',
+                    'family_status' => 'Anak Kandung',
+                    'child_order' => '2',
+                    'address' => 'Jl. Pemuda No. 10',
+                    'status' => 'ACTIVE',
+                ],
+            ],
+        ];
+
+        $response = $this->actingAs($user)->postJson(route('wali-kelas.student-wali-kelas.import'), $payload);
+
+        $response->assertStatus(200);
+        $response->assertJsonFragment([
+            'message' => '2 data siswa berhasil diimport.',
+        ]);
+
+        $this->assertDatabaseHas('student_wali_kelas', [
+            'class_id' => $classWaliKelas->id,
+            'nis' => '888001',
+            'name' => 'Siswa Import Satu',
+        ]);
+
+        $this->assertDatabaseHas('student_wali_kelas', [
+            'class_id' => $classWaliKelas->id,
+            'nis' => '888002',
+            'name' => 'Siswa Import Dua',
+        ]);
+    }
+
+    /**
+     * Test import fails when NIS is duplicate or required fields are missing.
+     */
+    public function test_import_student_wali_kelas_validation_error(): void
+    {
+        $user = User::factory()->create(['role' => 'wali_kelas']);
+        $academicYear = AcademicYear::factory()->create(['user_id' => $user->id]);
+        $classWaliKelas = ClassWaliKelas::factory()->create([
+            'academic_year_id' => $academicYear->id,
+            'user_id' => $user->id,
+        ]);
+
+        StudentWaliKelas::factory()->create([
+            'class_id' => $classWaliKelas->id,
+            'nis' => 'EXISTING_NIS',
+        ]);
+
+        $payload = [
+            'class_id' => $classWaliKelas->id,
+            'students' => [
+                [
+                    'nis' => 'EXISTING_NIS',
+                    'name' => 'Duplikat NIS',
+                    'gender' => 'L',
+                    'birth_place' => 'Jakarta',
+                    'birth_date' => '2010-01-01',
+                    'address' => 'Alamat',
+                ],
+            ],
+        ];
+
+        $response = $this->actingAs($user)->postJson(route('wali-kelas.student-wali-kelas.import'), $payload);
+
+        $response->assertStatus(422);
+        $response->assertJsonValidationErrors(['students.0.nis']);
+    }
 }
