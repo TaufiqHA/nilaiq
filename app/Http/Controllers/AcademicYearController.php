@@ -34,6 +34,7 @@ class AcademicYearController extends Controller
         $validated = $request->validate($this->validationRules());
 
         $validated['is_active'] = $request->boolean('is_active');
+        $validated['user_id'] = auth()->id();
 
         if ($validated['is_active']) {
             AcademicYear::query()->update(['is_active' => false]);

@@ -11,6 +11,7 @@ use Illuminate\Database\Eloquent\Model;
     'year',
     'semester',
     'is_active',
+    'user_id',
 ])]
 class AcademicYear extends Model
 {
