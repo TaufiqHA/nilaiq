@@ -11,9 +11,11 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::table('academic_years', function (Blueprint $table) {
-            $table->foreignId('user_id')->nullable()->constraind('users')->cascadeOnDelete();
-        });
+        if (! Schema::hasColumn('academic_years', 'user_id')) {
+            Schema::table('academic_years', function (Blueprint $table) {
+                $table->foreignId('user_id')->nullable()->constrained('users')->cascadeOnDelete();
+            });
+        }
     }
 
     /**
@@ -21,8 +23,11 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::table('academic_years', function (Blueprint $table) {
-            $table->dropColumn('user_id');
-        });
+        if (Schema::hasColumn('academic_years', 'user_id')) {
+            Schema::table('academic_years', function (Blueprint $table) {
+                $table->dropForeign(['user_id']);
+                $table->dropColumn('user_id');
+            });
+        }
     }
 };
