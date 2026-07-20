@@ -16,6 +16,7 @@ return new class extends Migration
             $table->string('year');
             $table->enum('semester', ['GANJIL', 'GENAP']);
             $table->boolean('is_active')->default(false);
+            $table->foreignId('user_id')->constraind('users')->cascadeOnDelete();
             $table->timestamps();
         });
     }
