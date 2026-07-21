@@ -27,7 +27,7 @@
                 </ol>
             </nav>
             <h1 class="text-2xl font-extrabold tracking-tight text-heading">Raport Peserta Didik</h1>
-            <p class="text-xs text-body mt-0.5">Lihat daftar siswa dan unduh atau cetak dokumen raport semester secara individual maupun kolektif.</p>
+            <p class="text-xs text-body mt-0.5">Lihat daftar siswa dan pratinjau atau cetak dokumen raport semester secara langsung tanpa pindah halaman.</p>
         </div>
 
         <!-- Class Badge Banner -->
@@ -91,7 +91,7 @@
         </form>
 
         <div class="flex flex-wrap items-center gap-2 shrink-0">
-            <!-- Modal Trigger Button -->
+            <!-- Modal Trigger Button: Kelompok Mapel -->
             <button type="button" onclick="openKelompokModal()" class="inline-flex items-center justify-center gap-1.5 px-3 py-2 text-xs font-bold text-heading bg-neutral-secondary-soft hover:bg-neutral-tertiary border border-default rounded-base shadow-xs transition-colors">
                 <svg class="w-4 h-4 text-body" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
@@ -101,12 +101,13 @@
             </button>
 
             @if($students->isNotEmpty())
-                <a href="{{ route('wali-kelas.raport.cetak-semua') }}" target="_blank" class="inline-flex items-center justify-center gap-2 px-4 py-2 text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 rounded-base shadow-xs transition-colors">
+                <!-- Button Pratinjau Semua Raport -->
+                <button type="button" onclick="previewRaportSemua()" class="inline-flex items-center justify-center gap-2 px-4 py-2 text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 rounded-base shadow-xs transition-colors cursor-pointer">
                     <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
                     </svg>
                     <span>Cetak Semua Raport</span>
-                </a>
+                </button>
             @endif
         </div>
     </div>
@@ -155,12 +156,13 @@
                             </div>
                         </td>
                         <td class="px-6 py-3 text-center">
-                            <a href="{{ route('wali-kelas.raport.cetak', $student->id) }}" target="_blank" class="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 text-xs font-bold text-white bg-brand hover:bg-brand/90 rounded-base shadow-xs transition-colors w-full sm:w-auto">
+                            <button type="button" onclick="previewRaport({{ $student->id }})" class="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 text-xs font-bold text-white bg-brand hover:bg-brand/90 rounded-base shadow-xs transition-colors w-full sm:w-auto cursor-pointer">
                                 <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                                 </svg>
-                                <span>Download Raport</span>
-                            </a>
+                                <span>Pratinjau Raport</span>
+                            </button>
                         </td>
                     </tr>
                 @empty
@@ -180,6 +182,44 @@
                 @endforelse
             </tbody>
         </table>
+    </div>
+</div>
+
+<!-- Modal Pratinjau Dokumen Raport (Full Modal Box) -->
+<div id="raport-preview-modal" class="fixed inset-0 z-50 hidden bg-black/60 backdrop-blur-xs flex items-center justify-center p-2 sm:p-4">
+    <div class="relative w-full max-w-5xl h-[92vh] bg-white dark:bg-neutral-primary-soft rounded-base shadow-2xl border border-default flex flex-col overflow-hidden">
+        
+        <!-- Modal Header -->
+        <div class="px-5 py-3.5 bg-neutral-primary-soft border-b border-default flex items-center justify-between shrink-0">
+            <div class="flex items-center gap-3">
+                <div class="p-2 bg-brand/10 text-fg-brand rounded-base">
+                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                </div>
+                <div>
+                    <h3 class="text-base font-extrabold text-heading">Pratinjau Dokumen Raport</h3>
+                    <p class="text-[11px] text-body">Pratinjau resmi cetakan A4 sebelum diunduh atau dicetak.</p>
+                </div>
+            </div>
+            
+            <div class="flex items-center gap-2">
+                <button type="button" onclick="printRaportFrame()" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-white bg-brand hover:bg-brand/90 rounded-base shadow-xs transition-colors cursor-pointer">
+                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+                    </svg>
+                    <span>Cetak / Download PDF</span>
+                </button>
+                <button type="button" onclick="closePreviewModal()" class="text-body hover:text-heading p-1.5 rounded-base hover:bg-neutral-tertiary transition-colors cursor-pointer" title="Tutup">
+                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
+                </button>
+            </div>
+        </div>
+
+        <!-- Modal Body (Iframe) -->
+        <div class="flex-1 bg-neutral-secondary-soft/50 relative overflow-hidden">
+            <iframe id="raport-preview-iframe" class="w-full h-full border-0" src=""></iframe>
+        </div>
     </div>
 </div>
 
@@ -256,6 +296,33 @@
 
     function closeKelompokModal() {
         document.getElementById('kelompok-modal').classList.add('hidden');
+    }
+
+    function previewRaport(studentId) {
+        const iframe = document.getElementById('raport-preview-iframe');
+        const urlTemplate = "{{ route('wali-kelas.raport.cetak', ['student' => 999999999]) }}";
+        iframe.src = urlTemplate.replace('999999999', studentId);
+        document.getElementById('raport-preview-modal').classList.remove('hidden');
+    }
+
+    function previewRaportSemua() {
+        const iframe = document.getElementById('raport-preview-iframe');
+        iframe.src = "{{ route('wali-kelas.raport.cetak-semua') }}";
+        document.getElementById('raport-preview-modal').classList.remove('hidden');
+    }
+
+    function closePreviewModal() {
+        const modal = document.getElementById('raport-preview-modal');
+        modal.classList.add('hidden');
+        document.getElementById('raport-preview-iframe').src = '';
+    }
+
+    function printRaportFrame() {
+        const iframe = document.getElementById('raport-preview-iframe');
+        if (iframe && iframe.contentWindow) {
+            iframe.contentWindow.focus();
+            iframe.contentWindow.print();
+        }
     }
 </script>
 @endsection

@@ -81,6 +81,13 @@
                 padding-top: 60px;
                 padding-bottom: 40px;
             }
+            body.in-iframe {
+                padding-top: 15px !important;
+                background-color: #f1f5f9;
+            }
+            body.in-iframe .no-print-bar {
+                display: none !important;
+            }
             .page {
                 box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
                 margin-bottom: 20px;
@@ -550,5 +557,10 @@
         </div>
     @endforeach
 
+    <script>
+        if (window.self !== window.top) {
+            document.body.classList.add('in-iframe');
+        }
+    </script>
 </body>
 </html>
