@@ -19,7 +19,7 @@ return new class extends Migration
             $table->string('name');
             $table->enum('gender', ['L', 'P']);
             $table->string('birth_place');
-            $table->date('birth_date');
+            $table->date('birth_date')->nullable();
             $table->text('address');
             $table->string('parent_name');
             $table->string('parent_phone');
