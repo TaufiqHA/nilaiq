@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\CatatanWaliKelas;
 use App\Models\ClassWaliKelas;
 use App\Models\StudentWaliKelas;
+use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -12,9 +13,9 @@ use Illuminate\Http\Request;
 class CatatanWaliKelasController extends Controller
 {
     /**
-     * Display a listing of the catatan wali kelas or JSON response.
+     * Display a listing of the catatan wali kelas or render blade view.
      */
-    public function index(Request $request): JsonResponse
+    public function index(Request $request): View|JsonResponse
     {
         if ($request->wantsJson()) {
             $query = CatatanWaliKelas::with('student');
@@ -34,10 +35,7 @@ class CatatanWaliKelasController extends Controller
             $students = StudentWaliKelas::where('class_id', $classWaliKelas->id)->with('catatanWaliKelas')->get();
         }
 
-        return response()->json([
-            'classWaliKelas' => $classWaliKelas,
-            'students' => $students,
-        ]);
+        return view('auth.waliKelas.catatanWaliKelas', compact('students', 'classWaliKelas'));
     }
 
     /**
