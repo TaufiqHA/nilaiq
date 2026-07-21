@@ -7,6 +7,7 @@ use App\Http\Controllers\AssignmentScoresController;
 use App\Http\Controllers\AttendanceMeetingsController;
 use App\Http\Controllers\AttendancesController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\CatatanWaliKelasController;
 use App\Http\Controllers\ClassesController;
 use App\Http\Controllers\ClassWaliKelasController;
 use App\Http\Controllers\DailyTestMeetingsController;
@@ -147,5 +148,9 @@ Route::middleware('auth')->group(function () {
         Route::resource('absensis', AbsensiController::class);
         Route::delete('absensis/{absensi}/delete', [AbsensiController::class, 'delete'])->name('absensis.delete');
         Route::get('/absensi', [AbsensiController::class, 'index'])->name('absensi');
+
+        Route::resource('catatan-wali-kelas', CatatanWaliKelasController::class)->parameters(['catatan-wali-kelas' => 'catatan_wali_kelas']);
+        Route::delete('catatan-wali-kelas/{catatan_wali_kelas}/delete', [CatatanWaliKelasController::class, 'delete'])->name('catatan-wali-kelas.delete');
+        Route::get('/catatan-wali-kelas-view', [CatatanWaliKelasController::class, 'index'])->name('catatan-wali-kelas');
     });
 });

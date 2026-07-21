@@ -101,4 +101,12 @@ class StudentWaliKelas extends Model
     {
         return $this->hasOne(Absensi::class, 'student_id');
     }
+
+    /**
+     * Get the catatan wali kelas record associated with the student.
+     */
+    public function catatanWaliKelas(): HasOne
+    {
+        return $this->hasOne(CatatanWaliKelas::class, 'student_id');
+    }
 }
