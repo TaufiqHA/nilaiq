@@ -28,7 +28,7 @@
             padding: 0 !important;
         }
 
-        body {
+        body, #print-area, #print-area * {
             background-color: #ffffff !important;
             color: #000000 !important;
             font-family: 'Times New Roman', Times, serif !important;
