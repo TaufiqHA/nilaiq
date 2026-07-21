@@ -22,6 +22,7 @@ use App\Http\Controllers\MidtermScoresController;
 use App\Http\Controllers\NilaiMapelController;
 use App\Http\Controllers\PrestasiController;
 use App\Http\Controllers\RaportController;
+use App\Http\Controllers\RecapsController;
 use App\Http\Controllers\RekapController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\SettingsWaliKelasController;
@@ -117,6 +118,10 @@ Route::middleware('auth')->group(function () {
         // Rekap Data Routes
         Route::get('/rekap', [RekapController::class, 'index'])->name('rekap.index');
         Route::get('/rekap/data/{class}', [RekapController::class, 'getClassRekapData'])->name('rekap.data');
+
+        // Recaps Management
+        Route::resource('recaps', RecapsController::class);
+        Route::delete('recaps/{recap}/delete', [RecapsController::class, 'delete'])->name('recaps.delete');
     });
 
     // Wali Kelas Routes Group
