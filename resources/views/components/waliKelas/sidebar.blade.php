@@ -71,8 +71,8 @@
                      </a>
                   </li>
                   <li>
-                     <a href="{{ Route::has('wali-kelas.sikap') ? route('wali-kelas.sikap') : (Route::has('sikap.index') ? route('sikap.index') : '#') }}" class="flex items-center px-2 py-1.5 {{ request()->routeIs('sikap.*', 'wali-kelas.sikap.*') ? 'bg-neutral-tertiary text-fg-brand font-bold' : 'text-body hover:bg-neutral-tertiary hover:text-fg-brand' }} rounded-base group transition-all duration-200">
-                        <svg class="shrink-0 w-5 h-5 transition duration-75 {{ request()->routeIs('sikap.*', 'wali-kelas.sikap.*') ? 'text-fg-brand' : 'group-hover:text-fg-brand' }}" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                     <a href="{{ Route::has('wali-kelas.sikap') ? route('wali-kelas.sikap') : (Route::has('wali-kelas.sikaps.index') ? route('wali-kelas.sikaps.index') : (Route::has('sikap.index') ? route('sikap.index') : '#')) }}" class="flex items-center px-2 py-1.5 {{ request()->routeIs('sikap', 'sikap.*', 'wali-kelas.sikap', 'wali-kelas.sikap.*', 'wali-kelas.sikaps.*', 'sikaps.*') ? 'bg-neutral-tertiary text-fg-brand font-bold' : 'text-body hover:bg-neutral-tertiary hover:text-fg-brand' }} rounded-base group transition-all duration-200">
+                        <svg class="shrink-0 w-5 h-5 transition duration-75 {{ request()->routeIs('sikap', 'sikap.*', 'wali-kelas.sikap', 'wali-kelas.sikap.*', 'wali-kelas.sikaps.*', 'sikaps.*') ? 'text-fg-brand' : 'group-hover:text-fg-brand' }}" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z"/>
                         </svg>
                         <span class="flex-1 ms-3 whitespace-nowrap">Sikap</span>

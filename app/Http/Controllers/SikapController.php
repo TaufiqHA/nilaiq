@@ -35,11 +35,7 @@ class SikapController extends Controller
             $students = StudentWaliKelas::where('class_id', $classWaliKelas->id)->with('sikap')->get();
         }
 
-        if (view()->exists('auth.waliKelas.sikap')) {
-            return view('auth.waliKelas.sikap', compact('students', 'classWaliKelas'));
-        }
-
-        return response()->json($students);
+        return view('auth.waliKelas.sikap', compact('students', 'classWaliKelas'));
     }
 
     /**
