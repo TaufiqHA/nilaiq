@@ -19,6 +19,7 @@ use App\Http\Controllers\FinalScoresController;
 use App\Http\Controllers\MapelSettingsController;
 use App\Http\Controllers\MidtermExamsController;
 use App\Http\Controllers\MidtermScoresController;
+use App\Http\Controllers\NilaiMapelController;
 use App\Http\Controllers\PrestasiController;
 use App\Http\Controllers\RekapController;
 use App\Http\Controllers\SettingsController;
@@ -152,5 +153,9 @@ Route::middleware('auth')->group(function () {
         Route::resource('catatan-wali-kelas', CatatanWaliKelasController::class)->parameters(['catatan-wali-kelas' => 'catatan_wali_kelas']);
         Route::delete('catatan-wali-kelas/{catatan_wali_kelas}/delete', [CatatanWaliKelasController::class, 'delete'])->name('catatan-wali-kelas.delete');
         Route::get('/catatan-wali-kelas-view', [CatatanWaliKelasController::class, 'index'])->name('catatan-wali-kelas');
+
+        Route::resource('nilai-mapels', NilaiMapelController::class)->parameters(['nilai-mapels' => 'nilai_mapel']);
+        Route::delete('nilai-mapels/{nilai_mapel}/delete', [NilaiMapelController::class, 'delete'])->name('nilai-mapels.delete');
+        Route::get('/nilai-mapel', [NilaiMapelController::class, 'index'])->name('nilai-mapel');
     });
 });

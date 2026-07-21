@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 
 #[Fillable([
@@ -108,5 +109,13 @@ class StudentWaliKelas extends Model
     public function catatanWaliKelas(): HasOne
     {
         return $this->hasOne(CatatanWaliKelas::class, 'student_id');
+    }
+
+    /**
+     * Get the nilai mapel records for the student.
+     */
+    public function nilaiMapels(): HasMany
+    {
+        return $this->hasMany(NilaiMapel::class, 'student_id');
     }
 }

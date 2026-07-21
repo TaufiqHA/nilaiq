@@ -7,6 +7,7 @@ use Illuminate\Database\Eloquent\Attributes\Fillable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 #[Fillable([
     'settingsWaliKelas_id',
@@ -44,5 +45,13 @@ class MapelSettings extends Model
     public function settingsWaliKelas(): BelongsTo
     {
         return $this->belongsTo(SettingsWaliKelas::class, 'settingsWaliKelas_id');
+    }
+
+    /**
+     * Get the nilai mapel records for the mapel settings.
+     */
+    public function nilaiMapels(): HasMany
+    {
+        return $this->hasMany(NilaiMapel::class, 'mapel_id');
     }
 }
