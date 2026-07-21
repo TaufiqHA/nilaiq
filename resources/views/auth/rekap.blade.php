@@ -153,18 +153,23 @@
 
     <!-- Section 2: Score Recap Details (Hidden by Default) -->
     <div id="rekap-details-section" class="hidden transition-all duration-300 print:hidden">
+        <!-- Back Button -->
+        <div class="mb-5">
+            <button type="button" onclick="backToClasses()"
+                class="inline-flex items-center gap-2 text-sm font-semibold text-body hover:text-brand transition-colors duration-200 cursor-pointer group">
+                <svg class="w-4 h-4 transform group-hover:-translate-x-1 transition-transform duration-200" fill="none"
+                    viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
+                </svg>
+                Kembali ke Daftar Kelas
+            </button>
+        </div>
+
         <!-- Header -->
         <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-8">
-            <div class="flex items-center gap-3">
-                <button type="button" onclick="backToClasses()" class="text-body hover:text-brand p-2 rounded-base hover:bg-neutral-secondary-soft border border-default hover:border-brand transition-all duration-200 cursor-pointer flex items-center justify-center shrink-0" title="Kembali ke Daftar Kelas">
-                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18" />
-                    </svg>
-                </button>
-                <div>
-                    <h1 id="rekap-title" class="text-3xl font-extrabold text-heading tracking-tight">Rekap Nilai Kelas VII A</h1>
-                    <p id="rekap-subtitle" class="text-body">Tahun Ajaran 2026/2027 • Semester Ganjil</p>
-                </div>
+            <div>
+                <h1 id="rekap-title" class="text-3xl font-extrabold text-heading tracking-tight mb-2">Rekap Nilai Kelas VII A</h1>
+                <p id="rekap-subtitle" class="text-body">Tahun Ajaran 2026/2027 • Semester Ganjil</p>
             </div>
             
             <!-- Actions & Search -->
@@ -178,6 +183,13 @@
                     <input type="text" id="search-students" oninput="filterRekap(this.value)" placeholder="Cari nama siswa..." class="w-full bg-white dark:bg-neutral-primary-soft border border-default rounded-base pl-9 pr-3 py-2 text-sm text-heading placeholder-neutral-400 focus:outline-none focus:border-brand">
                 </div>
                 
+                <a href="{{ route('nilai-akhir.index') }}" id="btn-nilai-akhir" class="bg-neutral-secondary-soft hover:bg-neutral-tertiary text-heading border border-default px-4 py-2 rounded-base text-sm font-bold shadow-xs transition-all duration-200 cursor-pointer flex items-center justify-center gap-2 print:hidden" title="Kelola Nilai Akhir">
+                    <svg class="w-4.5 h-4.5 text-brand" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                    Nilai Akhir
+                </a>
+
                 <button type="button" onclick="printRekap()" class="bg-brand hover:bg-brand-strong text-white px-4 py-2 rounded-base text-sm font-bold shadow-md shadow-brand/10 transition-all duration-200 cursor-pointer flex items-center justify-center gap-2 print:hidden">
                     <svg class="w-4.5 h-4.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M6.72 13.82l-.24-.24H4.5a.75.75 0 00-.75.75v3.5c0 .414.336.75.75.75h15a.75.75 0 00.75-.75v-3.5a.75.75 0 00-.75-.75h-1.98l-.24.24m-12 0a2.25 2.25 0 00-.24 2.4l1.16 2.32c.113.226.342.368.596.368h8.568c.254 0 .483-.142.596-.368l1.16-2.32a2.25 2.25 0 00-.24-2.4m-12 0h12M12 3v11.25m0 0l-3.75-3.75M12 14.25l3.75-3.75" />
@@ -297,11 +309,16 @@
 
         currentClassId = classId;
         
-        // Update Title & Subtitle
+        // Update Title & Subtitle & Nilai Akhir Button href
         document.getElementById('rekap-title').innerText = 'Rekap Nilai Kelas ' + selectedClass.name;
         document.getElementById('rekap-subtitle').innerText = 'Tahun Ajaran ' + 
             (selectedClass.academic_year ? selectedClass.academic_year.year : '-') + ' • Semester ' + 
             (selectedClass.academic_year ? selectedClass.academic_year.semester : '-');
+
+        const btnNilaiAkhir = document.getElementById('btn-nilai-akhir');
+        if (btnNilaiAkhir) {
+            btnNilaiAkhir.href = "{{ route('nilai-akhir.index') }}?class_id=" + classId;
+        }
 
         // Clear search input
         document.getElementById('search-students').value = '';

@@ -120,6 +120,8 @@ Route::middleware('auth')->group(function () {
         Route::get('/rekap/data/{class}', [RekapController::class, 'getClassRekapData'])->name('rekap.data');
 
         // Recaps Management
+        Route::get('/nilai-akhir', [RecapsController::class, 'nilaiAkhirView'])->name('nilai-akhir.index');
+        Route::post('recaps/batch', [RecapsController::class, 'batchStore'])->name('recaps.batch');
         Route::resource('recaps', RecapsController::class);
         Route::delete('recaps/{recap}/delete', [RecapsController::class, 'delete'])->name('recaps.delete');
     });

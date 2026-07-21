@@ -202,4 +202,68 @@ class RecapsTest extends TestCase
             'id' => $recap->id,
         ]);
     }
+
+    /**
+     * Test authenticated mapel user can access Nilai Akhir Blade view.
+     */
+    public function test_authenticated_mapel_user_can_access_nilai_akhir_view(): void
+    {
+        /** @var User $user */
+        $user = User::factory()->create(['role' => 'mapel']);
+        $class = Classes::factory()->create();
+
+        $response = $this->actingAs($user)->get(route('nilai-akhir.index', ['class_id' => $class->id]));
+
+        $response->assertStatus(200);
+        $response->assertViewIs('auth.nilaiAkhir');
+        $response->assertViewHas('selectedClassId', $class->id);
+    }
+
+    /**
+     * Test authenticated mapel user can batch store recaps.
+     */
+    public function test_authenticated_mapel_user_can_batch_store_recaps(): void
+    {
+        /** @var User $user */
+        $user = User::factory()->create(['role' => 'mapel']);
+        $academicYear = AcademicYear::factory()->create();
+        $class = Classes::factory()->create(['academic_year_id' => $academicYear->id]);
+        $student1 = Students::factory()->create(['class_id' => $class->id]);
+        $student2 = Students::factory()->create(['class_id' => $class->id]);
+
+        $batchData = [
+            'class_id' => $class->id,
+            'recaps' => [
+                [
+                    'student_id' => $student1->id,
+                    'final_score_result' => 85.00,
+                    'competency_description' => 'Sangat baik',
+                ],
+                [
+                    'student_id' => $student2->id,
+                    'final_score_result' => 90.00,
+                    'competency_description' => 'Luar biasa',
+                ],
+            ],
+        ];
+
+        $response = $this->actingAs($user)->post(route('recaps.batch'), $batchData);
+
+        $response->assertRedirect(route('nilai-akhir.index', ['class_id' => $class->id]));
+        $response->assertSessionHas('success', 'Data Nilai Akhir berhasil disimpan.');
+
+        $this->assertDatabaseHas('recaps', [
+            'class_id' => $class->id,
+            'student_id' => $student1->id,
+            'final_score_result' => 85.00,
+            'competency_description' => 'Sangat baik',
+        ]);
+
+        $this->assertDatabaseHas('recaps', [
+            'class_id' => $class->id,
+            'student_id' => $student2->id,
+            'final_score_result' => 90.00,
+            'competency_description' => 'Luar biasa',
+        ]);
+    }
 }
