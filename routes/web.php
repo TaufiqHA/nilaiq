@@ -155,6 +155,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/catatan-wali-kelas-view', [CatatanWaliKelasController::class, 'index'])->name('catatan-wali-kelas');
 
         Route::resource('nilai-mapels', NilaiMapelController::class)->parameters(['nilai-mapels' => 'nilai_mapel']);
+        Route::post('nilai-mapels/batch', [NilaiMapelController::class, 'batchStore'])->name('nilai-mapels.batch');
         Route::delete('nilai-mapels/{nilai_mapel}/delete', [NilaiMapelController::class, 'delete'])->name('nilai-mapels.delete');
         Route::get('/nilai-mapel', [NilaiMapelController::class, 'index'])->name('nilai-mapel');
     });

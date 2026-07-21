@@ -268,4 +268,52 @@ class NilaiMapelTest extends TestCase
             'id' => $nilaiMapel->id,
         ]);
     }
+
+    /**
+     * Test authenticated wali_kelas user can batch store nilai mapels via JSON.
+     */
+    public function test_wali_kelas_can_batch_store_nilai_mapels_json(): void
+    {
+        $user = User::factory()->create(['role' => 'wali_kelas']);
+        $student1 = $this->createStudent($user);
+        $student2 = $this->createStudent($user);
+        $mapel = $this->createMapel($user);
+
+        $payload = [
+            'mapel_id' => $mapel->id,
+            'scores' => [
+                [
+                    'student_id' => $student1->id,
+                    'nilai' => 88,
+                    'capaian' => 'Sangat Memuaskan',
+                ],
+                [
+                    'student_id' => $student2->id,
+                    'nilai' => 75,
+                    'capaian' => 'Cukup Baik',
+                ],
+            ],
+        ];
+
+        $response = $this->actingAs($user)->postJson(route('wali-kelas.nilai-mapels.batch'), $payload);
+
+        $response->assertStatus(200)
+            ->assertJsonFragment([
+                'message' => 'Data nilai mapel berhasil disimpan secara kolektif.',
+            ]);
+
+        $this->assertDatabaseHas('nilai_mapels', [
+            'student_id' => $student1->id,
+            'mapel_id' => $mapel->id,
+            'nilai' => 88,
+            'capaian' => 'Sangat Memuaskan',
+        ]);
+
+        $this->assertDatabaseHas('nilai_mapels', [
+            'student_id' => $student2->id,
+            'mapel_id' => $mapel->id,
+            'nilai' => 75,
+            'capaian' => 'Cukup Baik',
+        ]);
+    }
 }

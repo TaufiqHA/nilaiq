@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\ClassWaliKelas;
 use App\Models\MapelSettings;
 use App\Models\NilaiMapel;
+use App\Models\SettingsWaliKelas;
 use App\Models\StudentWaliKelas;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
@@ -37,14 +38,97 @@ class NilaiMapelController extends Controller
 
         $students = collect();
         $mapelSettings = collect();
-        if ($classWaliKelas) {
-            $students = StudentWaliKelas::where('class_id', $classWaliKelas->id)->with('nilaiMapels')->get();
-            $mapelSettings = MapelSettings::whereHas('settingsWaliKelas', function ($q) use ($classWaliKelas) {
-                $q->where('class_id', $classWaliKelas->id);
-            })->get();
+        $selectedMapel = null;
+        $nilaiMapelsKeyed = collect();
+
+        $settingsWaliKelas = SettingsWaliKelas::whereHas('academicYear', function ($q) use ($userId) {
+            $q->where('user_id', $userId);
+        })->first() ?? SettingsWaliKelas::first();
+
+        if ($settingsWaliKelas) {
+            $mapelSettings = MapelSettings::where('settingsWaliKelas_id', $settingsWaliKelas->id)->get();
         }
 
-        return view('auth.waliKelas.nilaiMapel', compact('students', 'mapelSettings', 'classWaliKelas'));
+        if ($mapelSettings->isEmpty()) {
+            $mapelSettings = MapelSettings::all();
+        }
+
+        $selectedMapelId = $request->input('mapel_id', $mapelSettings->first()?->id);
+        if ($selectedMapelId) {
+            $selectedMapel = $mapelSettings->firstWhere('id', $selectedMapelId) ?? MapelSettings::find($selectedMapelId);
+        }
+
+        if ($classWaliKelas) {
+            $students = StudentWaliKelas::where('class_id', $classWaliKelas->id)->get();
+        } else {
+            $students = StudentWaliKelas::all();
+        }
+
+        if ($selectedMapelId) {
+            $nilaiMapelsKeyed = NilaiMapel::where('mapel_id', $selectedMapelId)
+                ->when($classWaliKelas, function ($q) use ($classWaliKelas) {
+                    $q->whereHas('student', function ($sub) use ($classWaliKelas) {
+                        $sub->where('class_id', $classWaliKelas->id);
+                    });
+                })
+                ->get()
+                ->keyBy('student_id');
+        }
+
+        return view('auth.waliKelas.nilai', compact('students', 'mapelSettings', 'selectedMapel', 'nilaiMapelsKeyed', 'classWaliKelas'));
+    }
+
+    /**
+     * Store or update multiple nilai mapels in batch for a specific mapel.
+     */
+    public function batchStore(Request $request): RedirectResponse|JsonResponse
+    {
+        $validated = $request->validate([
+            'mapel_id' => ['required', 'exists:mapel_settings,id'],
+            'scores' => ['required', 'array'],
+            'scores.*.student_id' => ['required', 'exists:student_wali_kelas,id'],
+            'scores.*.nilai' => ['nullable', 'integer', 'min:0', 'max:100'],
+            'scores.*.capaian' => ['nullable', 'string'],
+        ]);
+
+        $mapelId = $validated['mapel_id'];
+        $createdOrUpdated = [];
+
+        foreach ($validated['scores'] as $scoreData) {
+            $nilaiValue = (isset($scoreData['nilai']) && $scoreData['nilai'] !== '') ? (int) $scoreData['nilai'] : null;
+            $capaianValue = ! empty($scoreData['capaian']) ? $scoreData['capaian'] : null;
+
+            if (is_null($nilaiValue) && is_null($capaianValue)) {
+                NilaiMapel::where('student_id', $scoreData['student_id'])
+                    ->where('mapel_id', $mapelId)
+                    ->delete();
+
+                continue;
+            }
+
+            $nilaiMapel = NilaiMapel::updateOrCreate(
+                [
+                    'student_id' => $scoreData['student_id'],
+                    'mapel_id' => $mapelId,
+                ],
+                [
+                    'nilai' => $nilaiValue,
+                    'capaian' => $capaianValue,
+                ]
+            );
+
+            $createdOrUpdated[] = $nilaiMapel;
+        }
+
+        if ($request->wantsJson()) {
+            return response()->json([
+                'message' => 'Data nilai mapel berhasil disimpan secara kolektif.',
+                'data' => $createdOrUpdated,
+            ]);
+        }
+
+        return redirect()->route('wali-kelas.nilai-mapel', ['mapel_id' => $mapelId])
+            ->with('success', 'Data nilai mata pelajaran berhasil disimpan.');
     }
 
     /**
@@ -69,7 +153,8 @@ class NilaiMapelController extends Controller
             ], 201);
         }
 
-        return redirect()->back()->with('success', 'Data nilai mapel berhasil disimpan.');
+        return redirect()->route('wali-kelas.nilai-mapel', ['mapel_id' => $validated['mapel_id']])
+            ->with('success', 'Data nilai mapel berhasil disimpan.');
     }
 
     /**
@@ -96,7 +181,8 @@ class NilaiMapelController extends Controller
             ]);
         }
 
-        return redirect()->back()->with('success', 'Data nilai mapel berhasil diperbarui.');
+        return redirect()->route('wali-kelas.nilai-mapel', ['mapel_id' => $validated['mapel_id']])
+            ->with('success', 'Data nilai mapel berhasil diperbarui.');
     }
 
     /**
@@ -104,6 +190,7 @@ class NilaiMapelController extends Controller
      */
     public function destroy(Request $request, NilaiMapel $nilaiMapel): RedirectResponse|JsonResponse
     {
+        $mapelId = $nilaiMapel->mapel_id;
         $nilaiMapel->delete();
 
         if ($request->wantsJson()) {
@@ -112,7 +199,8 @@ class NilaiMapelController extends Controller
             ]);
         }
 
-        return redirect()->back()->with('success', 'Data nilai mapel berhasil dihapus.');
+        return redirect()->route('wali-kelas.nilai-mapel', ['mapel_id' => $mapelId])
+            ->with('success', 'Data nilai mapel berhasil dihapus.');
     }
 
     /**
