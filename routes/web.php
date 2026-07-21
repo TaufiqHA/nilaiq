@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\AbsensiController;
 use App\Http\Controllers\AcademicYearController;
 use App\Http\Controllers\AssignmentMeetingsController;
 use App\Http\Controllers\AssignmentScoresController;
@@ -142,5 +143,9 @@ Route::middleware('auth')->group(function () {
         Route::resource('sikaps', SikapController::class);
         Route::delete('sikaps/{sikap}/delete', [SikapController::class, 'delete'])->name('sikaps.delete');
         Route::get('/sikap', [SikapController::class, 'index'])->name('sikap');
+
+        Route::resource('absensis', AbsensiController::class);
+        Route::delete('absensis/{absensi}/delete', [AbsensiController::class, 'delete'])->name('absensis.delete');
+        Route::get('/absensi', [AbsensiController::class, 'index'])->name('absensi');
     });
 });

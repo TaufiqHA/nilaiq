@@ -93,4 +93,12 @@ class StudentWaliKelas extends Model
     {
         return $this->hasOne(Sikap::class, 'student_id');
     }
+
+    /**
+     * Get the absensi record associated with the student.
+     */
+    public function absensi(): HasOne
+    {
+        return $this->hasOne(Absensi::class, 'student_id');
+    }
 }
