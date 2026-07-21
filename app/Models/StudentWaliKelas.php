@@ -85,4 +85,12 @@ class StudentWaliKelas extends Model
     {
         return $this->hasOne(Prestasi::class, 'student_id');
     }
+
+    /**
+     * Get the sikap record associated with the student.
+     */
+    public function sikap(): HasOne
+    {
+        return $this->hasOne(Sikap::class, 'student_id');
+    }
 }

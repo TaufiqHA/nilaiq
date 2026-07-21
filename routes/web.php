@@ -21,6 +21,7 @@ use App\Http\Controllers\PrestasiController;
 use App\Http\Controllers\RekapController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\SettingsWaliKelasController;
+use App\Http\Controllers\SikapController;
 use App\Http\Controllers\StudentsController;
 use App\Http\Controllers\StudentWaliKelasController;
 use App\Http\Middleware\WaliKelasMiddleware;
@@ -137,5 +138,9 @@ Route::middleware('auth')->group(function () {
         Route::resource('prestasis', PrestasiController::class);
         Route::delete('prestasis/{prestasi}/delete', [PrestasiController::class, 'delete'])->name('prestasis.delete');
         Route::get('/prestasi', [PrestasiController::class, 'index'])->name('prestasi');
+
+        Route::resource('sikaps', SikapController::class);
+        Route::delete('sikaps/{sikap}/delete', [SikapController::class, 'delete'])->name('sikaps.delete');
+        Route::get('/sikap', [SikapController::class, 'index'])->name('sikap');
     });
 });
