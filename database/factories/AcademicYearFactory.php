@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\AcademicYear;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -20,6 +21,7 @@ class AcademicYearFactory extends Factory
         $startYear = fake()->numberBetween(2020, 2030);
 
         return [
+            'user_id' => User::factory(),
             'year' => "{$startYear}/".($startYear + 1),
             'semester' => fake()->randomElement(['GANJIL', 'GENAP']),
             'is_active' => false,

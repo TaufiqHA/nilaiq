@@ -293,8 +293,8 @@
                                 class="bg-neutral-secondary-medium border border-default text-heading text-xs md:text-sm rounded-base focus:ring-brand focus:border-brand block w-full p-2.5">
                         </div>
                         <div>
-                            <label for="input-birth_date" class="block mb-1 text-xs md:text-sm font-bold text-heading">Tanggal Lahir <span class="text-red-500">*</span></label>
-                            <input type="date" id="input-birth_date" name="birth_date" required
+                            <label for="input-birth_date" class="block mb-1 text-xs md:text-sm font-bold text-heading">Tanggal Lahir</label>
+                            <input type="date" id="input-birth_date" name="birth_date"
                                 class="bg-neutral-secondary-medium border border-default text-heading text-xs md:text-sm rounded-base focus:ring-brand focus:border-brand block w-full p-2.5">
                         </div>
                     </div>
@@ -1055,13 +1055,13 @@
             if (!student.nis) student.errors.push('NIS wajib diisi');
             if (!['L', 'P'].includes(student.gender)) student.errors.push('Jenis kelamin harus L/P');
             if (!student.birth_place) student.errors.push('Tempat lahir wajib diisi');
-            if (!student.birth_date) {
-                student.errors.push('Tanggal lahir wajib diisi');
-            } else {
+            if (student.birth_date) {
                 const d = new Date(student.birth_date);
                 if (isNaN(d.getTime())) {
                     student.errors.push('Format tgl lahir tidak valid (gunakan YYYY-MM-DD)');
                 }
+            } else {
+                student.birth_date = null;
             }
             if (!student.address) student.errors.push('Alamat wajib diisi');
 

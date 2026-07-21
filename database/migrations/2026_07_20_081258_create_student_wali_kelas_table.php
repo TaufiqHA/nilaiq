@@ -24,7 +24,7 @@ return new class extends Migration
             $table->string('name');
             $table->enum('gender', ['L', 'P']);
             $table->string('birth_place');
-            $table->date('birth_date');
+            $table->date('birth_date')->nullable();
             $table->string('religion');
             $table->string('family_status'); // Anak Kandung, Anak Angkat, dll
             $table->string('child_order'); // Anak ke- (pakai string jaga-jaga format "1 (satu)")

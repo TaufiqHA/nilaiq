@@ -1296,13 +1296,13 @@
                 if (!student.nisn) student.errors.push('NISN wajib diisi');
                 if (!['L', 'P'].includes(student.gender)) student.errors.push('Jenis kelamin harus L/P');
                 if (!student.birth_place) student.errors.push('Tempat lahir wajib diisi');
-                if (!student.birth_date) {
-                    student.errors.push('Tanggal lahir wajib diisi');
-                } else {
+                if (student.birth_date) {
                     const d = new Date(student.birth_date);
                     if (isNaN(d.getTime())) {
                         student.errors.push('Format tgl lahir tidak valid (gunakan YYYY-MM-DD)');
                     }
+                } else {
+                    student.birth_date = null;
                 }
                 if (!student.address) student.errors.push('Alamat wajib diisi');
                 if (!student.parent_name) student.errors.push('Nama wali wajib diisi');

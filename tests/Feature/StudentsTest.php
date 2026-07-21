@@ -33,7 +33,7 @@ class StudentsTest extends TestCase
     public function test_authenticated_user_can_access_students_index(): void
     {
         /** @var User $user */
-        $user = User::factory()->create();
+        $user = User::factory()->create(['role' => 'mapel']);
         Students::factory()->count(3)->create();
 
         $response = $this->actingAs($user)->getJson(route('students.index'));
@@ -48,7 +48,7 @@ class StudentsTest extends TestCase
     public function test_authenticated_user_can_store_student(): void
     {
         /** @var User $user */
-        $user = User::factory()->create();
+        $user = User::factory()->create(['role' => 'mapel']);
         $class = Classes::factory()->create();
 
         $studentData = [
@@ -84,14 +84,14 @@ class StudentsTest extends TestCase
     public function test_store_student_validation(): void
     {
         /** @var User $user */
-        $user = User::factory()->create();
+        $user = User::factory()->create(['role' => 'mapel']);
 
         // Test required fields
         $response = $this->actingAs($user)->post(route('students.store'), []);
         $response->assertStatus(302);
         $response->assertSessionHasErrors([
             'class_id', 'nis', 'nisn', 'name', 'gender',
-            'birth_place', 'birth_date', 'address',
+            'birth_place', 'address',
             'parent_name', 'parent_phone', 'status',
         ]);
 
@@ -111,7 +111,7 @@ class StudentsTest extends TestCase
     public function test_unique_nis_and_nisn_validation(): void
     {
         /** @var User $user */
-        $user = User::factory()->create();
+        $user = User::factory()->create(['role' => 'mapel']);
         $existingStudent = Students::factory()->create([
             'nis' => '1111111111',
             'nisn' => '2222222222',
@@ -142,7 +142,7 @@ class StudentsTest extends TestCase
     public function test_authenticated_user_can_view_student_details(): void
     {
         /** @var User $user */
-        $user = User::factory()->create();
+        $user = User::factory()->create(['role' => 'mapel']);
         $student = Students::factory()->create();
 
         $response = $this->actingAs($user)->getJson(route('students.show', $student));
@@ -158,7 +158,7 @@ class StudentsTest extends TestCase
     public function test_authenticated_user_can_update_student(): void
     {
         /** @var User $user */
-        $user = User::factory()->create();
+        $user = User::factory()->create(['role' => 'mapel']);
         $student = Students::factory()->create([
             'name' => 'Old Name',
             'nis' => '9999999999',
@@ -201,7 +201,7 @@ class StudentsTest extends TestCase
     public function test_authenticated_user_can_delete_student_via_destroy(): void
     {
         /** @var User $user */
-        $user = User::factory()->create();
+        $user = User::factory()->create(['role' => 'mapel']);
         $student = Students::factory()->create();
 
         $response = $this->actingAs($user)->deleteJson(route('students.destroy', $student));
@@ -220,7 +220,7 @@ class StudentsTest extends TestCase
     public function test_authenticated_user_can_delete_student_via_delete_alias(): void
     {
         /** @var User $user */
-        $user = User::factory()->create();
+        $user = User::factory()->create(['role' => 'mapel']);
         $student = Students::factory()->create();
 
         $response = $this->actingAs($user)->deleteJson(route('students.delete', $student));
@@ -239,7 +239,7 @@ class StudentsTest extends TestCase
     public function test_authenticated_user_can_import_students(): void
     {
         /** @var User $user */
-        $user = User::factory()->create();
+        $user = User::factory()->create(['role' => 'mapel']);
         $class = Classes::factory()->create();
 
         $importData = [
@@ -287,7 +287,7 @@ class StudentsTest extends TestCase
     public function test_import_students_validates_uniqueness_in_database(): void
     {
         /** @var User $user */
-        $user = User::factory()->create();
+        $user = User::factory()->create(['role' => 'mapel']);
         $class = Classes::factory()->create();
         Students::factory()->create(['nis' => '88888']);
 
@@ -321,7 +321,7 @@ class StudentsTest extends TestCase
     public function test_import_students_validates_distinctness_in_payload(): void
     {
         /** @var User $user */
-        $user = User::factory()->create();
+        $user = User::factory()->create(['role' => 'mapel']);
         $class = Classes::factory()->create();
 
         $importData = [
@@ -358,5 +358,38 @@ class StudentsTest extends TestCase
 
         $response->assertStatus(422);
         $response->assertJsonValidationErrors(['students.0.nis', 'students.1.nis']);
+    }
+
+    /**
+     * Test import students with nullable birth_date.
+     */
+    public function test_import_students_with_nullable_birth_date(): void
+    {
+        /** @var User $user */
+        $user = User::factory()->create(['role' => 'mapel']);
+        $class = Classes::factory()->create();
+
+        $importData = [
+            'class_id' => $class->id,
+            'students' => [
+                [
+                    'nis' => '88800',
+                    'nisn' => '99900',
+                    'name' => 'Imported Student Null BirthDate',
+                    'gender' => 'L',
+                    'birth_place' => 'Bandung',
+                    'birth_date' => null,
+                    'address' => 'Jl. Kebon Kawung',
+                    'parent_name' => 'Wali 1',
+                    'parent_phone' => '08211111',
+                    'status' => 'ACTIVE',
+                ],
+            ],
+        ];
+
+        $response = $this->actingAs($user)->postJson(route('students.import'), $importData);
+
+        $response->assertStatus(200);
+        $this->assertDatabaseHas('students', ['nis' => '88800', 'birth_date' => null]);
     }
 }

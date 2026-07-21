@@ -131,7 +131,7 @@ class StudentWaliKelasTest extends TestCase
         $response = $this->actingAs($user)->postJson(route('wali-kelas.student-wali-kelas.store'), []);
 
         $response->assertStatus(422);
-        $response->assertJsonValidationErrors(['class_id', 'nis', 'name', 'gender', 'birth_place', 'birth_date']);
+        $response->assertJsonValidationErrors(['class_id', 'nis', 'name', 'gender', 'birth_place']);
     }
 
     /**
@@ -353,5 +353,37 @@ class StudentWaliKelasTest extends TestCase
 
         $response->assertStatus(422);
         $response->assertJsonValidationErrors(['students.0.nis']);
+    }
+
+    /**
+     * Test importing student wali kelas with nullable birth_date.
+     */
+    public function test_import_student_wali_kelas_with_nullable_birth_date(): void
+    {
+        $user = User::factory()->create(['role' => 'wali_kelas']);
+        $classWaliKelas = ClassWaliKelas::factory()->create(['user_id' => $user->id]);
+
+        $payload = [
+            'class_id' => $classWaliKelas->id,
+            'students' => [
+                [
+                    'nis' => '999001',
+                    'name' => 'Siswa Tanpa Tgl Lahir',
+                    'gender' => 'L',
+                    'birth_place' => 'Bandung',
+                    'birth_date' => null,
+                    'address' => 'Jl. Kebon Sirih',
+                    'status' => 'ACTIVE',
+                ],
+            ],
+        ];
+
+        $response = $this->actingAs($user)->postJson(route('wali-kelas.student-wali-kelas.import'), $payload);
+
+        $response->assertStatus(200);
+        $this->assertDatabaseHas('student_wali_kelas', [
+            'nis' => '999001',
+            'birth_date' => null,
+        ]);
     }
 }
