@@ -24,8 +24,8 @@
                <span class="text-sm text-body ml-1">Siswa</span>
             </div>
             <div class="text-xs text-body font-medium mt-3 flex items-center justify-between border-t border-default pt-2">
-               <span>Status Aktif</span>
-               <span class="font-bold text-emerald-600">100% Terdaftar</span>
+               <span>Komposisi Siswa</span>
+               <span class="font-bold text-emerald-600">{{ $maleStudentsCount ?? 0 }} L / {{ $femaleStudentsCount ?? 0 }} P</span>
             </div>
          </div>
 
@@ -40,7 +40,7 @@
                </span>
             </div>
             <div class="mt-4">
-               <span class="text-3xl font-black text-heading tracking-tight">{{ $attendanceRate ?? 95 }}%</span>
+               <span class="text-3xl font-black text-heading tracking-tight">{{ $attendanceRate ?? 0 }}%</span>
             </div>
             <div class="text-xs text-body font-medium mt-3 flex items-center justify-between border-t border-default pt-2">
                <span>Rekap Hadir Kelas</span>
@@ -93,6 +93,93 @@
             </div>
          </div>
 
+      </div>
+
+      <!-- Data Siswa Table Section -->
+      <div class="p-5 rounded-base bg-white dark:bg-neutral-primary-soft border border-default shadow-xs space-y-4">
+         <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-default pb-4">
+            <div>
+               <h3 class="text-md font-bold text-heading flex items-center gap-2">
+                  <svg class="w-5 h-5 text-brand" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                     <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                  </svg>
+                  Data Siswa Kelas {{ $classWaliKelas ? "({$classWaliKelas->name})" : '' }}
+               </h3>
+               <p class="text-xs text-body mt-0.5">Daftar peserta didik binaan di kelas Anda yang terdaftar di sistem.</p>
+            </div>
+            <a href="{{ route('wali-kelas.siswa') }}" class="inline-flex items-center justify-center text-xs font-semibold text-brand hover:text-brand-strong bg-brand-soft hover:bg-brand-soft/80 px-3.5 py-2 rounded-base transition-colors shrink-0">
+               <span>Kelola Data Siswa</span>
+               <svg class="w-4 h-4 ms-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                  <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+               </svg>
+            </a>
+         </div>
+
+         <div class="overflow-x-auto rounded-base border border-default">
+            <table class="w-full text-xs md:text-sm text-left text-body">
+               <thead class="text-[11px] md:text-xs font-bold text-heading uppercase bg-neutral-tertiary border-b border-default">
+                  <tr>
+                     <th scope="col" class="px-4 py-3 text-center w-12">No</th>
+                     <th scope="col" class="px-4 py-3">NIS / NISN</th>
+                     <th scope="col" class="px-4 py-3">Nama Siswa</th>
+                     <th scope="col" class="px-4 py-3 text-center">L/P</th>
+                     <th scope="col" class="px-4 py-3">Tempat, Tgl Lahir</th>
+                     <th scope="col" class="px-4 py-3">Agama</th>
+                     <th scope="col" class="px-4 py-3 text-center">Status</th>
+                  </tr>
+               </thead>
+               <tbody class="divide-y divide-default">
+                  @forelse($students ?? [] as $index => $student)
+                     <tr class="hover:bg-neutral-tertiary/50 transition-colors">
+                        <td class="px-4 py-3 text-center font-bold text-heading">{{ $index + 1 }}</td>
+                        <td class="px-4 py-3 font-mono text-xs">
+                           <span class="font-bold text-heading">{{ $student->nis }}</span>
+                           @if($student->nisn)
+                              <span class="block text-[11px] text-body/60">NISN: {{ $student->nisn }}</span>
+                           @endif
+                        </td>
+                        <td class="px-4 py-3 font-bold text-heading">
+                           {{ $student->name }}
+                        </td>
+                        <td class="px-4 py-3 text-center">
+                           @if($student->gender === 'L')
+                              <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold bg-blue-100 text-blue-700">Laki-laki</span>
+                           @else
+                              <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-bold bg-emerald-100 text-black">Perempuan</span>
+                           @endif
+                        </td>
+                        <td class="px-4 py-3">
+                           {{ $student->birth_place }}, {{ $student->birth_date ? \Carbon\Carbon::parse($student->birth_date)->format('d/m/Y') : '-' }}
+                        </td>
+                        <td class="px-4 py-3">{{ $student->religion }}</td>
+                        <td class="px-4 py-3 text-center">
+                           @if($student->status === 'ACTIVE')
+                              <span class="inline-flex items-center justify-center px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-100 text-black">
+                                 Aktif
+                              </span>
+                           @else
+                              <span class="inline-flex items-center justify-center px-2.5 py-1 rounded-full text-xs font-bold bg-rose-100 text-rose-800">
+                                 Nonaktif
+                              </span>
+                           @endif
+                        </td>
+                     </tr>
+                  @empty
+                     <tr>
+                        <td colspan="7" class="px-4 py-8 text-center text-body">
+                           <div class="flex flex-col items-center justify-center space-y-1.5">
+                              <svg class="w-10 h-10 text-body/40" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                              </svg>
+                              <p class="text-sm font-bold text-heading">Belum Ada Data Siswa</p>
+                              <p class="text-xs text-body">Silakan tambahkan data siswa di menu Data Siswa.</p>
+                           </div>
+                        </td>
+                     </tr>
+                  @endforelse
+               </tbody>
+            </table>
+         </div>
       </div>
 
       <!-- Information Details Section -->

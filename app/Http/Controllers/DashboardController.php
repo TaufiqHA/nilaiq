@@ -2,16 +2,19 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Absensi;
 use App\Models\AcademicYear;
 use App\Models\AssignmentMeetings;
 use App\Models\Attendances;
 use App\Models\Classes;
+use App\Models\ClassWaliKelas;
 use App\Models\DailyTestMeetings;
 use App\Models\FinalExams;
 use App\Models\MidtermExams;
 use App\Models\Settings;
 use App\Models\SettingsWaliKelas;
 use App\Models\Students;
+use App\Models\StudentWaliKelas;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\View\View;
@@ -140,17 +143,50 @@ class DashboardController extends Controller
      */
     public function waliKelas(Request $request): View|JsonResponse
     {
+        $userId = auth()->id();
+        $classWaliKelas = ClassWaliKelas::where('user_id', $userId)->first();
+
         $activeAcademicYear = AcademicYear::where('is_active', true)->first();
         $settingsWaliKelas = SettingsWaliKelas::first();
-        $totalStudents = Students::where('status', 'ACTIVE')->count();
 
-        $totalAttendances = Attendances::count();
-        $presentAttendances = Attendances::where('status', 'HADIR')->count();
-        $attendanceRate = $totalAttendances > 0
-            ? round(($presentAttendances / $totalAttendances) * 100, 2)
-            : 0;
+        $students = collect();
+        $totalStudents = 0;
+        $activeStudentsCount = 0;
+        $maleStudentsCount = 0;
+        $femaleStudentsCount = 0;
+        $attendanceRate = 0;
 
-        $data = compact('activeAcademicYear', 'settingsWaliKelas', 'totalStudents', 'attendanceRate');
+        if ($classWaliKelas) {
+            $students = StudentWaliKelas::where('class_id', $classWaliKelas->id)->get();
+            $totalStudents = $students->count();
+            $activeStudentsCount = $students->where('status', 'ACTIVE')->count();
+            $maleStudentsCount = $students->where('gender', 'L')->count();
+            $femaleStudentsCount = $students->where('gender', 'P')->count();
+
+            $studentIds = $students->pluck('id');
+            $absensiRecords = Absensi::whereIn('student_id', $studentIds)->get();
+            $totalHadir = $absensiRecords->sum('hadir');
+            $totalIzin = $absensiRecords->sum('izin');
+            $totalSakit = $absensiRecords->sum('sakit');
+            $totalAlpa = $absensiRecords->sum('alpa');
+            $totalAbsensi = $totalHadir + $totalIzin + $totalSakit + $totalAlpa;
+
+            if ($totalAbsensi > 0) {
+                $attendanceRate = round(($totalHadir / $totalAbsensi) * 100, 2);
+            }
+        }
+
+        $data = compact(
+            'activeAcademicYear',
+            'settingsWaliKelas',
+            'classWaliKelas',
+            'students',
+            'totalStudents',
+            'activeStudentsCount',
+            'maleStudentsCount',
+            'femaleStudentsCount',
+            'attendanceRate'
+        );
 
         if ($request->wantsJson()) {
             return response()->json($data);
