@@ -35,11 +35,7 @@ class AbsensiController extends Controller
             $students = StudentWaliKelas::where('class_id', $classWaliKelas->id)->with('absensi')->get();
         }
 
-        if (view()->exists('auth.waliKelas.absensi')) {
-            return view('auth.waliKelas.absensi', compact('students', 'classWaliKelas'));
-        }
-
-        return response()->json($students);
+        return view('auth.waliKelas.absensi', compact('students', 'classWaliKelas'));
     }
 
     /**

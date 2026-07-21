@@ -79,6 +79,22 @@ class AbsensiTest extends TestCase
     }
 
     /**
+     * Test authenticated wali_kelas user can access absensi html view.
+     */
+    public function test_wali_kelas_can_view_absensi_page(): void
+    {
+        $user = User::factory()->create(['role' => 'wali_kelas']);
+        $student = $this->createStudent($user);
+        Absensi::factory()->create(['student_id' => $student->id]);
+
+        $response = $this->actingAs($user)->get(route('wali-kelas.absensi'));
+
+        $response->assertStatus(200)
+            ->assertViewIs('auth.waliKelas.absensi')
+            ->assertViewHas('students');
+    }
+
+    /**
      * Test authenticated wali_kelas user can filter absensis by student_id.
      */
     public function test_wali_kelas_can_filter_absensis_by_student_id(): void
