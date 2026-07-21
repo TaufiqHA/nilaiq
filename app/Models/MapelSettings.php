@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
     'mapel',
     'guru',
     'kkm',
+    'kelompok',
 ])]
 class MapelSettings extends Model
 {

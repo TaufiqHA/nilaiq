@@ -21,6 +21,7 @@ use App\Http\Controllers\MidtermExamsController;
 use App\Http\Controllers\MidtermScoresController;
 use App\Http\Controllers\NilaiMapelController;
 use App\Http\Controllers\PrestasiController;
+use App\Http\Controllers\RaportController;
 use App\Http\Controllers\RekapController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\SettingsWaliKelasController;
@@ -158,5 +159,11 @@ Route::middleware('auth')->group(function () {
         Route::post('nilai-mapels/batch', [NilaiMapelController::class, 'batchStore'])->name('nilai-mapels.batch');
         Route::delete('nilai-mapels/{nilai_mapel}/delete', [NilaiMapelController::class, 'delete'])->name('nilai-mapels.delete');
         Route::get('/nilai-mapel', [NilaiMapelController::class, 'index'])->name('nilai-mapel');
+
+        // Raport Routes
+        Route::get('/raport', [RaportController::class, 'index'])->name('raport');
+        Route::post('/raport/mapel-kelompok', [RaportController::class, 'updateKelompok'])->name('raport.update-kelompok');
+        Route::get('/raport/cetak-semua', [RaportController::class, 'cetakSemua'])->name('raport.cetak-semua');
+        Route::get('/raport/{student}/cetak', [RaportController::class, 'cetak'])->name('raport.cetak');
     });
 });

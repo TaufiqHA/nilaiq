@@ -23,6 +23,7 @@ return new class extends Migration
             $table->string('mapel');
             $table->string('guru');
             $table->integer('kkm');
+            $table->string('kelompok')->default('A');
 
             $table->timestamps();
         });
