@@ -33,7 +33,7 @@ class AcademicYearTest extends TestCase
     {
         /** @var User $user */
         $user = User::factory()->create();
-        AcademicYear::factory()->count(3)->create();
+        AcademicYear::factory()->count(3)->create(['user_id' => $user->id]);
 
         $response = $this->actingAs($user)->get(route('academic-years.index'));
 
@@ -49,7 +49,7 @@ class AcademicYearTest extends TestCase
     {
         /** @var User $user */
         $user = User::factory()->create();
-        $year = AcademicYear::factory()->create();
+        $year = AcademicYear::factory()->create(['user_id' => $user->id]);
 
         $response = $this->actingAs($user)->getJson(route('academic-years.index'));
 
@@ -79,6 +79,7 @@ class AcademicYearTest extends TestCase
             'year' => '2025/2026',
             'semester' => 'GANJIL',
             'is_active' => true,
+            'user_id' => $user->id,
         ]);
 
         $response->assertRedirect(route('academic-years.index'));
@@ -93,7 +94,7 @@ class AcademicYearTest extends TestCase
         /** @var User $user */
         $user = User::factory()->create();
 
-        $activeYear = AcademicYear::factory()->active()->create();
+        $activeYear = AcademicYear::factory()->active()->create(['user_id' => $user->id]);
 
         $yearData = [
             'year' => '2026/2027',
@@ -106,6 +107,7 @@ class AcademicYearTest extends TestCase
         $this->assertDatabaseHas('academic_years', [
             'year' => '2026/2027',
             'is_active' => true,
+            'user_id' => $user->id,
         ]);
 
         $this->assertDatabaseHas('academic_years', [
@@ -121,7 +123,7 @@ class AcademicYearTest extends TestCase
     {
         /** @var User $user */
         $user = User::factory()->create();
-        $year = AcademicYear::factory()->create();
+        $year = AcademicYear::factory()->create(['user_id' => $user->id]);
 
         $response = $this->actingAs($user)->get(route('academic-years.show', $year));
 
@@ -137,7 +139,7 @@ class AcademicYearTest extends TestCase
     {
         /** @var User $user */
         $user = User::factory()->create();
-        $year = AcademicYear::factory()->create(['year' => '2024/2025']);
+        $year = AcademicYear::factory()->create(['year' => '2024/2025', 'user_id' => $user->id]);
 
         $updateData = [
             'year' => '2025/2026',
@@ -165,8 +167,8 @@ class AcademicYearTest extends TestCase
         /** @var User $user */
         $user = User::factory()->create();
 
-        $activeYear = AcademicYear::factory()->active()->create();
-        $anotherYear = AcademicYear::factory()->create(['is_active' => false]);
+        $activeYear = AcademicYear::factory()->active()->create(['user_id' => $user->id]);
+        $anotherYear = AcademicYear::factory()->create(['is_active' => false, 'user_id' => $user->id]);
 
         $updateData = [
             'year' => $anotherYear->year,
@@ -194,7 +196,7 @@ class AcademicYearTest extends TestCase
     {
         /** @var User $user */
         $user = User::factory()->create();
-        $year = AcademicYear::factory()->create();
+        $year = AcademicYear::factory()->create(['user_id' => $user->id]);
 
         $response = $this->actingAs($user)->delete(route('academic-years.destroy', $year));
 
@@ -212,7 +214,7 @@ class AcademicYearTest extends TestCase
     {
         /** @var User $user */
         $user = User::factory()->create();
-        $year = AcademicYear::factory()->create();
+        $year = AcademicYear::factory()->create(['user_id' => $user->id]);
 
         $response = $this->actingAs($user)->delete(route('academic-years.delete', $year));
 
@@ -221,5 +223,33 @@ class AcademicYearTest extends TestCase
         ]);
 
         $response->assertRedirect(route('academic-years.index'));
+    }
+
+    /**
+     * Test user cannot access or modify another user's academic year.
+     */
+    public function test_user_cannot_access_or_modify_other_users_academic_year(): void
+    {
+        /** @var User $user1 */
+        $user1 = User::factory()->create();
+        /** @var User $user2 */
+        $user2 = User::factory()->create();
+
+        $yearOfUser2 = AcademicYear::factory()->create(['user_id' => $user2->id]);
+
+        // Attempting to view details
+        $this->actingAs($user1)->get(route('academic-years.show', $yearOfUser2))
+            ->assertStatus(403);
+
+        // Attempting to update
+        $this->actingAs($user1)->put(route('academic-years.update', $yearOfUser2), [
+            'year' => '2027/2028',
+            'semester' => 'GENAP',
+            'is_active' => '1',
+        ])->assertStatus(403);
+
+        // Attempting to delete
+        $this->actingAs($user1)->delete(route('academic-years.destroy', $yearOfUser2))
+            ->assertStatus(403);
     }
 }

@@ -15,7 +15,8 @@ class AcademicYearController extends Controller
      */
     public function index(Request $request): JsonResponse|View
     {
-        $academicYears = AcademicYear::orderBy('year', 'desc')
+        $academicYears = AcademicYear::where('user_id', auth()->id())
+            ->orderBy('year', 'desc')
             ->orderBy('semester', 'asc')
             ->get();
 
@@ -37,7 +38,7 @@ class AcademicYearController extends Controller
         $validated['user_id'] = auth()->id();
 
         if ($validated['is_active']) {
-            AcademicYear::query()->update(['is_active' => false]);
+            AcademicYear::where('user_id', auth()->id())->update(['is_active' => false]);
         }
 
         $academicYear = AcademicYear::create($validated);
@@ -57,11 +58,16 @@ class AcademicYearController extends Controller
      */
     public function show(Request $request, AcademicYear $academicYear): JsonResponse|View
     {
+        if ($academicYear->user_id !== auth()->id()) {
+            abort(403, 'Akses ditolak.');
+        }
+
         if ($request->wantsJson()) {
             return response()->json($academicYear);
         }
 
-        $academicYears = AcademicYear::orderBy('year', 'desc')
+        $academicYears = AcademicYear::where('user_id', auth()->id())
+            ->orderBy('year', 'desc')
             ->orderBy('semester', 'asc')
             ->get();
 
@@ -73,12 +79,18 @@ class AcademicYearController extends Controller
      */
     public function update(Request $request, AcademicYear $academicYear): JsonResponse|RedirectResponse
     {
+        if ($academicYear->user_id !== auth()->id()) {
+            abort(403, 'Akses ditolak.');
+        }
+
         $validated = $request->validate($this->validationRules());
 
         $validated['is_active'] = $request->boolean('is_active');
 
         if ($validated['is_active']) {
-            AcademicYear::where('id', '!=', $academicYear->id)->update(['is_active' => false]);
+            AcademicYear::where('user_id', auth()->id())
+                ->where('id', '!=', $academicYear->id)
+                ->update(['is_active' => false]);
         }
 
         $academicYear->update($validated);
@@ -98,6 +110,10 @@ class AcademicYearController extends Controller
      */
     public function destroy(AcademicYear $academicYear): JsonResponse|RedirectResponse
     {
+        if ($academicYear->user_id !== auth()->id()) {
+            abort(403, 'Akses ditolak.');
+        }
+
         $academicYear->delete();
 
         if (request()->wantsJson()) {

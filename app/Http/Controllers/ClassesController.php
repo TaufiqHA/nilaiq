@@ -17,7 +17,10 @@ class ClassesController extends Controller
     public function index(Request $request): JsonResponse|View
     {
         $classes = Classes::with(['academicYear', 'students'])->get();
-        $academicYears = AcademicYear::all();
+        $academicYears = AcademicYear::where('user_id', auth()->id())
+            ->orderBy('year', 'desc')
+            ->orderBy('semester', 'asc')
+            ->get();
 
         if ($request->wantsJson()) {
             return response()->json($classes);
@@ -57,7 +60,10 @@ class ClassesController extends Controller
         }
 
         $classes = Classes::with(['academicYear', 'students'])->get();
-        $academicYears = AcademicYear::all();
+        $academicYears = AcademicYear::where('user_id', auth()->id())
+            ->orderBy('year', 'desc')
+            ->orderBy('semester', 'asc')
+            ->get();
 
         return view('auth.class', compact('classes', 'academicYears', 'class'));
     }

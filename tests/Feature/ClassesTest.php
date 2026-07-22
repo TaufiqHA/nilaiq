@@ -34,7 +34,8 @@ class ClassesTest extends TestCase
     {
         /** @var User $user */
         $user = User::factory()->create();
-        Classes::factory()->count(3)->create();
+        $academicYear = AcademicYear::factory()->create(['user_id' => $user->id]);
+        Classes::factory()->count(3)->create(['academic_year_id' => $academicYear->id]);
 
         $response = $this->actingAs($user)->get(route('classes.index'));
 
@@ -114,7 +115,8 @@ class ClassesTest extends TestCase
     {
         /** @var User $user */
         $user = User::factory()->create();
-        $class = Classes::factory()->create();
+        $academicYear = AcademicYear::factory()->create(['user_id' => $user->id]);
+        $class = Classes::factory()->create(['academic_year_id' => $academicYear->id]);
 
         $response = $this->actingAs($user)->get(route('classes.show', $class));
 

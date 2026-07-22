@@ -24,6 +24,7 @@ use App\Http\Controllers\PrestasiController;
 use App\Http\Controllers\RaportController;
 use App\Http\Controllers\RecapsController;
 use App\Http\Controllers\RekapController;
+use App\Http\Controllers\RekapNilaiController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\SettingsWaliKelasController;
 use App\Http\Controllers\SikapController;
@@ -172,5 +173,8 @@ Route::middleware('auth')->group(function () {
         Route::post('/raport/mapel-kelompok', [RaportController::class, 'updateKelompok'])->name('raport.update-kelompok');
         Route::get('/raport/cetak-semua', [RaportController::class, 'cetakSemua'])->name('raport.cetak-semua');
         Route::get('/raport/{student}/cetak', [RaportController::class, 'cetak'])->name('raport.cetak');
+
+        // Rekap Nilai Route
+        Route::get('/rekap-nilai', [RekapNilaiController::class, 'index'])->name('rekap-nilai');
     });
 });
