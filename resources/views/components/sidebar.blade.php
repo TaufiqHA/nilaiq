@@ -117,15 +117,15 @@
       
       <!-- Quick User profile info footer inside sidebar -->
       <div class="border-t border-default pt-4 flex items-center justify-between gap-3">
-         <div class="flex items-center gap-3 min-w-0">
-            <div class="h-9 w-9 rounded-full bg-brand flex items-center justify-center font-bold text-white shadow-sm text-sm shrink-0">
+         <a href="{{ route('profile') }}" class="flex items-center gap-3 min-w-0 hover:opacity-85 hover:text-fg-brand transition-all duration-200 group">
+            <div class="h-9 w-9 rounded-full bg-brand flex items-center justify-center font-bold text-white shadow-sm text-sm shrink-0 group-hover:bg-brand-strong transition-colors">
                {{ substr(auth()->user()->name, 0, 2) }}
             </div>
             <div class="min-w-0">
-               <p class="text-sm font-bold text-heading truncate">{{ auth()->user()->name }}</p>
-               <p class="text-xs text-body truncate">{{ auth()->user()->email }}</p>
+               <p class="text-sm font-bold text-heading truncate group-hover:text-fg-brand transition-colors">{{ auth()->user()->name }}</p>
+               <p class="text-xs text-body truncate group-hover:text-fg-brand/80 transition-colors">{{ auth()->user()->email }}</p>
             </div>
-         </div>
+         </a>
          
          <!-- Laravel Logout Button -->
          <form action="{{ route('logout') }}" method="POST" id="logout-form" class="hidden">

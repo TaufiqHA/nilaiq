@@ -21,6 +21,7 @@ use App\Http\Controllers\MidtermExamsController;
 use App\Http\Controllers\MidtermScoresController;
 use App\Http\Controllers\NilaiMapelController;
 use App\Http\Controllers\PrestasiController;
+use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RaportController;
 use App\Http\Controllers\RecapsController;
 use App\Http\Controllers\RekapController;
@@ -55,6 +56,9 @@ Route::middleware('auth')->group(function () {
     // Auth & Account
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
     Route::get('/me', [AuthController::class, 'me'])->name('me');
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile');
+    Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::put('/profile/password', [ProfileController::class, 'updatePassword'])->name('profile.password');
 
     // Academic Years
     Route::resource('academic-years', AcademicYearController::class);
