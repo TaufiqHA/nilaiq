@@ -12,7 +12,13 @@
                 <h1 class="hidden sm:block text-3xl font-extrabold text-heading tracking-tight mb-2">Absensi</h1>
                 <p class="text-body">Kelola pertemuan dan isi absensi siswa di setiap kelas.</p>
             </div>
-            <div>
+            <div class="flex items-center gap-3">
+                <button type="button" data-modal-target="rekap-class-modal" data-modal-toggle="rekap-class-modal" class="bg-neutral-secondary-medium hover:bg-neutral-tertiary border border-default text-heading px-5 py-2.5 rounded-base text-sm font-bold shadow-sm transition-all duration-200 cursor-pointer flex items-center gap-2">
+                    <svg class="w-4.5 h-4.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                    </svg>
+                    Rekap Absensi
+                </button>
                 <button type="button" onclick="prepareAddMeeting()" data-modal-target="meeting-modal" data-modal-toggle="meeting-modal" class="bg-brand hover:bg-brand-strong text-white px-5 py-2.5 rounded-base text-sm font-bold shadow-md shadow-brand/10 transition-all duration-200 cursor-pointer flex items-center gap-2">
                     <svg class="w-4.5 h-4.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
@@ -62,7 +68,7 @@
                         <select id="filter-class" onchange="filterMeetings()" class="w-full bg-neutral-secondary-medium border border-default text-heading text-sm rounded-base focus:ring-brand focus:border-brand block p-2 font-semibold">
                             <option value="">-- Semua Kelas --</option>
                             @foreach($classes as $class)
-                                <option value="{{ $class->name }}">{{ $class->name }}</option>
+                                <option value="{{ $class->id }}" data-name="{{ $class->name }}">{{ $class->name }}</option>
                             @endforeach
                         </select>
                     </div>
@@ -233,6 +239,51 @@
                 </svg>
                 <p class="font-medium text-heading">Tidak ada siswa ditemukan.</p>
                 <p class="text-xs mt-1">Belum ada data siswa di kelas pertemuan ini.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal Dialog: Select Class for Rekap Absensi -->
+<div id="rekap-class-modal" tabindex="-1" aria-hidden="true" class="fixed top-0 left-0 right-0 z-50 hidden w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] max-h-full flex items-center justify-center bg-black/50 backdrop-blur-xs">
+    <div class="relative w-full max-w-md max-h-full">
+        <!-- Modal content -->
+        <div class="relative bg-white rounded-base shadow-lg dark:bg-neutral-primary-soft border border-default">
+            <!-- Modal header -->
+            <div class="flex items-center justify-between p-4 md:p-5 border-b rounded-t border-default">
+                <h3 class="text-lg font-bold text-heading">
+                    Pilih Kelas
+                </h3>
+                <button type="button" class="text-body bg-transparent hover:bg-neutral-secondary-soft hover:text-heading rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-neutral-tertiary cursor-pointer" data-modal-hide="rekap-class-modal">
+                    <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+                    </svg>
+                    <span class="sr-only">Close modal</span>
+                </button>
+            </div>
+            <!-- Modal body -->
+            <div class="p-4 md:p-5 space-y-4">
+                <!-- Class Select -->
+                <div>
+                    <label for="rekap_modal_class_id" class="block mb-2 text-sm font-semibold text-heading">Pilih Kelas untuk Rekap</label>
+                    <select id="rekap_modal_class_id" required
+                            class="bg-neutral-secondary-medium border border-default text-heading text-sm rounded-base focus:ring-brand focus:border-brand block w-full p-2.5 font-semibold">
+                        <option value="" disabled selected>-- Pilih Kelas --</option>
+                        @foreach($classes as $class)
+                            <option value="{{ $class->id }}">{{ $class->name }}</option>
+                        @endforeach
+                    </select>
+                </div>
+
+                <!-- Modal Action Buttons -->
+                <div class="flex items-center justify-end gap-3 border-t border-default pt-4 mt-6">
+                    <button type="button" data-modal-hide="rekap-class-modal" class="px-5 py-2.5 text-sm font-semibold border border-default hover:bg-neutral-tertiary text-body rounded-base transition-all duration-200 cursor-pointer">
+                        Batal
+                    </button>
+                    <button type="button" onclick="goToRekapAbsensiFromModal()" class="bg-brand hover:bg-brand-strong text-white px-5 py-2.5 rounded-base text-sm font-bold shadow-md shadow-brand/10 transition-all duration-200 cursor-pointer">
+                        Pilih
+                    </button>
+                </div>
             </div>
         </div>
     </div>
@@ -661,7 +712,9 @@
     // Filter main meetings table list by search, class, and date selection
     function filterMeetings() {
         const query = document.getElementById('search-meetings').value.toLowerCase();
-        const selectedClass = document.getElementById('filter-class').value;
+        const selectedClassEl = document.getElementById('filter-class');
+        const selectedClass = selectedClassEl.value;
+        const selectedClassName = selectedClassEl.options[selectedClassEl.selectedIndex].getAttribute('data-name') || '';
         const selectedDate = document.getElementById('filter-date').value;
         const rows = document.querySelectorAll('.meeting-row');
         let hasVisibleRows = false;
@@ -672,7 +725,7 @@
             const rawDate = row.getAttribute('data-date');
             
             const matchesSearch = title.includes(query);
-            const matchesClass = selectedClass === '' || className === selectedClass;
+            const matchesClass = selectedClass === '' || className === selectedClassName;
             const matchesDate = selectedDate === '' || rawDate === selectedDate;
 
             if (matchesSearch && matchesClass && matchesDate) {
@@ -699,6 +752,16 @@
     function clearDateFilter() {
         document.getElementById('filter-date').value = '';
         filterMeetings();
+    }
+
+    // Go to Rekap Absensi page from class selection modal
+    function goToRekapAbsensiFromModal() {
+        const selectedClassVal = document.getElementById('rekap_modal_class_id').value;
+        if (!selectedClassVal) {
+            alert('Silakan pilih kelas terlebih dahulu.');
+            return;
+        }
+        window.location.href = `/rekap-absensi?class_id=${selectedClassVal}`;
     }
 
     // Helper toast show

@@ -119,6 +119,7 @@ Route::middleware('auth')->group(function () {
         // Rekap Data Routes
         Route::get('/rekap', [RekapController::class, 'index'])->name('rekap.index');
         Route::get('/rekap/data/{class}', [RekapController::class, 'getClassRekapData'])->name('rekap.data');
+        Route::get('/rekap-absensi', [AttendanceMeetingsController::class, 'rekapAbsensi'])->name('rekap-absensi.index');
 
         // Recaps Management
         Route::get('/nilai-akhir', [RecapsController::class, 'nilaiAkhirView'])->name('nilai-akhir.index');
