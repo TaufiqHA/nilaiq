@@ -23,6 +23,7 @@ class AttendanceMeetingsFactory extends Factory
             'title' => fake()->sentence(3),
             'meeting_date' => fake()->date(),
             'description' => fake()->paragraph(),
+            'tipe' => fake()->randomElement(['harian', 'ulang harian', 'tugas', 'pts', 'pas']),
         ];
     }
 }

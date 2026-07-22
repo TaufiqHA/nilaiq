@@ -14,6 +14,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
     'title',
     'meeting_date',
     'description',
+    'tipe',
 ])]
 class AttendanceMeetings extends Model
 {

@@ -128,6 +128,7 @@ class AttendanceMeetingsController extends Controller
             'title' => ['required', 'string', 'max:255'],
             'meeting_date' => ['required', 'date'],
             'description' => ['nullable', 'string'],
+            'tipe' => ['required', 'string', 'in:harian,ulang harian,tugas,pts,pas'],
         ];
     }
 
@@ -174,8 +175,8 @@ class AttendanceMeetingsController extends Controller
                     ->groupBy('student_id');
 
                 // Get assessment data for the columns UH1-UH3, T1-T3, PTS, PAS
-                $dailyTests = DailyTestMeetings::where('class_id', $classId)->orderBy('id')->take(3)->get();
-                $assignments = AssignmentMeetings::where('class_id', $classId)->orderBy('id')->take(3)->get();
+                $dailyTests = DailyTestMeetings::where('class_id', $classId)->orderBy('id')->get();
+                $assignments = AssignmentMeetings::where('class_id', $classId)->orderBy('id')->get();
                 $midterms = MidtermExams::where('class_id', $classId)->orderBy('id')->take(1)->get();
                 $finals = FinalExams::where('class_id', $classId)->orderBy('id')->take(1)->get();
 

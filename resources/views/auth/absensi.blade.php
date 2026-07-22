@@ -92,6 +92,7 @@
                             <th scope="col" class="px-6 py-3.5 min-w-[50px] w-12 text-center hidden sm:table-cell">No</th>
                             <th scope="col" class="px-6 py-3.5 min-w-[180px]">Nama Pertemuan</th>
                             <th scope="col" class="px-6 py-3.5 min-w-[80px]">Kelas</th>
+                            <th scope="col" class="px-6 py-3.5 min-w-[100px] text-center">Tipe</th>
                             <th scope="col" class="px-6 py-3.5 min-w-[160px] hidden md:table-cell">Tanggal Pertemuan</th>
                             <th scope="col" class="px-6 py-3.5 min-w-[160px] hidden lg:table-cell">Deskripsi</th>
                             <th scope="col" class="px-6 py-3.5 min-w-[120px] text-center whitespace-nowrap">Status Terisi</th>
@@ -104,6 +105,29 @@
                                 <td class="px-6 py-4 text-center font-semibold text-heading select-none hidden sm:table-cell">{{ sprintf('%02d', $loop->iteration) }}</td>
                                 <td class="px-6 py-4 font-bold text-heading whitespace-nowrap">{{ $meeting->title }}</td>
                                 <td class="px-6 py-4 text-body font-semibold">{{ $meeting->class?->name ?? '-' }}</td>
+                                <td class="px-6 py-4 text-center whitespace-nowrap">
+                                    @if(($meeting->tipe ?? 'harian') === 'harian')
+                                        <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-sky-50 text-sky-700 border border-sky-200 dark:bg-sky-950/20 dark:text-sky-400 dark:border-sky-900/30">
+                                            Harian
+                                        </span>
+                                    @elseif($meeting->tipe === 'ulang harian')
+                                        <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-amber-50 text-amber-700 border border-amber-200 dark:bg-amber-950/20 dark:text-amber-400 dark:border-amber-900/30">
+                                            Ulangan Harian
+                                        </span>
+                                    @elseif($meeting->tipe === 'tugas')
+                                        <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-emerald-50 text-emerald-700 border border-emerald-200 dark:bg-emerald-950/20 dark:text-emerald-400 dark:border-emerald-900/30">
+                                            Tugas
+                                        </span>
+                                    @elseif($meeting->tipe === 'pts')
+                                        <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-purple-50 text-purple-700 border border-purple-200 dark:bg-purple-950/20 dark:text-purple-400 dark:border-purple-900/30">
+                                            PTS
+                                        </span>
+                                    @elseif($meeting->tipe === 'pas')
+                                        <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-rose-50 text-rose-700 border border-rose-200 dark:bg-rose-950/20 dark:text-rose-400 dark:border-rose-900/30">
+                                            PAS
+                                        </span>
+                                    @endif
+                                </td>
                                 <td class="px-6 py-4 text-body whitespace-nowrap hidden md:table-cell">{{ $meeting->meeting_date ? \Carbon\Carbon::parse($meeting->meeting_date)->translatedFormat('d F Y') : '-' }}</td>
                                 <td class="px-6 py-4 text-body max-w-xs truncate hidden lg:table-cell">{{ $meeting->description ?? '-' }}</td>
                                 <td class="px-6 py-4 text-center whitespace-nowrap">
@@ -127,7 +151,7 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="7" class="px-6 py-8 text-center text-body">
+                                <td colspan="8" class="px-6 py-8 text-center text-body">
                                     <svg class="mx-auto h-12 w-12 text-neutral-400 mb-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M19 11H5m14 0a2 2 0 0 1 2 2v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-6a2 2 0 0 1 2-2" />
                                     </svg>
@@ -331,6 +355,19 @@
                            placeholder="contoh: Pertemuan Pertama">
                 </div>
 
+                <!-- Tipe Select -->
+                <div>
+                    <label for="modal_tipe" class="block mb-2 text-sm font-semibold text-heading">Tipe Pertemuan</label>
+                    <select name="tipe" id="modal_tipe" required
+                            class="bg-neutral-secondary-medium border border-default text-heading text-sm rounded-base focus:ring-brand focus:border-brand block w-full p-2.5 font-semibold">
+                        <option value="harian">Harian</option>
+                        <option value="ulang harian">Ulangan Harian</option>
+                        <option value="tugas">Tugas</option>
+                        <option value="pts">PTS</option>
+                        <option value="pas">PAS</option>
+                    </select>
+                </div>
+
                 <!-- Meeting Date Input -->
                 <div>
                     <label for="modal_meeting_date" class="block mb-2 text-sm font-semibold text-heading">Tanggal Pertemuan</label>
@@ -392,6 +429,7 @@
         
         document.getElementById('modal_class_id').value = '';
         document.getElementById('modal_title_input').value = '';
+        document.getElementById('modal_tipe').value = 'harian';
         document.getElementById('modal_meeting_date').value = new Date().toISOString().split('T')[0];
         document.getElementById('modal_description').value = '';
     }
@@ -404,6 +442,7 @@
 
         document.getElementById('modal_class_id').value = meeting.class_id;
         document.getElementById('modal_title_input').value = meeting.title;
+        document.getElementById('modal_tipe').value = meeting.tipe || 'harian';
         
         let rawDate = meeting.meeting_date;
         if (rawDate && rawDate.includes('T')) {
