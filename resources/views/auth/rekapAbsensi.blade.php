@@ -158,11 +158,12 @@
                         <tr class="bg-neutral-secondary-medium text-heading font-bold text-center border-b border-default select-none">
                             <th class="border-e border-default py-3.5 px-2" colspan="3">Nomor</th>
                             <th class="border-e border-default py-3.5 px-4 text-left min-w-[200px]" rowspan="2">Nama Peserta Didik</th>
-                            <th class="border-e border-default py-2" colspan="{{ $totalMeetingsCount > 0 ? $totalMeetingsCount : 1 }}">Absensi Pertemuan</th>
-                            <th class="border-e border-default py-2" colspan="{{ $dailyTests->count() > 0 ? $dailyTests->count() : 1 }}">Ulangan</th>
-                            <th class="border-e border-default py-2" colspan="{{ $assignments->count() > 0 ? $assignments->count() : 1 }}">Tugas</th>
-                            <th class="border-e border-default py-2" colspan="2">Penilaian</th>
-                            <th class="border-e border-default py-2" colspan="3">Jumlah Absen</th>
+                            <th class="border-e border-default py-2" colspan="{{ $meetingsHarian->count() > 0 ? $meetingsHarian->count() : 1 }}">Harian</th>
+                            <th class="border-e border-default py-2" colspan="{{ $meetingsUlangHarian->count() > 0 ? $meetingsUlangHarian->count() : 1 }}">Ulangan Harian</th>
+                            <th class="border-e border-default py-2" colspan="{{ $meetingsTugas->count() > 0 ? $meetingsTugas->count() : 1 }}">Tugas</th>
+                            <th class="border-e border-default py-2" colspan="{{ $meetingsPts->count() > 0 ? $meetingsPts->count() : 1 }}">PTS</th>
+                            <th class="border-e border-default py-2" colspan="{{ $meetingsPas->count() > 0 ? $meetingsPas->count() : 1 }}">PAS</th>
+                            <th class="border-e border-default py-2" colspan="4">Jumlah Kehadiran</th>
                         </tr>
                         <tr class="bg-neutral-secondary-medium text-heading font-bold text-center border-b border-default select-none">
                             <th class="border-e border-default py-2 w-10">No</th>
@@ -173,82 +174,57 @@
                             @foreach($meetingsHarian as $index => $meeting)
                                 <th class="border-e border-default py-2 w-8 text-[10px]" title="{{ $meeting->title }}">{{ $index + 1 }}</th>
                             @endforeach
+                            @if($meetingsHarian->count() === 0)
+                                <th class="border-e border-default py-2 w-8 text-[10px]">-</th>
+                            @endif
+
                             <!-- Ulang Harian Columns -->
                             @foreach($meetingsUlangHarian as $index => $meeting)
                                 <th class="border-e border-default py-2 w-8 text-[10px]" title="{{ $meeting->title }}">UH{{ $index + 1 }}</th>
                             @endforeach
+                            @if($meetingsUlangHarian->count() === 0)
+                                <th class="border-e border-default py-2 w-8 text-[10px]">-</th>
+                            @endif
+
                             <!-- Tugas Columns -->
                             @foreach($meetingsTugas as $index => $meeting)
                                 <th class="border-e border-default py-2 w-8 text-[10px]" title="{{ $meeting->title }}">T{{ $index + 1 }}</th>
                             @endforeach
+                            @if($meetingsTugas->count() === 0)
+                                <th class="border-e border-default py-2 w-8 text-[10px]">-</th>
+                            @endif
+
                             <!-- PTS Columns -->
                             @foreach($meetingsPts as $index => $meeting)
                                 <th class="border-e border-default py-2 w-8 text-[10px]" title="{{ $meeting->title }}">PTS{{ $meetingsPts->count() > 1 ? $index + 1 : '' }}</th>
                             @endforeach
+                            @if($meetingsPts->count() === 0)
+                                <th class="border-e border-default py-2 w-8 text-[10px]">-</th>
+                            @endif
+
                             <!-- PAS Columns -->
                             @foreach($meetingsPas as $index => $meeting)
                                 <th class="border-e border-default py-2 w-8 text-[10px]" title="{{ $meeting->title }}">PAS{{ $meetingsPas->count() > 1 ? $index + 1 : '' }}</th>
                             @endforeach
-                            @if($totalMeetingsCount === 0)
+                            @if($meetingsPas->count() === 0)
                                 <th class="border-e border-default py-2 w-8 text-[10px]">-</th>
                             @endif
 
-                            <!-- Ulangan (UH1-UHn) -->
-                            @forelse($dailyTests as $tIndex => $test)
-                                <th class="border-e border-default py-2 w-10 text-[10px]" title="{{ $test->title }}">UH{{ $tIndex + 1 }}</th>
-                            @empty
-                                <th class="border-e border-default py-2 w-10 text-[10px]">-</th>
-                            @endforelse
-                            <!-- Tugas (T1-Tn) -->
-                            @forelse($assignments as $aIndex => $asg)
-                                <th class="border-e border-default py-2 w-10 text-[10px]" title="{{ $asg->title }}">T{{ $aIndex + 1 }}</th>
-                            @empty
-                                <th class="border-e border-default py-2 w-10 text-[10px]">-</th>
-                            @endforelse
-                            <!-- Penilaian (PTS, PAS) -->
-                            <th class="border-e border-default py-2 w-10 text-[10px]" title="{{ $midterms->get(0)->title ?? '-' }}">PTS</th>
-                            <th class="border-e border-default py-2 w-10 text-[10px]" title="{{ $finals->get(0)->title ?? '-' }}">PAS</th>
-                            <!-- Absensi (A, I, S) -->
-                            <th class="border-e border-default py-2 w-8 text-fg-danger-strong font-bold">A</th>
-                            <th class="border-e border-default py-2 w-8 text-sky-600 font-bold">I</th>
+                            <!-- Absensi (H, S, I, A) -->
+                            <th class="border-e border-default py-2 w-8 text-emerald-600 font-bold">H</th>
                             <th class="border-e border-default py-2 w-8 text-amber-600 font-bold">S</th>
+                            <th class="border-e border-default py-2 w-8 text-sky-600 font-bold">I</th>
+                            <th class="border-e border-default py-2 w-8 text-fg-danger-strong font-bold">A</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-default bg-white dark:bg-neutral-primary-soft">
                         @forelse($students as $index => $student)
                             @php
                                 $studentAttendances = $attendances->get($student->id) ?? collect();
-                                $countA = $studentAttendances->where('status', 'ALFA')->count();
-                                $countI = $studentAttendances->where('status', 'IZIN')->count();
+                                $countH = $studentAttendances->where('status', 'HADIR')->count();
                                 $countS = $studentAttendances->where('status', 'SAKIT')->count();
-
-                                // UH scores
-                                $uhScores = [];
-                                foreach ($dailyTests as $tIndex => $test) {
-                                    $scoreObj = $dailyScores->get($student->id)?->firstWhere('daily_test_meeting_id', $test->id);
-                                    $uhScores[$tIndex] = $scoreObj ? round($scoreObj->score) : '';
-                                }
-                                
-                                // Tugas scores
-                                $tugasScores = [];
-                                foreach ($assignments as $aIndex => $asg) {
-                                    $scoreObj = $assignmentScores->get($student->id)?->firstWhere('assignment_meeting_id', $asg->id);
-                                    $tugasScores[$aIndex] = $scoreObj ? round($scoreObj->score) : '';
-                                }
-                                
-                                // PTS score
-                                $ptsScore = '';
-                                if ($midterms->count() > 0) {
-                                    $scoreObj = $midtermScores->get($student->id)?->firstWhere('midterm_exam_id', $midterms[0]->id);
-                                    $ptsScore = $scoreObj ? round($scoreObj->score) : '';
-                                }
-                                
-                                // PAS score
-                                $pasScore = '';
-                                if ($finals->count() > 0) {
-                                    $scoreObj = $finalScores->get($student->id)?->firstWhere('final_exam_id', $finals[0]->id);
-                                    $pasScore = $scoreObj ? round($scoreObj->score) : '';
-                                }
+                                $countI = $studentAttendances->where('status', 'IZIN')->count();
+                                $countA = $studentAttendances->where('status', 'ALFA')->count();
                             @endphp
                             <tr class="hover:bg-neutral-secondary-soft dark:hover:bg-neutral-tertiary transition-colors duration-150 text-center">
                                 <td class="py-2.5 px-2 font-semibold text-heading border-e border-default">{{ sprintf('%02d', $index + 1) }}</td>
@@ -256,22 +232,17 @@
                                 <td class="py-2.5 text-body border-e border-default">{{ $student->nisn ?? '-' }}</td>
                                 <td class="py-2.5 px-4 font-bold text-heading text-left border-e border-default whitespace-nowrap">{{ $student->name }}</td>
                                 
-                                <!-- Meetings grouped display -->
-                                @php
-                                    $renderMeetings = collect()
-                                        ->concat($meetingsHarian)
-                                        ->concat($meetingsUlangHarian)
-                                        ->concat($meetingsTugas)
-                                        ->concat($meetingsPts)
-                                        ->concat($meetingsPas);
-                                @endphp
-                                @foreach($renderMeetings as $meeting)
+                                <!-- Harian -->
+                                @forelse($meetingsHarian as $meeting)
                                     @php
                                         $statusChar = '';
                                         $cellClass = 'text-body';
                                         $meetingAttendance = $studentAttendances->firstWhere('attendance_meeting_id', $meeting->id);
                                         if ($meetingAttendance) {
-                                            if ($meetingAttendance->status === 'IZIN') {
+                                            if ($meetingAttendance->status === 'HADIR') {
+                                                $statusChar = 'H';
+                                                $cellClass = 'text-emerald-600 font-bold bg-emerald-50 dark:bg-emerald-950/20';
+                                            } elseif ($meetingAttendance->status === 'IZIN') {
                                                 $statusChar = 'I';
                                                 $cellClass = 'text-sky-600 font-bold bg-sky-50 dark:bg-sky-950/20';
                                             } elseif ($meetingAttendance->status === 'SAKIT') {
@@ -284,37 +255,127 @@
                                         }
                                     @endphp
                                     <td class="py-2.5 border-e border-default {{ $cellClass }}">{{ $statusChar }}</td>
-                                @endforeach
-                                @if($totalMeetingsCount === 0)
-                                    <td class="py-2.5 border-e border-default text-body text-center font-semibold">-</td>
-                                @endif
-
-                                <!-- Daily Test scores -->
-                                @forelse($dailyTests as $tIndex => $test)
-                                    <td class="py-2.5 border-e border-default font-semibold text-heading font-mono">{{ $uhScores[$tIndex] ?? '' }}</td>
                                 @empty
                                     <td class="py-2.5 border-e border-default text-body text-center font-semibold">-</td>
                                 @endforelse
 
-                                <!-- Assignment scores -->
-                                @forelse($assignments as $aIndex => $asg)
-                                    <td class="py-2.5 border-e border-default font-semibold text-heading font-mono">{{ $tugasScores[$aIndex] ?? '' }}</td>
+                                <!-- Ulang Harian -->
+                                @forelse($meetingsUlangHarian as $meeting)
+                                    @php
+                                        $statusChar = '';
+                                        $cellClass = 'text-body';
+                                        $meetingAttendance = $studentAttendances->firstWhere('attendance_meeting_id', $meeting->id);
+                                        if ($meetingAttendance) {
+                                            if ($meetingAttendance->status === 'HADIR') {
+                                                $statusChar = 'H';
+                                                $cellClass = 'text-emerald-600 font-bold bg-emerald-50 dark:bg-emerald-950/20';
+                                            } elseif ($meetingAttendance->status === 'IZIN') {
+                                                $statusChar = 'I';
+                                                $cellClass = 'text-sky-600 font-bold bg-sky-50 dark:bg-sky-950/20';
+                                            } elseif ($meetingAttendance->status === 'SAKIT') {
+                                                $statusChar = 'S';
+                                                $cellClass = 'text-amber-600 font-bold bg-amber-50 dark:bg-amber-950/20';
+                                            } elseif ($meetingAttendance->status === 'ALFA') {
+                                                $statusChar = 'A';
+                                                $cellClass = 'text-fg-danger-strong font-extrabold bg-danger-soft/20';
+                                            }
+                                        }
+                                    @endphp
+                                    <td class="py-2.5 border-e border-default {{ $cellClass }}">{{ $statusChar }}</td>
                                 @empty
                                     <td class="py-2.5 border-e border-default text-body text-center font-semibold">-</td>
                                 @endforelse
 
-                                <!-- PTS / PAS -->
-                                <td class="py-2.5 border-e border-default font-bold text-brand font-mono">{{ $ptsScore }}</td>
-                                <td class="py-2.5 border-e border-default font-bold text-brand font-mono">{{ $pasScore }}</td>
+                                <!-- Tugas -->
+                                @forelse($meetingsTugas as $meeting)
+                                    @php
+                                        $statusChar = '';
+                                        $cellClass = 'text-body';
+                                        $meetingAttendance = $studentAttendances->firstWhere('attendance_meeting_id', $meeting->id);
+                                        if ($meetingAttendance) {
+                                            if ($meetingAttendance->status === 'HADIR') {
+                                                $statusChar = 'H';
+                                                $cellClass = 'text-emerald-600 font-bold bg-emerald-50 dark:bg-emerald-950/20';
+                                            } elseif ($meetingAttendance->status === 'IZIN') {
+                                                $statusChar = 'I';
+                                                $cellClass = 'text-sky-600 font-bold bg-sky-50 dark:bg-sky-950/20';
+                                            } elseif ($meetingAttendance->status === 'SAKIT') {
+                                                $statusChar = 'S';
+                                                $cellClass = 'text-amber-600 font-bold bg-amber-50 dark:bg-amber-950/20';
+                                            } elseif ($meetingAttendance->status === 'ALFA') {
+                                                $statusChar = 'A';
+                                                $cellClass = 'text-fg-danger-strong font-extrabold bg-danger-soft/20';
+                                            }
+                                        }
+                                    @endphp
+                                    <td class="py-2.5 border-e border-default {{ $cellClass }}">{{ $statusChar }}</td>
+                                @empty
+                                    <td class="py-2.5 border-e border-default text-body text-center font-semibold">-</td>
+                                @endforelse
 
-                                <!-- Total absences -->
-                                <td class="py-2.5 border-e border-default font-bold text-fg-danger-strong bg-danger-soft/10 w-8">{{ $countA > 0 ? $countA : '' }}</td>
+                                <!-- PTS -->
+                                @forelse($meetingsPts as $meeting)
+                                    @php
+                                        $statusChar = '';
+                                        $cellClass = 'text-body';
+                                        $meetingAttendance = $studentAttendances->firstWhere('attendance_meeting_id', $meeting->id);
+                                        if ($meetingAttendance) {
+                                            if ($meetingAttendance->status === 'HADIR') {
+                                                $statusChar = 'H';
+                                                $cellClass = 'text-emerald-600 font-bold bg-emerald-50 dark:bg-emerald-950/20';
+                                            } elseif ($meetingAttendance->status === 'IZIN') {
+                                                $statusChar = 'I';
+                                                $cellClass = 'text-sky-600 font-bold bg-sky-50 dark:bg-sky-950/20';
+                                            } elseif ($meetingAttendance->status === 'SAKIT') {
+                                                $statusChar = 'S';
+                                                $cellClass = 'text-amber-600 font-bold bg-amber-50 dark:bg-amber-950/20';
+                                            } elseif ($meetingAttendance->status === 'ALFA') {
+                                                $statusChar = 'A';
+                                                $cellClass = 'text-fg-danger-strong font-extrabold bg-danger-soft/20';
+                                            }
+                                        }
+                                    @endphp
+                                    <td class="py-2.5 border-e border-default {{ $cellClass }}">{{ $statusChar }}</td>
+                                @empty
+                                    <td class="py-2.5 border-e border-default text-body text-center font-semibold">-</td>
+                                @endforelse
+
+                                <!-- PAS -->
+                                @forelse($meetingsPas as $meeting)
+                                    @php
+                                        $statusChar = '';
+                                        $cellClass = 'text-body';
+                                        $meetingAttendance = $studentAttendances->firstWhere('attendance_meeting_id', $meeting->id);
+                                        if ($meetingAttendance) {
+                                            if ($meetingAttendance->status === 'HADIR') {
+                                                $statusChar = 'H';
+                                                $cellClass = 'text-emerald-600 font-bold bg-emerald-50 dark:bg-emerald-950/20';
+                                            } elseif ($meetingAttendance->status === 'IZIN') {
+                                                $statusChar = 'I';
+                                                $cellClass = 'text-sky-600 font-bold bg-sky-50 dark:bg-sky-950/20';
+                                            } elseif ($meetingAttendance->status === 'SAKIT') {
+                                                $statusChar = 'S';
+                                                $cellClass = 'text-amber-600 font-bold bg-amber-50 dark:bg-amber-950/20';
+                                            } elseif ($meetingAttendance->status === 'ALFA') {
+                                                $statusChar = 'A';
+                                                $cellClass = 'text-fg-danger-strong font-extrabold bg-danger-soft/20';
+                                            }
+                                        }
+                                    @endphp
+                                    <td class="py-2.5 border-e border-default {{ $cellClass }}">{{ $statusChar }}</td>
+                                @empty
+                                    <td class="py-2.5 border-e border-default text-body text-center font-semibold">-</td>
+                                @endforelse
+
+                                <!-- Total absences/kehadiran -->
+                                <td class="py-2.5 border-e border-default font-bold text-emerald-600 bg-emerald-500/5 w-8">{{ $countH > 0 ? $countH : '' }}</td>
+                                <td class="py-2.5 border-e border-default font-bold text-amber-600 bg-amber-500/5 w-8">{{ $countS > 0 ? $countS : '' }}</td>
                                 <td class="py-2.5 border-e border-default font-bold text-sky-600 bg-sky-500/5 w-8">{{ $countI > 0 ? $countI : '' }}</td>
-                                <td class="py-2.5 font-bold text-amber-600 bg-amber-500/5 w-8">{{ $countS > 0 ? $countS : '' }}</td>
+                                <td class="py-2.5 font-bold text-fg-danger-strong bg-danger-soft/10 w-8">{{ $countA > 0 ? $countA : '' }}</td>
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="{{ 9 + ($totalMeetingsCount > 0 ? $totalMeetingsCount : 1) + ($dailyTests->count() > 0 ? $dailyTests->count() : 1) + ($assignments->count() > 0 ? $assignments->count() : 1) }}" class="py-8 text-center text-body">
+                                <td colspan="{{ 8 + ($meetingsHarian->count() > 0 ? $meetingsHarian->count() : 1) + ($meetingsUlangHarian->count() > 0 ? $meetingsUlangHarian->count() : 1) + ($meetingsTugas->count() > 0 ? $meetingsTugas->count() : 1) + ($meetingsPts->count() > 0 ? $meetingsPts->count() : 1) + ($meetingsPas->count() > 0 ? $meetingsPas->count() : 1) }}" class="py-8 text-center text-body">
                                     <p class="font-medium text-heading">Belum ada siswa aktif di kelas ini.</p>
                                 </td>
                             </tr>
@@ -363,11 +424,12 @@
                 <tr class="text-center font-bold">
                     <th colspan="3" style="width: 7%;">Nomor</th>
                     <th rowspan="2" style="width: 25%;">Nama Peserta Didik</th>
-                    <th colspan="{{ $totalMeetingsCount > 0 ? $totalMeetingsCount : 1 }}" style="width: 36%;">Absensi</th>
-                    <th colspan="{{ $dailyTests->count() > 0 ? $dailyTests->count() : 1 }}" style="width: 8%;">Ulangan</th>
-                    <th colspan="{{ $assignments->count() > 0 ? $assignments->count() : 1 }}" style="width: 8%;">Tugas</th>
-                    <th colspan="2" style="width: 5%;">Penilaian</th>
-                    <th colspan="3" style="width: 8%;">Absensi</th>
+                    <th colspan="{{ $meetingsHarian->count() > 0 ? $meetingsHarian->count() : 1 }}">Harian</th>
+                    <th colspan="{{ $meetingsUlangHarian->count() > 0 ? $meetingsUlangHarian->count() : 1 }}">Ulangan Harian</th>
+                    <th colspan="{{ $meetingsTugas->count() > 0 ? $meetingsTugas->count() : 1 }}">Tugas</th>
+                    <th colspan="{{ $meetingsPts->count() > 0 ? $meetingsPts->count() : 1 }}">PTS</th>
+                    <th colspan="{{ $meetingsPas->count() > 0 ? $meetingsPas->count() : 1 }}">PAS</th>
+                    <th colspan="4" style="width: 12%;">Rekap Absensi</th>
                     <th rowspan="2" style="width: 3%;">KET.</th>
                 </tr>
                 <tr class="text-center font-bold">
@@ -379,82 +441,57 @@
                     @foreach($meetingsHarian as $index => $meeting)
                         <th style="width: 2%;">{{ $index + 1 }}</th>
                     @endforeach
+                    @if($meetingsHarian->count() === 0)
+                        <th style="width: 2%;">-</th>
+                    @endif
+
                     <!-- UH -->
                     @foreach($meetingsUlangHarian as $index => $meeting)
                         <th style="width: 2%;">UH{{ $index + 1 }}</th>
                     @endforeach
+                    @if($meetingsUlangHarian->count() === 0)
+                        <th style="width: 2%;">-</th>
+                    @endif
+
                     <!-- Tugas -->
                     @foreach($meetingsTugas as $index => $meeting)
                         <th style="width: 2%;">T{{ $index + 1 }}</th>
                     @endforeach
+                    @if($meetingsTugas->count() === 0)
+                        <th style="width: 2%;">-</th>
+                    @endif
+
                     <!-- PTS -->
                     @foreach($meetingsPts as $index => $meeting)
                         <th style="width: 2%;">PTS{{ $meetingsPts->count() > 1 ? $index + 1 : '' }}</th>
                     @endforeach
+                    @if($meetingsPts->count() === 0)
+                        <th style="width: 2%;">-</th>
+                    @endif
+
                     <!-- PAS -->
                     @foreach($meetingsPas as $index => $meeting)
                         <th style="width: 2%;">PAS{{ $meetingsPas->count() > 1 ? $index + 1 : '' }}</th>
                     @endforeach
-                    @if($totalMeetingsCount === 0)
+                    @if($meetingsPas->count() === 0)
                         <th style="width: 2%;">-</th>
                     @endif
 
-                    <!-- Ulangan (UH1-UHn) -->
-                    @forelse($dailyTests as $tIndex => $test)
-                        <th style="width: 2.6%; font-size: 7.5pt !important;">UH{{ $tIndex + 1 }}</th>
-                    @empty
-                        <th style="width: 2.6%; font-size: 7.5pt !important;">-</th>
-                    @endforelse
-                    <!-- Tugas (T1-Tn) -->
-                    @forelse($assignments as $aIndex => $asg)
-                        <th style="width: 2.6%; font-size: 7.5pt !important;">T{{ $aIndex + 1 }}</th>
-                    @empty
-                        <th style="width: 2.6%; font-size: 7.5pt !important;">-</th>
-                    @endforelse
-                    <!-- Penilaian (PTS, PAS) -->
-                    <th style="width: 2.5%; font-size: 7.5pt !important;">PTS</th>
-                    <th style="width: 2.5%; font-size: 7.5pt !important;">PAS</th>
-                    <!-- Absensi (A, I, S) -->
-                    <th style="width: 2.6%;">A</th>
-                    <th style="width: 2.7%;">I</th>
-                    <th style="width: 2.7%;">S</th>
+                    <!-- Absensi (H, S, I, A) -->
+                    <th style="width: 3%;">H</th>
+                    <th style="width: 3%;">S</th>
+                    <th style="width: 3%;">I</th>
+                    <th style="width: 3%;">A</th>
                 </tr>
             </thead>
             <tbody>
                 @foreach($students as $index => $student)
                     @php
                         $studentAttendances = $attendances->get($student->id) ?? collect();
-                        $countA = $studentAttendances->where('status', 'ALFA')->count();
-                        $countI = $studentAttendances->where('status', 'IZIN')->count();
+                        $countH = $studentAttendances->where('status', 'HADIR')->count();
                         $countS = $studentAttendances->where('status', 'SAKIT')->count();
-
-                        // UH scores
-                        $uhScores = [];
-                        foreach ($dailyTests as $tIndex => $test) {
-                            $scoreObj = $dailyScores->get($student->id)?->firstWhere('daily_test_meeting_id', $test->id);
-                            $uhScores[$tIndex] = $scoreObj ? round($scoreObj->score) : '';
-                        }
-                        
-                        // Tugas scores
-                        $tugasScores = [];
-                        foreach ($assignments as $aIndex => $asg) {
-                            $scoreObj = $assignmentScores->get($student->id)?->firstWhere('assignment_meeting_id', $asg->id);
-                            $tugasScores[$aIndex] = $scoreObj ? round($scoreObj->score) : '';
-                        }
-                        
-                        // PTS score
-                        $ptsScore = '';
-                        if ($midterms->count() > 0) {
-                            $scoreObj = $midtermScores->get($student->id)?->firstWhere('midterm_exam_id', $midterms[0]->id);
-                            $ptsScore = $scoreObj ? round($scoreObj->score) : '';
-                        }
-                        
-                        // PAS score
-                        $pasScore = '';
-                        if ($finals->count() > 0) {
-                            $scoreObj = $finalScores->get($student->id)?->firstWhere('final_exam_id', $finals[0]->id);
-                            $pasScore = $scoreObj ? round($scoreObj->score) : '';
-                        }
+                        $countI = $studentAttendances->where('status', 'IZIN')->count();
+                        $countA = $studentAttendances->where('status', 'ALFA')->count();
                     @endphp
                     <tr>
                         <td>{{ $index + 1 }}</td>
@@ -462,21 +499,15 @@
                         <td>{{ $student->nisn ?? '0' }}</td>
                         <td class="text-left">{{ $student->name }}</td>
                         
-                        <!-- Meetings grouped display -->
-                        @php
-                            $renderMeetings = collect()
-                                ->concat($meetingsHarian)
-                                ->concat($meetingsUlangHarian)
-                                ->concat($meetingsTugas)
-                                ->concat($meetingsPts)
-                                ->concat($meetingsPas);
-                        @endphp
-                        @foreach($renderMeetings as $meeting)
+                        <!-- Harian -->
+                        @forelse($meetingsHarian as $meeting)
                             @php
                                 $statusChar = '';
                                 $meetingAttendance = $studentAttendances->firstWhere('attendance_meeting_id', $meeting->id);
                                 if ($meetingAttendance) {
-                                    if ($meetingAttendance->status === 'IZIN') {
+                                    if ($meetingAttendance->status === 'HADIR') {
+                                        $statusChar = 'H';
+                                    } elseif ($meetingAttendance->status === 'IZIN') {
                                         $statusChar = 'I';
                                     } elseif ($meetingAttendance->status === 'SAKIT') {
                                         $statusChar = 'S';
@@ -486,33 +517,103 @@
                                 }
                             @endphp
                             <td>{{ $statusChar }}</td>
-                        @endforeach
-                        @if($totalMeetingsCount === 0)
-                            <td>-</td>
-                        @endif
-
-                        <!-- Ulangan (UH1-UHn) -->
-                        @forelse($dailyTests as $tIndex => $test)
-                            <td>{{ $uhScores[$tIndex] ?? '' }}</td>
                         @empty
                             <td>-</td>
                         @endforelse
 
-                        <!-- Tugas (T1-Tn) -->
-                        @forelse($assignments as $aIndex => $asg)
-                            <td>{{ $tugasScores[$aIndex] ?? '' }}</td>
+                        <!-- UH -->
+                        @forelse($meetingsUlangHarian as $meeting)
+                            @php
+                                $statusChar = '';
+                                $meetingAttendance = $studentAttendances->firstWhere('attendance_meeting_id', $meeting->id);
+                                if ($meetingAttendance) {
+                                    if ($meetingAttendance->status === 'HADIR') {
+                                        $statusChar = 'H';
+                                    } elseif ($meetingAttendance->status === 'IZIN') {
+                                        $statusChar = 'I';
+                                    } elseif ($meetingAttendance->status === 'SAKIT') {
+                                        $statusChar = 'S';
+                                    } elseif ($meetingAttendance->status === 'ALFA') {
+                                        $statusChar = 'A';
+                                    }
+                                }
+                            @endphp
+                            <td>{{ $statusChar }}</td>
                         @empty
                             <td>-</td>
                         @endforelse
 
-                        <!-- Penilaian (PTS, PAS) -->
-                        <td>{{ $ptsScore }}</td>
-                        <td>{{ $pasScore }}</td>
+                        <!-- Tugas -->
+                        @forelse($meetingsTugas as $meeting)
+                            @php
+                                $statusChar = '';
+                                $meetingAttendance = $studentAttendances->firstWhere('attendance_meeting_id', $meeting->id);
+                                if ($meetingAttendance) {
+                                    if ($meetingAttendance->status === 'HADIR') {
+                                        $statusChar = 'H';
+                                    } elseif ($meetingAttendance->status === 'IZIN') {
+                                        $statusChar = 'I';
+                                    } elseif ($meetingAttendance->status === 'SAKIT') {
+                                        $statusChar = 'S';
+                                    } elseif ($meetingAttendance->status === 'ALFA') {
+                                        $statusChar = 'A';
+                                    }
+                                }
+                            @endphp
+                            <td>{{ $statusChar }}</td>
+                        @empty
+                            <td>-</td>
+                        @endforelse
 
-                        <!-- Absensi (A, I, S) -->
-                        <td>{{ $countA > 0 ? $countA : '' }}</td>
-                        <td>{{ $countI > 0 ? $countI : '' }}</td>
+                        <!-- PTS -->
+                        @forelse($meetingsPts as $meeting)
+                            @php
+                                $statusChar = '';
+                                $meetingAttendance = $studentAttendances->firstWhere('attendance_meeting_id', $meeting->id);
+                                if ($meetingAttendance) {
+                                    if ($meetingAttendance->status === 'HADIR') {
+                                        $statusChar = 'H';
+                                    } elseif ($meetingAttendance->status === 'IZIN') {
+                                        $statusChar = 'I';
+                                    } elseif ($meetingAttendance->status === 'SAKIT') {
+                                        $statusChar = 'S';
+                                    } elseif ($meetingAttendance->status === 'ALFA') {
+                                        $statusChar = 'A';
+                                    }
+                                }
+                            @endphp
+                            <td>{{ $statusChar }}</td>
+                        @empty
+                            <td>-</td>
+                        @endforelse
+
+                        <!-- PAS -->
+                        @forelse($meetingsPas as $meeting)
+                            @php
+                                $statusChar = '';
+                                $meetingAttendance = $studentAttendances->firstWhere('attendance_meeting_id', $meeting->id);
+                                if ($meetingAttendance) {
+                                    if ($meetingAttendance->status === 'HADIR') {
+                                        $statusChar = 'H';
+                                    } elseif ($meetingAttendance->status === 'IZIN') {
+                                        $statusChar = 'I';
+                                    } elseif ($meetingAttendance->status === 'SAKIT') {
+                                        $statusChar = 'S';
+                                    } elseif ($meetingAttendance->status === 'ALFA') {
+                                        $statusChar = 'A';
+                                    }
+                                }
+                            @endphp
+                            <td>{{ $statusChar }}</td>
+                        @empty
+                            <td>-</td>
+                        @endforelse
+
+                        <!-- Absensi (H, S, I, A) -->
+                        <td>{{ $countH > 0 ? $countH : '' }}</td>
                         <td>{{ $countS > 0 ? $countS : '' }}</td>
+                        <td>{{ $countI > 0 ? $countI : '' }}</td>
+                        <td>{{ $countA > 0 ? $countA : '' }}</td>
                         
                         <!-- Keterangan -->
                         <td></td>
