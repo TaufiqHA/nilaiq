@@ -595,7 +595,7 @@
                                     <path stroke-linecap="round" stroke-linejoin="round"
                                         d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
                                 </svg>
-                                Unduh Template CSV
+                                Unduh Template XLSX
                             </button>
                         </div>
                     </div>
@@ -1074,17 +1074,20 @@
 
         // Dynamic template downloader
         function downloadTemplate() {
-            const csvContent = "\uFEFFnis,nisn,nama,jenis_kelamin,tempat_lahir,tanggal_lahir,alamat,nama_wali,no_hp_wali,status\n" +
-                "123456,01234567,Ahmad Fauzi,L,Jakarta,2010-08-15,Jl. Mawar No. 5,Budi,08123456789,ACTIVE\n" +
-                "123457,01234568,Siti Aminah,P,Surabaya,2011-04-12,Jl. Melati No. 12,Aisyah,08987654321,ACTIVE";
-            const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-            const url = URL.createObjectURL(blob);
-            const link = document.createElement("a");
-            link.setAttribute("href", url);
-            link.setAttribute("download", "template_import_siswa.csv");
-            document.body.appendChild(link);
-            link.click();
-            document.body.removeChild(link);
+            loadSheetJS(() => {
+                const headers = ["nis", "nisn", "nama", "jenis_kelamin", "tempat_lahir", "tanggal_lahir", "alamat", "nama_wali", "no_hp_wali", "status"];
+                const data = [
+                    ["123456", "01234567", "Ahmad Fauzi", "L", "Jakarta", "2010-08-15", "Jl. Mawar No. 5", "Budi", "08123456789", "ACTIVE"],
+                    ["123457", "01234568", "Siti Aminah", "P", "Surabaya", "2011-04-12", "Jl. Melati No. 12", "Aisyah", "08987654321", "ACTIVE"]
+                ];
+                
+                const worksheetData = [headers, ...data];
+                const worksheet = XLSX.utils.aoa_to_sheet(worksheetData);
+                const workbook = XLSX.utils.book_new();
+                XLSX.utils.book_append_sheet(workbook, worksheet, "Template Siswa");
+                
+                XLSX.writeFile(workbook, "template_import_siswa.xlsx");
+            });
         }
 
         // Load SheetJS dynamically on demand

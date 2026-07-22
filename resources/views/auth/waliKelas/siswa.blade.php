@@ -588,7 +588,7 @@
                             <svg class="w-4 h-4 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
                             </svg>
-                            Unduh Template CSV
+                            Unduh Template XLSX
                         </button>
                     </div>
                 </div>
@@ -827,17 +827,20 @@
     }
 
     function downloadTemplate() {
-        const csvContent = "\uFEFFnis,nisn,nama,jenis_kelamin,tempat_lahir,tanggal_lahir,agama,status_keluarga,anak_ke,alamat,sekolah_asal,nama_ayah,pekerjaan_ayah,nama_ibu,pekerjaan_ibu,no_hp_ortu,nama_wali,pekerjaan_wali,no_hp_wali,status\n" +
-            "2024001,0012345678,Ahmad Fauzi,L,Jakarta,2010-08-15,Islam,Anak Kandung,1,Jl. Mawar No. 5,SMP 1 Jakarta,Budi,PNS,Siti,Ibu Rumah Tangga,08123456789,,,ACTIVE\n" +
-            "2024002,0012345679,Siti Aminah,P,Surabaya,2011-04-12,Islam,Anak Kandung,2,Jl. Melati No. 12,SMP 2 Surabaya,Agus,Wiraswasta,Dewi,Karyawan,08987654321,,,ACTIVE";
-        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
-        const url = URL.createObjectURL(blob);
-        const link = document.createElement("a");
-        link.setAttribute("href", url);
-        link.setAttribute("download", "template_import_siswa_wali_kelas.csv");
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+        loadSheetJS(() => {
+            const headers = ["nis", "nisn", "nama", "jenis_kelamin", "tempat_lahir", "tanggal_lahir", "agama", "status_keluarga", "anak_ke", "alamat", "sekolah_asal", "nama_ayah", "pekerjaan_ayah", "nama_ibu", "pekerjaan_ibu", "no_hp_ortu", "nama_wali", "pekerjaan_wali", "no_hp_wali", "status"];
+            const data = [
+                ["2024001", "0012345678", "Ahmad Fauzi", "L", "Jakarta", "2010-08-15", "Islam", "Anak Kandung", "1", "Jl. Mawar No. 5", "SMP 1 Jakarta", "Budi", "PNS", "Siti", "Ibu Rumah Tangga", "08123456789", "", "", "", "ACTIVE"],
+                ["2024002", "0012345679", "Siti Aminah", "P", "Surabaya", "2011-04-12", "Islam", "Anak Kandung", "2", "Jl. Melati No. 12", "SMP 2 Surabaya", "Agus", "Wiraswasta", "Dewi", "Karyawan", "08987654321", "", "", "", "ACTIVE"]
+            ];
+            
+            const worksheetData = [headers, ...data];
+            const worksheet = XLSX.utils.aoa_to_sheet(worksheetData);
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, "Template Siswa Wali Kelas");
+            
+            XLSX.writeFile(workbook, "template_import_siswa_wali_kelas.xlsx");
+        });
     }
 
     function loadSheetJS(callback) {
