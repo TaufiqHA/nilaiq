@@ -156,34 +156,13 @@
                 <table class="w-full text-xs text-left border-collapse">
                     <thead>
                         <tr class="bg-neutral-secondary-medium text-heading font-bold text-center border-b border-default select-none">
-                            <th class="border-e border-default py-3.5 px-2" colspan="3" rowspan="2">Nomor</th>
-                            <th class="border-e border-default py-3.5 px-4 text-left min-w-[200px]" rowspan="3">Nama Peserta Didik</th>
+                            <th class="border-e border-default py-3.5 px-2" colspan="3">Nomor</th>
+                            <th class="border-e border-default py-3.5 px-4 text-left min-w-[200px]" rowspan="2">Nama Peserta Didik</th>
                             <th class="border-e border-default py-2" colspan="{{ $totalMeetingsCount > 0 ? $totalMeetingsCount : 1 }}">Absensi Pertemuan</th>
-                            <th class="border-e border-default py-2" colspan="{{ $dailyTests->count() > 0 ? $dailyTests->count() : 1 }}" rowspan="2">Ulangan</th>
-                            <th class="border-e border-default py-2" colspan="{{ $assignments->count() > 0 ? $assignments->count() : 1 }}" rowspan="2">Tugas</th>
-                            <th class="border-e border-default py-2" colspan="2" rowspan="2">Penilaian</th>
-                            <th class="border-e border-default py-2" colspan="3" rowspan="2">Jumlah Absen</th>
-                        </tr>
-                        <tr class="bg-neutral-secondary-medium text-heading font-bold text-center border-b border-default select-none">
-                            <!-- Dynamic Meeting Type headers -->
-                            @if($meetingsHarian->count() > 0)
-                                <th class="border-e border-default py-1 bg-sky-50/50 dark:bg-sky-950/20 text-sky-700 dark:text-sky-400 font-bold" colspan="{{ $meetingsHarian->count() }}">Harian</th>
-                            @endif
-                            @if($meetingsUlangHarian->count() > 0)
-                                <th class="border-e border-default py-1 bg-amber-50/50 dark:bg-amber-950/20 text-amber-700 dark:text-amber-400 font-bold" colspan="{{ $meetingsUlangHarian->count() }}">UH</th>
-                            @endif
-                            @if($meetingsTugas->count() > 0)
-                                <th class="border-e border-default py-1 bg-emerald-50/50 dark:bg-emerald-950/20 text-emerald-700 dark:text-emerald-400 font-bold" colspan="{{ $meetingsTugas->count() }}">Tugas</th>
-                            @endif
-                            @if($meetingsPts->count() > 0)
-                                <th class="border-e border-default py-1 bg-purple-50/50 dark:bg-purple-950/20 text-purple-700 dark:text-purple-400 font-bold" colspan="{{ $meetingsPts->count() }}">PTS</th>
-                            @endif
-                            @if($meetingsPas->count() > 0)
-                                <th class="border-e border-default py-1 bg-rose-50/50 dark:bg-rose-950/20 text-rose-700 dark:text-rose-400 font-bold" colspan="{{ $meetingsPas->count() }}">PAS</th>
-                            @endif
-                            @if($totalMeetingsCount === 0)
-                                <th class="border-e border-default py-1 font-bold" colspan="1">-</th>
-                            @endif
+                            <th class="border-e border-default py-2" colspan="{{ $dailyTests->count() > 0 ? $dailyTests->count() : 1 }}">Ulangan</th>
+                            <th class="border-e border-default py-2" colspan="{{ $assignments->count() > 0 ? $assignments->count() : 1 }}">Tugas</th>
+                            <th class="border-e border-default py-2" colspan="2">Penilaian</th>
+                            <th class="border-e border-default py-2" colspan="3">Jumlah Absen</th>
                         </tr>
                         <tr class="bg-neutral-secondary-medium text-heading font-bold text-center border-b border-default select-none">
                             <th class="border-e border-default py-2 w-10">No</th>
@@ -196,19 +175,19 @@
                             @endforeach
                             <!-- Ulang Harian Columns -->
                             @foreach($meetingsUlangHarian as $index => $meeting)
-                                <th class="border-e border-default py-2 w-8 text-[10px]" title="{{ $meeting->title }}">{{ $index + 1 }}</th>
+                                <th class="border-e border-default py-2 w-8 text-[10px]" title="{{ $meeting->title }}">UH{{ $index + 1 }}</th>
                             @endforeach
                             <!-- Tugas Columns -->
                             @foreach($meetingsTugas as $index => $meeting)
-                                <th class="border-e border-default py-2 w-8 text-[10px]" title="{{ $meeting->title }}">{{ $index + 1 }}</th>
+                                <th class="border-e border-default py-2 w-8 text-[10px]" title="{{ $meeting->title }}">T{{ $index + 1 }}</th>
                             @endforeach
                             <!-- PTS Columns -->
                             @foreach($meetingsPts as $index => $meeting)
-                                <th class="border-e border-default py-2 w-8 text-[10px]" title="{{ $meeting->title }}">{{ $index + 1 }}</th>
+                                <th class="border-e border-default py-2 w-8 text-[10px]" title="{{ $meeting->title }}">PTS{{ $meetingsPts->count() > 1 ? $index + 1 : '' }}</th>
                             @endforeach
                             <!-- PAS Columns -->
                             @foreach($meetingsPas as $index => $meeting)
-                                <th class="border-e border-default py-2 w-8 text-[10px]" title="{{ $meeting->title }}">{{ $index + 1 }}</th>
+                                <th class="border-e border-default py-2 w-8 text-[10px]" title="{{ $meeting->title }}">PAS{{ $meetingsPas->count() > 1 ? $index + 1 : '' }}</th>
                             @endforeach
                             @if($totalMeetingsCount === 0)
                                 <th class="border-e border-default py-2 w-8 text-[10px]">-</th>
@@ -382,35 +361,14 @@
         <table id="rekap-print-table" style="font-family: 'Times New Roman', Times, serif !important;">
             <thead>
                 <tr class="text-center font-bold">
-                    <th colspan="3" rowspan="2" style="width: 7%;">Nomor</th>
-                    <th rowspan="3" style="width: 25%;">Nama Peserta Didik</th>
+                    <th colspan="3" style="width: 7%;">Nomor</th>
+                    <th rowspan="2" style="width: 25%;">Nama Peserta Didik</th>
                     <th colspan="{{ $totalMeetingsCount > 0 ? $totalMeetingsCount : 1 }}" style="width: 36%;">Absensi</th>
-                    <th colspan="{{ $dailyTests->count() > 0 ? $dailyTests->count() : 1 }}" rowspan="2" style="width: 8%;">Ulangan</th>
-                    <th colspan="{{ $assignments->count() > 0 ? $assignments->count() : 1 }}" rowspan="2" style="width: 8%;">Tugas</th>
-                    <th colspan="2" rowspan="2" style="width: 5%;">Penilaian</th>
-                    <th colspan="3" rowspan="2" style="width: 8%;">Absensi</th>
-                    <th rowspan="3" style="width: 3%;">KET.</th>
-                </tr>
-                <tr class="text-center font-bold">
-                    <!-- Dynamic Meeting Type headers -->
-                    @if($meetingsHarian->count() > 0)
-                        <th colspan="{{ $meetingsHarian->count() }}">Harian</th>
-                    @endif
-                    @if($meetingsUlangHarian->count() > 0)
-                        <th colspan="{{ $meetingsUlangHarian->count() }}">UH</th>
-                    @endif
-                    @if($meetingsTugas->count() > 0)
-                        <th colspan="{{ $meetingsTugas->count() }}">Tugas</th>
-                    @endif
-                    @if($meetingsPts->count() > 0)
-                        <th colspan="{{ $meetingsPts->count() }}">PTS</th>
-                    @endif
-                    @if($meetingsPas->count() > 0)
-                        <th colspan="{{ $meetingsPas->count() }}">PAS</th>
-                    @endif
-                    @if($totalMeetingsCount === 0)
-                        <th colspan="1">-</th>
-                    @endif
+                    <th colspan="{{ $dailyTests->count() > 0 ? $dailyTests->count() : 1 }}" style="width: 8%;">Ulangan</th>
+                    <th colspan="{{ $assignments->count() > 0 ? $assignments->count() : 1 }}" style="width: 8%;">Tugas</th>
+                    <th colspan="2" style="width: 5%;">Penilaian</th>
+                    <th colspan="3" style="width: 8%;">Absensi</th>
+                    <th rowspan="2" style="width: 3%;">KET.</th>
                 </tr>
                 <tr class="text-center font-bold">
                     <th style="width: 2%;">Urut</th>
@@ -423,19 +381,19 @@
                     @endforeach
                     <!-- UH -->
                     @foreach($meetingsUlangHarian as $index => $meeting)
-                        <th style="width: 2%;">{{ $index + 1 }}</th>
+                        <th style="width: 2%;">UH{{ $index + 1 }}</th>
                     @endforeach
                     <!-- Tugas -->
                     @foreach($meetingsTugas as $index => $meeting)
-                        <th style="width: 2%;">{{ $index + 1 }}</th>
+                        <th style="width: 2%;">T{{ $index + 1 }}</th>
                     @endforeach
                     <!-- PTS -->
                     @foreach($meetingsPts as $index => $meeting)
-                        <th style="width: 2%;">{{ $index + 1 }}</th>
+                        <th style="width: 2%;">PTS{{ $meetingsPts->count() > 1 ? $index + 1 : '' }}</th>
                     @endforeach
                     <!-- PAS -->
                     @foreach($meetingsPas as $index => $meeting)
-                        <th style="width: 2%;">{{ $index + 1 }}</th>
+                        <th style="width: 2%;">PAS{{ $meetingsPas->count() > 1 ? $index + 1 : '' }}</th>
                     @endforeach
                     @if($totalMeetingsCount === 0)
                         <th style="width: 2%;">-</th>
