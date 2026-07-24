@@ -5,6 +5,15 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Sign In - NilaiQ</title>
     
+    <!-- Inline script to prevent FOUC (flash of incorrect theme) -->
+    <script>
+        if (localStorage.getItem('color-theme') === 'dark' || (!('color-theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+    </script>
+
     <!-- Meta tags for SEO -->
     <meta name="description" content="Sign in to NilaiQ to access your academic achievements and grades.">
     

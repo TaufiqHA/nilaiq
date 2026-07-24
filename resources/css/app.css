@@ -1,4 +1,5 @@
 @import 'tailwindcss';
+@custom-variant dark (&:where(.dark, .dark *));
 @import "flowbite/src/themes/default";
 
 @plugin "flowbite/plugin";
@@ -52,20 +53,18 @@
     --color-danger-subtle: oklch(0.92 0.03 20);
 }
 
-@media (prefers-color-scheme: dark) {
-    :root {
-        --color-heading: oklch(0.95 0.01 240);
-        --color-body: oklch(0.65 0.01 240);
-        --color-default-medium: oklch(0.28 0.02 240);
-        --color-neutral-secondary-medium: oklch(0.12 0.02 240);
+.dark {
+    --color-heading: oklch(0.95 0.01 240);
+    --color-body: oklch(0.65 0.01 240);
+    --color-default-medium: oklch(0.28 0.02 240);
+    --color-neutral-secondary-medium: oklch(0.12 0.02 240);
 
-        --color-neutral-primary-soft: oklch(0.14 0.02 240);
-        --color-default: oklch(0.24 0.02 240);
-        --color-neutral-tertiary: oklch(0.20 0.02 240);
-        --color-neutral-secondary-soft: oklch(0.16 0.02 240);
-        --color-fg-disabled: oklch(0.45 0.01 240);
-        --color-fg-danger-strong: oklch(0.70 0.15 20);
-        --color-danger-soft: oklch(0.20 0.04 20 / 0.3);
-        --color-danger-subtle: oklch(0.30 0.05 20 / 0.5);
-    }
+    --color-neutral-primary-soft: oklch(0.14 0.02 240);
+    --color-default: oklch(0.24 0.02 240);
+    --color-neutral-tertiary: oklch(0.20 0.02 240);
+    --color-neutral-secondary-soft: oklch(0.16 0.02 240);
+    --color-fg-disabled: oklch(0.45 0.01 240);
+    --color-fg-danger-strong: oklch(0.70 0.15 20);
+    --color-danger-soft: oklch(0.20 0.04 20 / 0.3);
+    --color-danger-subtle: oklch(0.30 0.05 20 / 0.5);
 }

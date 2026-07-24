@@ -135,15 +135,25 @@
             </div>
          </a>
          
-         <!-- Laravel Logout Button -->
-         <form action="{{ route('logout') }}" method="POST" id="logout-form" class="hidden">
-            @csrf
-         </form>
-         <button type="button" onclick="event.preventDefault(); document.getElementById('logout-form').submit();" class="text-body hover:text-fg-brand hover:bg-neutral-tertiary p-1.5 rounded-base transition-all duration-200 cursor-pointer" title="Sign Out">
-            <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
-               <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12H4m12 0-4 4m4-4-4-4m3-4h2a3 3 0 0 1 3 3v10a3 3 0 0 1-3 3h-2"/>
-            </svg>
-         </button>
+         <div class="flex items-center gap-1 shrink-0">
+            <!-- Theme Toggle Button -->
+            <button type="button" class="theme-toggle text-body hover:text-fg-brand hover:bg-neutral-tertiary p-1.5 rounded-base transition-all duration-200 cursor-pointer" title="Toggle Dark/Light Mode">
+               <!-- Moon icon (shows in light mode) -->
+               <x-heroicon-o-moon class="theme-toggle-dark-icon hidden w-5 h-5" />
+               <!-- Sun icon (shows in dark mode) -->
+               <x-heroicon-o-sun class="theme-toggle-light-icon hidden w-5 h-5" />
+            </button>
+
+            <!-- Laravel Logout Button -->
+            <form action="{{ route('logout') }}" method="POST" id="logout-form" class="hidden">
+               @csrf
+            </form>
+            <button type="button" onclick="event.preventDefault(); document.getElementById('logout-form').submit();" class="text-body hover:text-fg-brand hover:bg-neutral-tertiary p-1.5 rounded-base transition-all duration-200 cursor-pointer" title="Sign Out">
+               <svg class="w-5 h-5" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
+                  <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 12H4m12 0-4 4m4-4-4-4m3-4h2a3 3 0 0 1 3 3v10a3 3 0 0 1-3 3h-2"/>
+               </svg>
+            </button>
+         </div>
       </div>
    </div>
 </aside>
