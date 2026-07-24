@@ -115,7 +115,7 @@
     <!-- Data Table Siswa -->
     <div class="relative overflow-x-auto border border-default rounded-base shadow-xs bg-white dark:bg-neutral-primary-soft">
         <table class="w-full text-xs text-left rtl:text-right text-body">
-            <thead class="text-[11px] uppercase bg-neutral-secondary-soft border-b border-default text-heading font-extrabold tracking-wider">
+            <thead class="text-[11px] uppercase bg-neutral-secondary-soft border-b border-default text-heading font-extrabold tracking-wider whitespace-nowrap">
                 <tr>
                     <th scope="col" class="px-4 py-3 text-center w-12">No</th>
                     <th scope="col" class="px-4 py-3">NIS / NISN</th>
@@ -131,10 +131,10 @@
                         <td class="px-4 py-3 text-center font-bold text-heading">
                             {{ $index + 1 }}
                         </td>
-                        <td class="px-4 py-3 font-mono text-xs text-body">
+                        <td class="px-4 py-3 font-mono text-xs text-body whitespace-nowrap">
                             {{ $student->nis ?? '-' }} / {{ $student->nisn ?? '-' }}
                         </td>
-                        <td class="px-6 py-3 font-bold text-heading text-sm">
+                        <td class="px-6 py-3 font-bold text-heading text-sm whitespace-nowrap">
                             {{ $student->name }}
                         </td>
                         <td class="px-4 py-3 text-center">
@@ -143,25 +143,26 @@
                             </span>
                         </td>
                         <td class="px-4 py-3 text-center">
-                            <div class="inline-flex items-center gap-1.5">
-                                <span class="px-2 py-0.5 text-[10px] font-bold rounded-base {{ $student->nilaiMapels->isNotEmpty() ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300' : 'bg-gray-100 text-gray-500' }}" title="Nilai Mapel">
+                            <div class="inline-flex flex-wrap items-center justify-center gap-1 min-w-[150px]">
+                                <span class="px-1.5 sm:px-2 py-0.5 text-[9px] sm:text-[10px] font-bold rounded-base {{ $student->nilaiMapels->isNotEmpty() ? 'bg-emerald-100 text-emerald-700 dark:bg-emerald-950 dark:text-emerald-300' : 'bg-gray-100 text-gray-500' }}" title="Nilai Mapel">
                                     Nilai: {{ $student->nilaiMapels->count() }}
                                 </span>
-                                <span class="px-2 py-0.5 text-[10px] font-bold rounded-base {{ $student->sikap ? 'bg-indigo-100 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300' : 'bg-gray-100 text-gray-500' }}" title="Capaian Sikap">
+                                <span class="px-1.5 sm:px-2 py-0.5 text-[9px] sm:text-[10px] font-bold rounded-base {{ $student->sikap ? 'bg-indigo-100 text-indigo-700 dark:bg-indigo-950 dark:text-indigo-300' : 'bg-gray-100 text-gray-500' }}" title="Capaian Sikap">
                                     Sikap
                                 </span>
-                                <span class="px-2 py-0.5 text-[10px] font-bold rounded-base {{ $student->absensi ? 'bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300' : 'bg-gray-100 text-gray-500' }}" title="Absensi">
-                                    Absensi
+                                <span class="px-1.5 sm:px-2 py-0.5 text-[9px] sm:text-[10px] font-bold rounded-base {{ $student->absensi ? 'bg-amber-100 text-amber-700 dark:bg-amber-950 dark:text-amber-300' : 'bg-gray-100 text-gray-500' }}" title="Absensi">
+                                    Absen
                                 </span>
                             </div>
                         </td>
                         <td class="px-6 py-3 text-center">
-                            <button type="button" onclick="previewRaport({{ $student->id }})" class="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 text-xs font-bold text-white bg-brand hover:bg-brand/90 rounded-base shadow-xs transition-colors w-full sm:w-auto cursor-pointer">
+                            <button type="button" onclick="previewRaport({{ $student->id }})" class="inline-flex items-center justify-center gap-1.5 px-3 py-1.5 text-xs font-bold text-white bg-brand hover:bg-brand/90 rounded-base shadow-xs transition-colors w-full sm:w-auto cursor-pointer" title="Pratinjau Raport">
                                 <svg class="w-3.5 h-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
                                     <path stroke-linecap="round" stroke-linejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
                                 </svg>
-                                <span>Pratinjau Raport</span>
+                                <span class="hidden sm:inline">Pratinjau Raport</span>
+                                <span class="inline sm:hidden">Pratinjau</span>
                             </button>
                         </td>
                     </tr>
@@ -187,28 +188,28 @@
 
 <!-- Modal Pratinjau Dokumen Raport (Full Modal Box) -->
 <div id="raport-preview-modal" class="fixed inset-0 z-50 hidden bg-black/60 backdrop-blur-xs flex items-center justify-center p-2 sm:p-4">
-    <div class="relative w-full max-w-5xl h-[92vh] bg-white dark:bg-neutral-primary-soft rounded-base shadow-2xl border border-default flex flex-col overflow-hidden">
+    <div class="relative w-full max-w-5xl h-[96vh] sm:h-[92vh] bg-white dark:bg-neutral-primary-soft rounded-base shadow-2xl border border-default flex flex-col overflow-hidden">
         
         <!-- Modal Header -->
-        <div class="px-5 py-3.5 bg-neutral-primary-soft border-b border-default flex items-center justify-between shrink-0">
-            <div class="flex items-center gap-3">
-                <div class="p-2 bg-brand/10 text-fg-brand rounded-base">
-                    <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+        <div class="px-3 sm:px-5 py-2.5 sm:py-3.5 bg-neutral-primary-soft border-b border-default flex items-center justify-between shrink-0 gap-2">
+            <div class="flex items-center gap-2 sm:gap-3 overflow-hidden">
+                <div class="p-1.5 sm:p-2 bg-brand/10 text-fg-brand rounded-base shrink-0">
+                    <svg class="w-4.5 h-4.5 sm:w-5 sm:h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                     </svg>
                 </div>
-                <div>
-                    <h3 class="text-base font-extrabold text-heading">Pratinjau Dokumen Raport</h3>
-                    <p class="text-[11px] text-body">Pratinjau resmi cetakan A4 sebelum diunduh atau dicetak.</p>
+                <div class="min-w-0">
+                    <h3 class="text-sm sm:text-base font-extrabold text-heading truncate">Pratinjau Raport</h3>
+                    <p class="text-[11px] text-body truncate hidden sm:block">Pratinjau resmi cetakan A4 sebelum diunduh atau dicetak.</p>
                 </div>
             </div>
             
-            <div class="flex items-center gap-2">
-                <button type="button" onclick="printRaportFrame()" class="inline-flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold text-white bg-brand hover:bg-brand/90 rounded-base shadow-xs transition-colors cursor-pointer">
+            <div class="flex items-center gap-1.5 sm:gap-2 shrink-0">
+                <button type="button" onclick="printRaportFrame()" class="inline-flex items-center gap-1.5 px-2.5 sm:px-3 py-1.5 text-xs font-bold text-white bg-brand hover:bg-brand/90 rounded-base shadow-xs transition-colors cursor-pointer" title="Cetak / Download PDF">
                     <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4a2 2 0 00-2-2H9a2 2 0 00-2 2v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
                     </svg>
-                    <span>Cetak / Download PDF</span>
+                    <span class="hidden sm:inline">Cetak / Download PDF</span>
                 </button>
                 <button type="button" onclick="closePreviewModal()" class="text-body hover:text-heading p-1.5 rounded-base hover:bg-neutral-tertiary transition-colors cursor-pointer" title="Tutup">
                     <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12"/></svg>
@@ -298,23 +299,57 @@
         document.getElementById('kelompok-modal').classList.add('hidden');
     }
 
+    function adjustIframeScale() {
+        const iframe = document.getElementById('raport-preview-iframe');
+        const container = iframe ? iframe.parentElement : null;
+        if (!iframe || !container) return;
+
+        const containerWidth = container.clientWidth;
+        const targetWidth = 850; // Width that fits A4 page preview perfectly
+
+        if (containerWidth > 0 && containerWidth < targetWidth) {
+            const scale = containerWidth / targetWidth;
+            iframe.style.width = targetWidth + 'px';
+            iframe.style.height = (container.clientHeight / scale) + 'px';
+            iframe.style.transform = `scale(${scale})`;
+            iframe.style.transformOrigin = 'top left';
+            iframe.style.position = 'absolute';
+            iframe.style.top = '0';
+            iframe.style.left = '0';
+        } else {
+            iframe.style.width = '100%';
+            iframe.style.height = '100%';
+            iframe.style.transform = 'none';
+            iframe.style.position = 'relative';
+            iframe.style.top = 'auto';
+            iframe.style.left = 'auto';
+        }
+    }
+
     function previewRaport(studentId) {
         const iframe = document.getElementById('raport-preview-iframe');
         const urlTemplate = "{{ route('wali-kelas.raport.cetak', ['student' => 999999999]) }}";
         iframe.src = urlTemplate.replace('999999999', studentId);
         document.getElementById('raport-preview-modal').classList.remove('hidden');
+        setTimeout(adjustIframeScale, 50);
     }
 
     function previewRaportSemua() {
         const iframe = document.getElementById('raport-preview-iframe');
         iframe.src = "{{ route('wali-kelas.raport.cetak-semua') }}";
         document.getElementById('raport-preview-modal').classList.remove('hidden');
+        setTimeout(adjustIframeScale, 50);
     }
 
     function closePreviewModal() {
         const modal = document.getElementById('raport-preview-modal');
         modal.classList.add('hidden');
-        document.getElementById('raport-preview-iframe').src = '';
+        const iframe = document.getElementById('raport-preview-iframe');
+        iframe.src = '';
+        iframe.style.width = '100%';
+        iframe.style.height = '100%';
+        iframe.style.transform = 'none';
+        iframe.style.position = 'relative';
     }
 
     function printRaportFrame() {
@@ -324,5 +359,14 @@
             iframe.contentWindow.print();
         }
     }
+
+    // Event listeners to handle resizing and frame load
+    window.addEventListener('resize', adjustIframeScale);
+    document.addEventListener('DOMContentLoaded', () => {
+        const iframe = document.getElementById('raport-preview-iframe');
+        if (iframe) {
+            iframe.addEventListener('load', adjustIframeScale);
+        }
+    });
 </script>
 @endsection

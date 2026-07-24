@@ -178,7 +178,7 @@
 
     @if($classWaliKelas)
         <!-- Statistics Cards -->
-        <div class="grid grid-cols-1 sm:grid-cols-4 gap-4 stats-grid">
+        <div class="hidden sm:grid grid-cols-4 gap-4 stats-grid">
             <div class="p-4 bg-white dark:bg-neutral-primary-soft border border-default rounded-base shadow-xs flex items-center gap-3">
                 <div class="p-2.5 bg-brand-soft text-fg-brand rounded-xl">
                     <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">

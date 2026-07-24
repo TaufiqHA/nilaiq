@@ -165,7 +165,7 @@
                 })->count();
                 $emptyCount = $totalStudents - $filledCount;
             @endphp
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div class="hidden sm:grid grid-cols-3 gap-3">
                 <div class="p-3.5 bg-white dark:bg-neutral-primary-soft border border-default rounded-base shadow-xs flex items-center gap-3">
                     <div class="p-2 bg-brand-soft text-fg-brand rounded-lg">
                         <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -224,7 +224,7 @@
             <div class="rounded-base bg-white dark:bg-neutral-primary-soft border border-default shadow-xs overflow-hidden">
                 <div class="overflow-x-auto">
                     <table id="nilai-table" class="w-full text-xs md:text-sm text-left text-body">
-                        <thead class="text-[11px] md:text-xs font-bold text-heading uppercase bg-neutral-tertiary border-b border-default">
+                        <thead class="text-[11px] md:text-xs font-bold text-heading uppercase bg-neutral-tertiary border-b border-default whitespace-nowrap">
                             <tr>
                                 <th scope="col" class="px-4 py-3 text-center w-12">No</th>
                                 <th scope="col" class="px-4 py-3">NIS / NISN</th>
@@ -280,7 +280,7 @@
                                                name="scores[{{ $index }}][capaian]"
                                                value="{{ $currentCapaian }}"
                                                placeholder="Deskripsi capaian pembelajaran..."
-                                               class="bg-neutral-secondary-medium border border-default text-heading text-xs rounded-base focus:ring-brand focus:border-brand block w-full p-2 transition-colors" />
+                                               class="min-w-[200px] bg-neutral-secondary-medium border border-default text-heading text-xs rounded-base focus:ring-brand focus:border-brand block w-full p-2 transition-colors" />
                                     </td>
                                 </tr>
                             @empty

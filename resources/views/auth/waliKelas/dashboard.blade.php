@@ -4,7 +4,7 @@
 
 @section('content')
    <!-- Dashboard Container -->
-   <div class="p-6 border border-default border-dashed rounded-base bg-white/40 dark:bg-neutral-secondary-medium/20 backdrop-blur-md space-y-6">
+   <div class="space-y-6 w-full">
 
       <!-- Stat Cards Grid -->
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">

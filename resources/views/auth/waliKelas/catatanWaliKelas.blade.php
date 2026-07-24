@@ -103,7 +103,7 @@
         })->count();
         $noCatatanCount = $totalStudents - $hasCatatanCount;
     @endphp
-    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+    <div class="hidden sm:grid grid-cols-3 gap-3">
         <div class="p-3.5 bg-white dark:bg-neutral-primary-soft border border-default rounded-base shadow-xs flex items-center gap-3">
             <div class="p-2 bg-brand-soft text-fg-brand rounded-lg">
                 <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -158,7 +158,7 @@
     <div class="rounded-base bg-white dark:bg-neutral-primary-soft border border-default shadow-xs overflow-hidden">
         <div class="overflow-x-auto">
             <table id="catatan-table" class="w-full text-xs md:text-sm text-left text-body">
-                <thead class="text-[11px] md:text-xs font-bold text-heading uppercase bg-neutral-tertiary border-b border-default">
+                <thead class="text-[11px] md:text-xs font-bold text-heading uppercase bg-neutral-tertiary border-b border-default whitespace-nowrap">
                     <tr>
                         <th scope="col" class="px-4 py-3 text-center w-12">No</th>
                         <th scope="col" class="px-4 py-3">NIS / NISN</th>
@@ -186,7 +186,7 @@
                             <!-- Catatan -->
                             <td class="px-4 py-3">
                                 @if(!empty($catatanText))
-                                    <p class="text-xs font-medium text-heading whitespace-pre-line">{{ $catatanText }}</p>
+                                    <p class="text-xs font-medium text-heading whitespace-pre-line" title="{{ $catatanText }}">{{ \Illuminate\Support\Str::words($catatanText, 5, '...') }}</p>
                                 @else
                                     <span class="text-body/50 italic text-xs">Belum ada catatan wali kelas.</span>
                                 @endif

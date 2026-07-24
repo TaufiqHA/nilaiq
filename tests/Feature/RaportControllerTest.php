@@ -6,6 +6,7 @@ use App\Models\AcademicYear;
 use App\Models\ClassWaliKelas;
 use App\Models\MapelSettings;
 use App\Models\SettingsWaliKelas;
+use App\Models\Sikap;
 use App\Models\StudentWaliKelas;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -95,5 +96,61 @@ class RaportControllerTest extends TestCase
             'id' => $data['mapel']->id,
             'kelompok' => 'B',
         ]);
+    }
+
+    public function test_raport_cetak_displays_sikap_data_correctly(): void
+    {
+        $user = User::factory()->create(['role' => 'wali_kelas']);
+        $data = $this->setupDataForUser($user);
+
+        // 1. Case where Sikap is not filled (should show '-')
+        $response = $this->actingAs($user)->get(route('wali-kelas.raport.cetak', $data['student']));
+        $response->assertStatus(200);
+        $response->assertSee('-');
+
+        // 2. Case where Sikap is filled
+        $sikap = Sikap::factory()->create([
+            'student_id' => $data['student']->id,
+            'beriman_bertakwa_dan_berakhlak_mulia' => 'Sikap Sangat Beriman dan Bertakwa',
+            'mandiri' => 'Sikap Sangat Mandiri',
+            'bergotong_royong' => 'Sikap Gotong Royong Bagus',
+            'kreatif' => 'Sikap Sangat Kreatif',
+            'bernalar_kritis' => 'Sikap Bernalar Kritis Hebat',
+            'berkebinekaan_global' => 'Sikap Berkebinekaan Global Baik',
+        ]);
+
+        $response2 = $this->actingAs($user)->get(route('wali-kelas.raport.cetak', $data['student']));
+        $response2->assertStatus(200);
+        $response2->assertSee('Sikap Sangat Beriman dan Bertakwa');
+        $response2->assertSee('Sikap Sangat Mandiri');
+        $response2->assertSee('Sikap Gotong Royong Bagus');
+        $response2->assertSee('Sikap Sangat Kreatif');
+        $response2->assertSee('Sikap Bernalar Kritis Hebat');
+        $response2->assertSee('Sikap Berkebinekaan Global Baik');
+    }
+
+    public function test_raport_cetak_status_box_visibility_based_on_semester(): void
+    {
+        $userGenap = User::factory()->create(['role' => 'wali_kelas']);
+
+        // Test GENAP Semester (should see status box)
+        $dataGenap = $this->setupDataForUser($userGenap);
+        $dataGenap['academicYear']->update(['semester' => 'GENAP']);
+
+        $responseGenap = $this->actingAs($userGenap)->get(route('wali-kelas.raport.cetak', $dataGenap['student']));
+        $responseGenap->assertStatus(200);
+        $responseGenap->assertSee('Telah menyelesaikan seluruh rangkaian pembelajaran');
+        $responseGenap->assertSee('LULUS');
+
+        $userGanjil = User::factory()->create(['role' => 'wali_kelas']);
+
+        // Test GANJIL Semester (should NOT see status box)
+        $dataGanjil = $this->setupDataForUser($userGanjil);
+        $dataGanjil['academicYear']->update(['semester' => 'GANJIL']);
+
+        $responseGanjil = $this->actingAs($userGanjil)->get(route('wali-kelas.raport.cetak', $dataGanjil['student']));
+        $responseGanjil->assertStatus(200);
+        $responseGanjil->assertDontSee('Telah menyelesaikan seluruh rangkaian pembelajaran');
+        $responseGanjil->assertDontSee('dinyatakan LULUS');
     }
 }

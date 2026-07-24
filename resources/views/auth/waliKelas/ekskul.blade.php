@@ -157,7 +157,7 @@
     <div class="rounded-base bg-white dark:bg-neutral-primary-soft border border-default shadow-xs overflow-hidden">
         <div class="overflow-x-auto">
             <table id="ekskul-table" class="w-full text-xs md:text-sm text-left text-body">
-                <thead class="text-[11px] md:text-xs font-bold text-heading uppercase bg-neutral-tertiary border-b border-default">
+                <thead class="text-[11px] md:text-xs font-bold text-heading uppercase bg-neutral-tertiary border-b border-default whitespace-nowrap">
                     <tr>
                         <th scope="col" class="px-4 py-3 text-center w-12">No</th>
                         <th scope="col" class="px-4 py-3">NIS / NISN</th>

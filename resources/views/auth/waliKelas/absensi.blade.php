@@ -103,7 +103,7 @@
         })->count();
         $noAbsensiCount = $totalStudents - $hasAbsensiCount;
     @endphp
-    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+    <div class="hidden sm:grid grid-cols-3 gap-3">
         <div class="p-3.5 bg-white dark:bg-neutral-primary-soft border border-default rounded-base shadow-xs flex items-center gap-3">
             <div class="p-2 bg-brand-soft text-fg-brand rounded-lg">
                 <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -293,7 +293,7 @@
                 @csrf
                 <input type="hidden" id="form-student-id" name="student_id" value="">
 
-                <div class="grid grid-cols-2 gap-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <!-- 1. Hadir -->
                     <div>
                         <label for="hadir" class="block mb-1 text-xs font-bold text-heading">Hadir (Hari)</label>

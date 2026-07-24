@@ -1,6 +1,6 @@
 @extends('layouts.waliKelas')
 
-@section('title', 'Sikap (Profil Pelajar Pancasila)')
+@section('title', 'Sikap')
 
 @section('content')
 <!-- Container Utama Penilaian Sikap -->
@@ -26,7 +26,7 @@
                     </li>
                 </ol>
             </nav>
-            <h1 class="text-2xl font-extrabold tracking-tight text-heading">Penilaian Sikap (Profil Pelajar Pancasila)</h1>
+            <h1 class="text-2xl font-extrabold tracking-tight text-heading">Penilaian Sikap</h1>
             <p class="text-xs text-body mt-0.5">Kelola data sikap dan karakter 6 Dimensi Profil Pelajar Pancasila untuk setiap siswa.</p>
         </div>
 
@@ -111,7 +111,7 @@
         })->count();
         $noSikapCount = $totalStudents - $hasSikapCount;
     @endphp
-    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+    <div class="hidden sm:grid grid-cols-3 gap-3">
         <div class="p-3.5 bg-white dark:bg-neutral-primary-soft border border-default rounded-base shadow-xs flex items-center gap-3">
             <div class="p-2 bg-brand-soft text-fg-brand rounded-lg">
                 <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -166,7 +166,7 @@
     <div class="rounded-base bg-white dark:bg-neutral-primary-soft border border-default shadow-xs overflow-hidden">
         <div class="overflow-x-auto">
             <table id="sikap-table" class="w-full text-xs md:text-sm text-left text-body">
-                <thead class="text-[11px] md:text-xs font-bold text-heading uppercase bg-neutral-tertiary border-b border-default">
+                <thead class="text-[11px] md:text-xs font-bold text-heading uppercase bg-neutral-tertiary border-b border-default whitespace-nowrap">
                     <tr>
                         <th scope="col" class="px-4 py-3 text-center w-12">No</th>
                         <th scope="col" class="px-4 py-3">NIS / NISN</th>
@@ -199,7 +199,7 @@
                             <td class="px-4 py-3">
                                 @if(!empty($sikap->beriman_bertakwa_dan_berakhlak_mulia))
                                     <span class="line-clamp-2 text-xs font-medium text-heading" title="{{ $sikap->beriman_bertakwa_dan_berakhlak_mulia }}">
-                                        {{ $sikap->beriman_bertakwa_dan_berakhlak_mulia }}
+                                        {{ \Illuminate\Support\Str::words($sikap->beriman_bertakwa_dan_berakhlak_mulia, 5, '...') }}
                                     </span>
                                 @else
                                     <span class="text-body/50 italic text-xs">-</span>
@@ -209,7 +209,7 @@
                             <td class="px-4 py-3">
                                 @if(!empty($sikap->mandiri))
                                     <span class="line-clamp-2 text-xs font-medium text-heading" title="{{ $sikap->mandiri }}">
-                                        {{ $sikap->mandiri }}
+                                        {{ \Illuminate\Support\Str::words($sikap->mandiri, 5, '...') }}
                                     </span>
                                 @else
                                     <span class="text-body/50 italic text-xs">-</span>
@@ -219,7 +219,7 @@
                             <td class="px-4 py-3">
                                 @if(!empty($sikap->bergotong_royong))
                                     <span class="line-clamp-2 text-xs font-medium text-heading" title="{{ $sikap->bergotong_royong }}">
-                                        {{ $sikap->bergotong_royong }}
+                                        {{ \Illuminate\Support\Str::words($sikap->bergotong_royong, 5, '...') }}
                                     </span>
                                 @else
                                     <span class="text-body/50 italic text-xs">-</span>
@@ -229,7 +229,7 @@
                             <td class="px-4 py-3">
                                 @if(!empty($sikap->kreatif))
                                     <span class="line-clamp-2 text-xs font-medium text-heading" title="{{ $sikap->kreatif }}">
-                                        {{ $sikap->kreatif }}
+                                        {{ \Illuminate\Support\Str::words($sikap->kreatif, 5, '...') }}
                                     </span>
                                 @else
                                     <span class="text-body/50 italic text-xs">-</span>
@@ -239,7 +239,7 @@
                             <td class="px-4 py-3">
                                 @if(!empty($sikap->bernalar_kritis))
                                     <span class="line-clamp-2 text-xs font-medium text-heading" title="{{ $sikap->bernalar_kritis }}">
-                                        {{ $sikap->bernalar_kritis }}
+                                        {{ \Illuminate\Support\Str::words($sikap->bernalar_kritis, 5, '...') }}
                                     </span>
                                 @else
                                     <span class="text-body/50 italic text-xs">-</span>
@@ -249,7 +249,7 @@
                             <td class="px-4 py-3">
                                 @if(!empty($sikap->berkebinekaan_global))
                                     <span class="line-clamp-2 text-xs font-medium text-heading" title="{{ $sikap->berkebinekaan_global }}">
-                                        {{ $sikap->berkebinekaan_global }}
+                                        {{ \Illuminate\Support\Str::words($sikap->berkebinekaan_global, 5, '...') }}
                                     </span>
                                 @else
                                     <span class="text-body/50 italic text-xs">-</span>

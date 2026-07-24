@@ -133,7 +133,7 @@
 
                         <div>
                             <label for="school_logo_file" class="block mb-2 text-xs font-semibold text-heading">Logo Sekolah (Opsional)</label>
-                            <div class="flex items-center gap-3">
+                            <div class="flex flex-col sm:flex-row sm:items-center gap-3">
                                 <!-- Thumbnail Preview Container -->
                                 <div id="school_logo_preview_container" class="shrink-0 {{ $settingsWaliKelas?->school_logo ? '' : 'hidden' }}">
                                     <img id="school_logo_preview" 
@@ -143,7 +143,7 @@
                                 </div>
 
                                 <!-- File Input Control -->
-                                <div class="flex-1">
+                                <div class="flex-1 w-full">
                                     <label for="school_logo_file" class="flex items-center w-full bg-neutral-secondary-soft dark:bg-neutral-secondary-medium/50 border border-default text-heading text-xs rounded-base cursor-pointer hover:bg-neutral-tertiary transition-colors overflow-hidden">
                                         <span class="px-4 py-2.5 bg-brand hover:bg-brand-strong text-white font-bold shrink-0 flex items-center gap-1.5 transition-colors">
                                             <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -264,7 +264,7 @@
             <!-- Flowbite Data Table -->
             <div class="relative overflow-x-auto border border-default rounded-base">
                 <table class="w-full text-xs text-left text-body">
-                    <thead class="text-[11px] font-bold text-heading uppercase bg-neutral-secondary-soft dark:bg-neutral-secondary-medium/60 border-b border-default">
+                    <thead class="text-[11px] font-bold text-heading uppercase bg-neutral-secondary-soft dark:bg-neutral-secondary-medium/60 border-b border-default whitespace-nowrap">
                         <tr>
                             <th scope="col" class="px-4 py-3 text-center w-12">No</th>
                             <th scope="col" class="px-4 py-3">Mata Pelajaran</th>
@@ -281,7 +281,7 @@
                                 <td class="px-4 py-3 font-semibold text-heading">{{ $item->mapel }}</td>
                                 <td class="px-4 py-3 text-body">{{ $item->guru }}</td>
                                 <td class="px-4 py-3 text-center font-extrabold text-heading text-sm">{{ $item->kkm }}</td>
-                                <td class="px-4 py-3 text-center">
+                                <td class="px-4 py-3 text-center whitespace-nowrap">
                                     @if($item->kkm >= 80)
                                         <span class="bg-success-soft text-fg-success-strong text-xs font-medium px-1.5 py-0.5 rounded">Sangat Baik (≥80)</span>
                                     @elseif($item->kkm >= 75)

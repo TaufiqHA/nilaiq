@@ -293,27 +293,27 @@
                 <tbody>
                     <tr>
                         <td class="text-center">Beriman, bertakwa kepada Tuhan Yang Maha Esa, dan berakhlak mulia</td>
-                        <td>{{ $sikap?->beriman_bertakwa_dan_berakhlak_mulia ?? 'Menunjukkan sikap baik dalam mensyukuri dan menghargai anugerah Tuhan Yang Maha Esa serta berdoa sebelum dan sesudah melakukan kegiatan' }}</td>
+                        <td>{{ trim($sikap?->beriman_bertakwa_dan_berakhlak_mulia ?? '') !== '' ? $sikap->beriman_bertakwa_dan_berakhlak_mulia : '-' }}</td>
                     </tr>
                     <tr>
                         <td class="text-center">Mandiri</td>
-                        <td>{{ $sikap?->mandiri ?? 'Dapat melaksanakan kegiatan belajar di kelas dan menyelesaikan tugas dalam waktu yang disepakati' }}</td>
+                        <td>{{ trim($sikap?->mandiri ?? '') !== '' ? $sikap->mandiri : '-' }}</td>
                     </tr>
                     <tr>
                         <td class="text-center">Bergotong royong</td>
-                        <td>{{ $sikap?->bergotong_royong ?? 'Menerima dan melaksanakan tugas serta peran yang diberikan kelompok dalam sebuah kegiatan bersama' }}</td>
+                        <td>{{ trim($sikap?->bergotong_royong ?? '') !== '' ? $sikap->bergotong_royong : '-' }}</td>
                     </tr>
                     <tr>
                         <td class="text-center">Kreatif</td>
-                        <td>{{ $sikap?->kreatif ?? 'Mampu mengidentifikasi gagasan kreatif untuk menghadapi situasi dan permasalahan yang terjadi' }}</td>
+                        <td>{{ trim($sikap?->kreatif ?? '') !== '' ? $sikap->kreatif : '-' }}</td>
                     </tr>
                     <tr>
                         <td class="text-center">Bernalar kritis</td>
-                        <td>{{ $sikap?->bernalar_kritis ?? 'Mampu menyampaikan apa yang dipikirkan secara terperinci' }}</td>
+                        <td>{{ trim($sikap?->bernalar_kritis ?? '') !== '' ? $sikap->bernalar_kritis : '-' }}</td>
                     </tr>
                     <tr>
                         <td class="text-center">Berkebinekaan global</td>
-                        <td>{{ $sikap?->berkebinekaan_global ?? 'Dapat mengidentifikasi dan mendeskripsikan ide-ide tentang dirinya dan beberapa macam kelompok di lingkungan sekitarnya' }}</td>
+                        <td>{{ trim($sikap?->berkebinekaan_global ?? '') !== '' ? $sikap->berkebinekaan_global : '-' }}</td>
                     </tr>
                 </tbody>
             </table>
@@ -502,12 +502,14 @@
             </div>
 
             <!-- STATUS BOX (KELULUSAN / KENAIKAN) -->
-            <div class="status-box-container">
-                <div class="box-status">
-                    Telah menyelesaikan seluruh rangkaian pembelajaran dan dinyatakan 
-                    <span class="font-bold" style="font-size: 11pt; margin-left: 5px;">LULUS</span>
+            @if(strtoupper($academicYear?->semester ?? 'GENAP') === 'GENAP')
+                <div class="status-box-container">
+                    <div class="box-status">
+                        Telah menyelesaikan seluruh rangkaian pembelajaran dan dinyatakan 
+                        <span class="font-bold" style="font-size: 11pt; margin-left: 5px;">LULUS</span>
+                    </div>
                 </div>
-            </div>
+            @endif
 
             <!-- BLOK TANDA TANGAN -->
             @php
