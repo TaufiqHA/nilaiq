@@ -7,6 +7,7 @@ use App\Http\Controllers\AssignmentScoresController;
 use App\Http\Controllers\AttendanceMeetingsController;
 use App\Http\Controllers\AttendancesController;
 use App\Http\Controllers\AuthController;
+use App\Http\Controllers\BackupController;
 use App\Http\Controllers\CatatanWaliKelasController;
 use App\Http\Controllers\ClassesController;
 use App\Http\Controllers\ClassWaliKelasController;
@@ -78,6 +79,12 @@ Route::middleware('auth')->group(function () {
         Route::post('/master-data', [SettingsController::class, 'store'])->name('master-data.store');
         Route::resource('settings', SettingsController::class);
         Route::delete('settings/{setting}/delete', [SettingsController::class, 'delete'])->name('settings.delete');
+
+        // Database Backup
+        Route::get('/backup', [BackupController::class, 'index'])->name('backup.index');
+        Route::post('/backup', [BackupController::class, 'store'])->name('backup.store');
+        Route::get('/backup/download/{filename}', [BackupController::class, 'download'])->name('backup.download');
+        Route::delete('/backup/{filename}', [BackupController::class, 'destroy'])->name('backup.destroy');
 
         Route::resource('classes', ClassesController::class);
         Route::delete('classes/{class}/delete', [ClassesController::class, 'delete'])->name('classes.delete');
