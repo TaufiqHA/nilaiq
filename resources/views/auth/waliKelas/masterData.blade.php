@@ -72,8 +72,8 @@
     </div>
 
     <!-- Flowbite Tabs Header -->
-    <div class="border-b border-default">
-        <ul class="flex flex-wrap -mb-px text-xs font-semibold text-center text-body" id="masterDataTab" data-tabs-toggle="#masterDataTabContent" role="tablist">
+    <div class="border-b border-default overflow-x-auto scrollbar-none">
+        <ul class="flex flex-nowrap -mb-px text-xs font-semibold text-center text-body min-w-max" id="masterDataTab" data-tabs-toggle="#masterDataTabContent" role="tablist">
             <li class="me-2" role="presentation">
                 <button class="inline-flex items-center justify-center p-3 border-b-2 rounded-t-lg hover:text-fg-brand hover:border-brand transition-all duration-200 group active" id="identitas-tab" data-tabs-target="#identitas" type="button" role="tab" aria-controls="identitas" aria-selected="true">
                     {{-- <svg class="w-4 h-4 me-2 text-body group-hover:text-fg-brand transition-colors duration-200" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
@@ -139,7 +139,10 @@
                                     <img id="school_logo_preview" 
                                          src="{{ $settingsWaliKelas?->school_logo ? asset('storage/' . $settingsWaliKelas->school_logo) : '#' }}" 
                                          alt="Preview Logo" 
-                                         class="w-11 h-11 object-contain rounded-base border border-default p-1 bg-white dark:bg-neutral-secondary-medium shadow-xs">
+                                         onclick="openLogoModal()"
+                                         class="w-11 h-11 object-contain rounded-base border border-default p-1 bg-white dark:bg-neutral-secondary-medium shadow-xs cursor-pointer hover:opacity-80 hover:scale-105 transition-all duration-200"
+                                         title="Klik untuk memperbesar"
+                                         role="button">
                                 </div>
 
                                 <!-- File Input Control -->
@@ -540,6 +543,28 @@
     </div>
 </div>
 
+<!-- FLOWBITE/CUSTOM MODAL: LIHAT LOGO -->
+<div id="modal-lihat-logo" tabindex="-1" aria-hidden="true" class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-full max-h-full bg-slate-900/60 backdrop-blur-xs">
+    <div class="relative p-4 w-full max-w-lg max-h-full">
+        <!-- Modal content -->
+        <div class="relative bg-white rounded-base shadow-lg dark:bg-neutral-primary-soft border border-default overflow-hidden">
+            <!-- Modal header -->
+            <div class="flex items-center justify-between p-4 border-b border-default">
+                <h3 class="text-sm font-bold text-heading">Pratinjau Logo Sekolah</h3>
+                <button type="button" class="text-body bg-transparent hover:bg-neutral-tertiary hover:text-heading rounded-base text-sm w-8 h-8 ms-auto inline-flex justify-center items-center cursor-pointer" onclick="closeLogoModal()">
+                    <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+                    </svg>
+                </button>
+            </div>
+            <!-- Modal body -->
+            <div class="p-6 flex items-center justify-center bg-neutral-secondary-soft dark:bg-neutral-secondary-medium/20">
+                <img id="logo-preview-large" src="#" alt="Logo Sekolah Besar" class="max-w-full max-h-[60vh] object-contain rounded-base shadow-xs p-2 bg-white dark:bg-neutral-secondary-medium">
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- SCRIPT UNTUK AJAX MAPEL SETTINGS & INTERAKTIVITAS -->
 <script>
     const baseUrlMapel = "{{ url('wali-kelas/mapel-settings') }}";
@@ -608,7 +633,36 @@
                 }
             });
         }, 4600);
+
+        const logoModal = document.getElementById('modal-lihat-logo');
+        if (logoModal) {
+            logoModal.addEventListener('click', function(e) {
+                if (e.target === logoModal) {
+                    closeLogoModal();
+                }
+            });
+        }
     });
+
+    function openLogoModal() {
+        const previewImg = document.getElementById('school_logo_preview');
+        const largeImg = document.getElementById('logo-preview-large');
+        const modal = document.getElementById('modal-lihat-logo');
+        
+        if (previewImg && previewImg.src && previewImg.src !== '#' && largeImg && modal) {
+            largeImg.src = previewImg.src;
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+    }
+
+    function closeLogoModal() {
+        const modal = document.getElementById('modal-lihat-logo');
+        if (modal) {
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+    }
 
     function handleLogoChange(event) {
         const file = event.target.files[0];
