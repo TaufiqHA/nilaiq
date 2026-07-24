@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\User;
+use Illuminate\Console\Scheduling\Schedule;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\Storage;
@@ -124,5 +125,28 @@ class BackupTest extends TestCase
         $response->assertRedirect(route('backup.index'));
         $response->assertSessionHas('success', 'File backup berhasil dihapus.');
         $this->assertFalse(Storage::disk('backups')->exists($folder.'/backup-test.zip'));
+    }
+
+    /**
+     * Test backup schedule is registered.
+     */
+    public function test_backup_schedule_is_registered(): void
+    {
+        $schedule = app(Schedule::class);
+        $events = collect($schedule->events());
+
+        $cleanEvent = $events->first(function ($event): bool {
+            return str_contains($event->command, 'backup:clean');
+        });
+
+        $runEvent = $events->first(function ($event): bool {
+            return str_contains($event->command, 'backup:run --only-db');
+        });
+
+        $this->assertNotNull($cleanEvent, 'backup:clean command is not scheduled');
+        $this->assertNotNull($runEvent, 'backup:run command is not scheduled');
+
+        $this->assertEquals('0 0 * * *', $cleanEvent->expression);
+        $this->assertEquals('10 0 * * *', $runEvent->expression);
     }
 }

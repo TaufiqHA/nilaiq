@@ -163,9 +163,10 @@ return [
             /*
              * The disk names on which the backups will be stored.
              */
-            'disks' => [
+            'disks' => array_filter([
                 'backups',
-            ],
+                (env('GOOGLE_DRIVE_CLIENT_ID') && env('GOOGLE_DRIVE_REFRESH_TOKEN')) ? 'google' : null,
+            ]),
 
             /*
              * Determines whether to allow backups to continue when some targets fail instead of failing completely.
