@@ -175,6 +175,8 @@ Route::middleware('auth')->group(function () {
         Route::delete('catatan-wali-kelas/{catatan_wali_kelas}/delete', [CatatanWaliKelasController::class, 'delete'])->name('catatan-wali-kelas.delete');
         Route::get('/catatan-wali-kelas-view', [CatatanWaliKelasController::class, 'index'])->name('catatan-wali-kelas');
 
+        Route::get('nilai-mapels/export', [NilaiMapelController::class, 'exportTemplate'])->name('nilai-mapels.export');
+        Route::post('nilai-mapels/import', [NilaiMapelController::class, 'import'])->name('nilai-mapels.import');
         Route::resource('nilai-mapels', NilaiMapelController::class)->parameters(['nilai-mapels' => 'nilai_mapel']);
         Route::post('nilai-mapels/batch', [NilaiMapelController::class, 'batchStore'])->name('nilai-mapels.batch');
         Route::delete('nilai-mapels/{nilai_mapel}/delete', [NilaiMapelController::class, 'delete'])->name('nilai-mapels.delete');

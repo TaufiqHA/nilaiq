@@ -211,13 +211,15 @@
                     </div>
                     <input type="text" id="student-search" oninput="filterStudentTable()" class="bg-neutral-secondary-medium border border-default text-heading text-sm rounded-base focus:ring-brand focus:border-brand block w-full ps-9 p-2.5 placeholder:text-body" placeholder="Cari NIS, nama siswa..." />
                 </div>
-
-                {{-- <div class="flex items-center gap-2">
-                    <button type="submit" class="w-full md:w-auto px-4 py-2.5 text-xs font-bold text-white bg-brand hover:bg-brand-strong rounded-base shadow-xs transition-colors cursor-pointer inline-flex items-center justify-center gap-2">
-                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/></svg>
-                        <span>Simpan Semua Nilai {{ $selectedMapel->mapel }}</span>
+ 
+                <div class="flex items-center gap-2 w-full md:w-auto">
+                    <button type="button" onclick="openImportModal()" class="w-full md:w-auto text-white bg-emerald-600 hover:bg-emerald-700 box-border border border-transparent focus:ring-4 focus:ring-emerald-300 shadow-xs font-medium leading-5 rounded-base text-sm px-4 py-2.5 focus:outline-none cursor-pointer inline-flex items-center justify-center gap-2">
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5m-13.5-9L12 3m0 0l4.5 4.5M12 3v13.5" />
+                        </svg>
+                        <span>Import Excel</span>
                     </button>
-                </div> --}}
+                </div>
             </div>
 
             <!-- Data Table Input Nilai Siswa -->
@@ -313,7 +315,126 @@
         </form>
     @endif
 </div>
-
+ 
+<!-- MODAL IMPORT NILAI VIA EXCEL -->
+@if($selectedMapel)
+<div id="nilai-import-modal" tabindex="-1" aria-hidden="true" class="fixed top-0 left-0 right-0 z-50 hidden w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] max-h-full flex items-center justify-center bg-black/50 backdrop-blur-xs">
+    <div class="relative p-4 w-full max-w-4xl max-h-full">
+        <!-- Modal content -->
+        <div class="relative bg-white rounded-base shadow-lg dark:bg-neutral-primary-soft border border-default p-4 md:p-6 flex flex-col max-h-[90vh]">
+            <!-- Modal header -->
+            <div class="flex items-center justify-between border-b border-default pb-4 md:pb-5 shrink-0">
+                <h3 id="import-modal-title" class="text-lg font-bold text-heading">
+                    Import Nilai via Excel
+                </h3>
+                <button type="button" onclick="closeModal('nilai-import-modal')" class="text-body bg-transparent hover:bg-neutral-secondary-soft hover:text-heading rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-neutral-tertiary cursor-pointer">
+                    <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 14 14">
+                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6"/>
+                    </svg>
+                    <span class="sr-only">Close modal</span>
+                </button>
+            </div>
+            
+            <form action="{{ route('wali-kelas.nilai-mapels.import') }}" method="POST" enctype="multipart/form-data" class="flex flex-col flex-1 min-h-0">
+                @csrf
+                <input type="hidden" name="mapel_id" value="{{ $selectedMapel->id }}">
+                
+                <!-- Modal body -->
+                <div class="py-4 md:py-6 overflow-y-auto flex-1 space-y-6">
+                    <!-- Instructions and Template download -->
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 items-start bg-neutral-secondary-medium/50 dark:bg-neutral-primary-soft border border-default p-4 rounded-base">
+                        <div>
+                            <h4 class="font-bold text-heading text-sm mb-2">Petunjuk Penggunaan:</h4>
+                            <ul class="list-disc pl-5 text-xs text-body space-y-1">
+                                <li>Format file harus berupa Excel (<strong>.xlsx</strong> / <strong>.xls</strong>).</li>
+                                <li>Pastikan baris pertama berisi header kolom yang sesuai dengan template: <strong>ID Siswa (Jangan Diubah)</strong>, <strong>NIS</strong>, <strong>NISN</strong>, <strong>Nama Siswa</strong>, <strong>Nilai Akhir (0-100)</strong>, dan <strong>Capaian Pembelajaran</strong>.</li>
+                                <li>Jangan mengubah nilai kolom <strong>ID Siswa</strong> karena kolom tersebut digunakan sebagai identifikasi utama data siswa di database.</li>
+                                <li>Nilai akhir harus berupa angka bulat antara <strong>0 - 100</strong>.</li>
+                            </ul>
+                        </div>
+                        <div class="flex flex-col justify-center items-center h-full border-t md:border-t-0 md:border-l border-default pt-4 md:pt-0 md:pl-6 text-center">
+                            <p class="text-xs text-body mb-3 font-semibold">Gunakan template di bawah untuk mendapatkan daftar siswa terbaru:</p>
+                            <a href="{{ route('wali-kelas.nilai-mapels.export', ['mapel_id' => $selectedMapel->id]) }}" class="inline-flex items-center gap-2 px-4 py-2 border border-default bg-neutral-secondary-medium dark:bg-neutral-primary-soft text-heading hover:bg-neutral-tertiary-medium dark:hover:bg-neutral-tertiary text-xs font-bold rounded-base transition-colors duration-150 shadow-xs cursor-pointer">
+                                <svg class="w-4 h-4 text-emerald-600" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M3 16.5v2.25A2.25 2.25 0 005.25 21h13.5A2.25 2.25 0 0021 18.75V16.5M16.5 12L12 16.5m0 0L7.5 12m4.5 4.5V3" />
+                                </svg>
+                                Unduh Template Excel
+                            </a>
+                        </div>
+                    </div>
+ 
+                    <!-- Dropzone / File input -->
+                    <div>
+                        <label class="block mb-2 text-sm font-semibold text-heading">Pilih File Spreadsheet</label>
+                        <div class="flex items-center justify-center w-full">
+                            <label id="import-dropzone" for="import-file-input" class="flex flex-col items-center justify-center w-full h-32 border-2 border-dashed border-default rounded-base cursor-pointer bg-neutral-secondary-medium/20 hover:bg-neutral-secondary-medium/40 transition-colors duration-150">
+                                <div class="flex flex-col items-center justify-center pt-5 pb-6">
+                                    <svg class="w-8 h-8 mb-2.5 text-neutral-400" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 20 16">
+                                        <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" d="M13 13h3a3 3 0 0 0 0-6h-.025A5.56 5.56 0 0 0 16 6.5 5.5 5.5 0 0 0 5.207 5.021C5.137 5.017 5.071 5 5 5a4 4 0 0 0 0 8h2.167M10 15V6m0 0L8 8m2-2 2 2" />
+                                    </svg>
+                                    <p class="mb-1 text-xs text-body"><span class="font-bold">Klik untuk unggah</span> atau drag and drop</p>
+                                    <p class="text-[10px] text-body opacity-80">XLSX atau XLS (Maks. 5MB)</p>
+                                </div>
+                                <input id="import-file-input" name="file" type="file" accept=".xlsx, .xls" required class="hidden" onchange="handleFileSelect(event)" />
+                            </label>
+                        </div>
+                        <div id="file-name-display" class="hidden mt-2 text-xs font-bold text-emerald-600 dark:text-emerald-400 text-center"></div>
+                    </div>
+ 
+                    <!-- Validation Warnings Container -->
+                    <div id="import-errors-container" class="hidden text-sm text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950/20 p-4 rounded-base border border-red-200 dark:border-red-900/30">
+                        <div class="flex items-center gap-1.5 mb-2 font-bold">
+                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                            </svg>
+                            <span>Ditemukan beberapa kesalahan:</span>
+                        </div>
+                        <ul class="list-disc pl-5 space-y-1 text-xs" id="import-errors-list"></ul>
+                    </div>
+ 
+                    <!-- Preview Table Container -->
+                    <div id="import-preview-section" class="hidden space-y-3">
+                        <div class="flex items-center justify-between">
+                            <h4 class="font-bold text-heading text-sm">Preview Data Yang Akan Diimport:</h4>
+                            <span id="preview-count" class="px-2 py-0.5 rounded text-xs font-bold bg-brand/10 text-brand border border-brand/20">0 Data</span>
+                        </div>
+                        <div class="relative overflow-x-auto border border-default rounded-base max-h-[30vh]">
+                            <table class="w-full text-xs text-left text-body">
+                                <thead class="text-[10px] font-bold text-heading uppercase bg-neutral-secondary-medium border-b border-default select-none sticky top-0">
+                                    <tr>
+                                        <th scope="col" class="px-4 py-2.5 text-center w-10">Baris</th>
+                                        <th scope="col" class="px-4 py-2.5 min-w-[80px]">ID Siswa</th>
+                                        <th scope="col" class="px-4 py-2.5 min-w-[80px]">NIS</th>
+                                        <th scope="col" class="px-4 py-2.5 min-w-[150px]">Nama Siswa</th>
+                                        <th scope="col" class="px-4 py-2.5 text-center min-w-[80px]">Nilai Akhir</th>
+                                        <th scope="col" class="px-4 py-2.5 min-w-[200px]">Capaian Pembelajaran</th>
+                                        <th scope="col" class="px-4 py-2.5 min-w-[150px]">Status Validasi</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="import-preview-body" class="divide-y divide-default">
+                                    <!-- JS will render preview rows -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Modal footer -->
+                <div class="flex items-center justify-end gap-3 border-t border-default pt-4 md:pt-5 shrink-0">
+                    <button onclick="closeModal('nilai-import-modal')" type="button" class="text-body bg-neutral-secondary-medium box-border border border-default-medium hover:bg-neutral-tertiary-medium hover:text-heading focus:ring-4 focus:ring-neutral-tertiary shadow-xs font-semibold leading-5 rounded-base text-sm px-5 py-2.5 focus:outline-none cursor-pointer">Batal</button>
+                    <button type="submit" id="btn-confirm-import" class="inline-flex items-center text-white bg-brand hover:bg-brand-strong box-border border border-transparent focus:ring-4 focus:ring-brand-medium shadow-xs font-bold leading-5 rounded-base text-sm px-5 py-2.5 focus:outline-none cursor-pointer disabled:bg-neutral-tertiary disabled:text-fg-disabled disabled:cursor-not-allowed" disabled>
+                        <svg class="w-4 h-4 me-1.5 -ms-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12" />
+                        </svg>
+                        Mulai Import
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+@endif
+ 
 <script>
     function dismissAlert(alertEl) {
         if (alertEl) {
@@ -355,5 +476,283 @@
             }
         }
     }
+
+    const allowedStudentIds = @json($students->pluck('id'));
+    const studentMap = @json($students->keyBy('id')->map(function($s) {
+        return [
+            'name' => $s->name,
+            'nis' => $s->nis,
+            'nisn' => $s->nisn
+        ];
+    }));
+
+    function openImportModal() {
+        const fileInput = document.getElementById('import-file-input');
+        if (fileInput) {
+            fileInput.value = '';
+        }
+        const fileDisplay = document.getElementById('file-name-display');
+        if (fileDisplay) {
+            fileDisplay.classList.add('hidden');
+            fileDisplay.innerText = '';
+        }
+
+        const previewSection = document.getElementById('import-preview-section');
+        if (previewSection) {
+            previewSection.classList.add('hidden');
+        }
+        const previewBody = document.getElementById('import-preview-body');
+        if (previewBody) {
+            previewBody.innerHTML = '';
+        }
+        const errorsContainer = document.getElementById('import-errors-container');
+        if (errorsContainer) {
+            errorsContainer.classList.add('hidden');
+        }
+        const errorsList = document.getElementById('import-errors-list');
+        if (errorsList) {
+            errorsList.innerHTML = '';
+        }
+        const confirmBtn = document.getElementById('btn-confirm-import');
+        if (confirmBtn) {
+            confirmBtn.disabled = true;
+        }
+
+        const modal = document.getElementById('nilai-import-modal');
+        if (modal) {
+            modal.classList.remove('hidden');
+        }
+    }
+
+    function closeModal(modalId) {
+        const modal = document.getElementById(modalId);
+        if (modal) {
+            modal.classList.add('hidden');
+        }
+    }
+
+    function updateFileNameDisplay(event) {
+        const input = event.target;
+        const display = document.getElementById('file-name-display');
+        if (display && input.files && input.files.length > 0) {
+            display.innerText = "File terpilih: " + input.files[0].name;
+            display.classList.remove('hidden');
+        } else if (display) {
+            display.classList.add('hidden');
+        }
+    }
+
+    function handleFileSelect(event) {
+        const file = event.target.files[0];
+        processFile(file);
+    }
+
+    function processFile(file) {
+        if (!file) return;
+
+        updateFileNameDisplay({ target: { files: [file] } });
+
+        const fileExt = file.name.split('.').pop().toLowerCase();
+        const maxSizeBytes = 5 * 1024 * 1024; // 5MB
+
+        if (file.size > maxSizeBytes) {
+            alert('Ukuran file melebihi batas 5MB.');
+            return;
+        }
+
+        if (fileExt === 'xlsx' || fileExt === 'xls') {
+            loadSheetJS(() => {
+                const reader = new FileReader();
+                reader.onload = function (e) {
+                    const data = new Uint8Array(e.target.result);
+                    try {
+                        const workbook = XLSX.read(data, { type: 'array' });
+                        const firstSheetName = workbook.SheetNames[0];
+                        const worksheet = workbook.Sheets[firstSheetName];
+                        const jsonData = XLSX.utils.sheet_to_json(worksheet, { header: 1 });
+                        parseExcelData(jsonData);
+                    } catch (err) {
+                        console.error(err);
+                        alert('Gagal membaca file Excel. Harap pastikan file tidak rusak.');
+                    }
+                };
+                reader.readAsArrayBuffer(file);
+            });
+        } else {
+            alert('Format file tidak didukung. Harap pilih file XLSX atau XLS.');
+        }
+    }
+
+    function loadSheetJS(callback) {
+        if (typeof XLSX !== 'undefined') {
+            callback();
+            return;
+        }
+        const script = document.createElement('script');
+        script.src = 'https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js';
+        script.onload = callback;
+        script.onerror = () => {
+            alert('Gagal memuat library parser Excel. Harap pastikan koneksi internet Anda aktif.');
+        };
+        document.head.appendChild(script);
+    }
+
+    function parseExcelData(rawData) {
+        if (!rawData || rawData.length < 2) {
+            alert('File kosong atau tidak memiliki data.');
+            return;
+        }
+
+        const headers = rawData[0].map(h => String(h || '').trim().toLowerCase());
+        const rows = rawData.slice(1);
+
+        const headerMap = {
+            'id': ['id siswa', 'id_siswa', 'id siswa (jangan diubah)'],
+            'nis': ['nis'],
+            'name': ['nama siswa', 'nama_siswa', 'nama'],
+            'nilai': ['nilai akhir', 'nilai akhir (0-100)', 'nilai_akhir', 'nilai'],
+            'capaian': ['capaian pembelajaran', 'capaian_pembelajaran', 'capaian']
+        };
+
+        const indexMap = {};
+        Object.keys(headerMap).forEach(key => {
+            indexMap[key] = headers.findIndex(h => headerMap[key].includes(h));
+        });
+
+        if (indexMap.id === -1) {
+            alert('Kolom "ID Siswa" tidak ditemukan di file. Pastikan header kolom sudah benar sesuai template.');
+            return;
+        }
+
+        const parsedRows = [];
+        let hasValidationErrors = false;
+
+        rows.forEach((row, i) => {
+            if (!row || row.length === 0 || row.every(val => val === null || val === undefined || String(val).trim() === '')) {
+                return;
+            }
+
+            const getVal = (key) => {
+                const idx = indexMap[key];
+                if (idx === -1 || idx === undefined || row[idx] === undefined || row[idx] === null) return '';
+                return String(row[idx]).trim();
+            };
+
+            const studentId = getVal('id');
+            const nis = getVal('nis');
+            const name = getVal('name');
+            const nilai = getVal('nilai');
+            const capaian = getVal('capaian');
+
+            const errors = [];
+
+            if (!studentId) {
+                errors.push('ID Siswa kosong');
+            } else if (!studentMap[studentId]) {
+                errors.push('Siswa bukan anggota kelas Anda');
+            }
+
+            if (nilai !== '') {
+                const score = Number(nilai);
+                if (isNaN(score) || score < 0 || score > 100) {
+                    errors.push('Nilai harus berupa angka 0-100');
+                }
+            }
+
+            if (errors.length > 0) {
+                hasValidationErrors = true;
+            }
+
+            parsedRows.push({
+                rowNum: i + 2,
+                studentId: studentId,
+                nis: nis || (studentMap[studentId] ? studentMap[studentId].nis : '-'),
+                name: name || (studentMap[studentId] ? studentMap[studentId].name : '-'),
+                nilai: nilai,
+                capaian: capaian,
+                errors: errors
+            });
+        });
+
+        displayImportPreview(parsedRows, hasValidationErrors);
+    }
+
+    function displayImportPreview(parsedRows, hasValidationErrors) {
+        const previewSection = document.getElementById('import-preview-section');
+        const previewCount = document.getElementById('preview-count');
+        const previewBody = document.getElementById('import-preview-body');
+        const confirmBtn = document.getElementById('btn-confirm-import');
+        const errorsContainer = document.getElementById('import-errors-container');
+        const errorsList = document.getElementById('import-errors-list');
+
+        previewBody.innerHTML = '';
+        errorsList.innerHTML = '';
+        errorsContainer.classList.add('hidden');
+
+        previewCount.innerText = `${parsedRows.length} Baris`;
+        previewSection.classList.remove('hidden');
+
+        parsedRows.forEach(row => {
+            const tr = document.createElement('tr');
+            const hasErr = row.errors.length > 0;
+            tr.className = hasErr
+                ? 'bg-red-50/50 dark:bg-red-950/20 text-red-900 dark:text-red-300 border-b border-red-200 dark:border-red-900/30'
+                : 'hover:bg-neutral-secondary-soft dark:hover:bg-neutral-tertiary border-b border-default';
+
+            const validationStatus = hasErr
+                ? `<span class="font-bold text-red-600 dark:text-red-400">${row.errors.join(', ')}</span>`
+                : '<span class="text-emerald-600 dark:text-emerald-400 font-semibold">Valid</span>';
+
+            tr.innerHTML = `
+                <td class="px-4 py-3 text-center font-semibold select-none">${row.rowNum}</td>
+                <td class="px-4 py-3 font-mono font-bold">${row.studentId || '-'}</td>
+                <td class="px-4 py-3 font-mono">${row.nis || '-'}</td>
+                <td class="px-4 py-3 font-bold">${row.name || '-'}</td>
+                <td class="px-4 py-3 text-center font-bold">${row.nilai !== '' ? row.nilai : '-'}</td>
+                <td class="px-4 py-3 max-w-xs truncate text-xs" title="${row.capaian}">${row.capaian || '-'}</td>
+                <td class="px-4 py-3 whitespace-nowrap">${validationStatus}</td>
+            `;
+            previewBody.appendChild(tr);
+        });
+
+        if (hasValidationErrors) {
+            confirmBtn.disabled = true;
+            parsedRows.forEach(row => {
+                if (row.errors.length > 0) {
+                    const li = document.createElement('li');
+                    li.innerText = `Baris ${row.rowNum} (${row.name || 'ID ' + row.studentId}): ${row.errors.join(', ')}`;
+                    errorsList.appendChild(li);
+                }
+            });
+            errorsContainer.classList.remove('hidden');
+        } else {
+            confirmBtn.disabled = false;
+        }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+        const dropzone = document.getElementById('import-dropzone');
+        const fileInput = document.getElementById('import-file-input');
+
+        if (dropzone && fileInput) {
+            dropzone.addEventListener('dragover', (e) => {
+                e.preventDefault();
+                dropzone.classList.add('bg-neutral-secondary-medium/50');
+            });
+
+            dropzone.addEventListener('dragleave', () => {
+                dropzone.classList.remove('bg-neutral-secondary-medium/50');
+            });
+
+            dropzone.addEventListener('drop', (e) => {
+                e.preventDefault();
+                dropzone.classList.remove('bg-neutral-secondary-medium/50');
+                if (e.dataTransfer.files.length > 0) {
+                    fileInput.files = e.dataTransfer.files;
+                    processFile(e.dataTransfer.files[0]);
+                }
+            });
+        }
+    });
 </script>
 @endsection
