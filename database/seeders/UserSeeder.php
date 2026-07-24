@@ -13,18 +13,31 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
-        User::factory()->create([
-            'name' => 'Admin NilaiQ',
-            'email' => 'admin@nilaiq.com',
-            'password' => Hash::make('password'),
-            'role' => 'mapel',
-        ]);
+        if (! User::where('email', 'administrator@nilaiq.com')->exists()) {
+            User::factory()->create([
+                'name' => 'Admin NilaiQ',
+                'email' => 'administrator@nilaiq.com',
+                'password' => Hash::make('password'),
+                'role' => 'admin',
+            ]);
+        }
 
-        User::factory()->create([
-            'name' => 'Wali Kelas',
-            'email' => 'wali@nilaiq.com',
-            'password' => Hash::make('password'),
-            'role' => 'wali_kelas',
-        ]);
+        if (! User::where('email', 'wali@nilaiq.com')->exists()) {
+            User::factory()->create([
+                'name' => 'Wali Kelas',
+                'email' => 'wali@nilaiq.com',
+                'password' => Hash::make('password'),
+                'role' => 'wali_kelas',
+            ]);
+        }
+
+        if (! User::where('email', 'admin@nilaiq.com')->exists()) {
+            User::factory()->create([
+                'name' => 'Guru Mapel',
+                'email' => 'admin@nilaiq.com',
+                'password' => Hash::make('password'),
+                'role' => 'mapel',
+            ]);
+        }
     }
 }

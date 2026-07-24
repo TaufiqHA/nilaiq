@@ -28,9 +28,11 @@ class AuthController extends Controller
                 return response()->json($user);
             }
 
-            $targetRoute = $user->role === 'wali_kelas'
-                ? route('wali-kelas.dashboard')
-                : route('dashboard');
+            $targetRoute = match ($user->role) {
+                'admin' => route('admin.monitoring'),
+                'wali_kelas' => route('wali-kelas.dashboard'),
+                default => route('dashboard'),
+            };
 
             return redirect()->intended($targetRoute);
         }
