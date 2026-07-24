@@ -4,7 +4,7 @@
 
 @section('content')
    <!-- Dashboard Container -->
-   <div class="p-6 border border-default border-dashed rounded-base bg-white/40 dark:bg-neutral-secondary-medium/20 backdrop-blur-md">
+   <div class="sm:p-6 sm:border sm:border-default sm:border-dashed sm:rounded-base sm:bg-white/40 sm:dark:bg-neutral-secondary-medium/20 sm:backdrop-blur-md">
       
       <!-- Top Row Grid: Siswa, Kelas, Tahun Ajaran, Kehadiran -->
       <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
