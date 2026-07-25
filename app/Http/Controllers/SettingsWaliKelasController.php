@@ -147,6 +147,7 @@ class SettingsWaliKelasController extends Controller
             'npsn' => ['required', 'string', 'max:255'],
             'school_address' => ['required', 'string'],
             'principal_name' => ['required', 'string', 'max:255'],
+            'principal_nip' => ['nullable', 'string', 'max:255'],
             'school_logo' => ['nullable', 'string', 'max:255'],
             'school_logo_file' => ['nullable', 'image', 'max:2048'],
             'teacher_name' => ['required', 'string', 'max:255'],

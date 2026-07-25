@@ -128,7 +128,12 @@
 
                         <div>
                             <label for="principal_name" class="block mb-1 text-xs font-semibold text-heading">Nama Kepala Sekolah <span class="text-red-500">*</span></label>
-                            <input type="text" id="principal_name" name="principal_name" value="{{ old('principal_name', $settingsWaliKelas?->principal_name) }}" required class="bg-neutral-secondary-soft dark:bg-neutral-secondary-medium/50 border border-default text-heading text-xs rounded-base focus:ring-brand focus:border-brand block w-full p-2.5" placeholder="Dr. H. Ahmad Dahlan, M.Pd">
+                            <input type="text" id="principal_name" name="principal_name" value="{{ old('principal_name', $settingsWaliKelas?->principal_name) }}" required class="bg-neutral-secondary-soft dark:bg-neutral-secondary-medium/50 border border-default text-heading text-xs rounded-base focus:ring-brand focus:border-brand block w-full p-2.5" placeholder="Contoh: Dr. H. Ahmad Dahlan, M.Pd">
+                        </div>
+
+                        <div>
+                            <label for="principal_nip" class="block mb-1 text-xs font-semibold text-heading">NIP Kepala Sekolah</label>
+                            <input type="text" id="principal_nip" name="principal_nip" value="{{ old('principal_nip', $settingsWaliKelas?->principal_nip) }}" class="bg-neutral-secondary-soft dark:bg-neutral-secondary-medium/50 border border-default text-heading text-xs rounded-base focus:ring-brand focus:border-brand block w-full p-2.5" placeholder="Contoh: 197812192010011016">
                         </div>
 
                         <div>

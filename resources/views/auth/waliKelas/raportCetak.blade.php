@@ -551,7 +551,7 @@
                     <tr>
                         <td colspan="2" style="text-align: center;">
                             <span class="font-bold">{{ strtoupper($settingsWaliKelas?->principal_name ?? 'SULKIFLI, S. Pd., M. Pd.') }}</span><br>
-                            NIP. {{ $settingsWaliKelas?->npsn ?? '19781219 201001 1 016' }}
+                            NIP. {{ $settingsWaliKelas?->principal_nip ?? '19781219 201001 1 016' }}
                         </td>
                     </tr>
                 </table>

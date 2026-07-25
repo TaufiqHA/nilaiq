@@ -205,7 +205,12 @@
                </div>
                <div class="p-3 rounded-base bg-neutral-secondary-soft dark:bg-neutral-secondary-medium/40 border border-default">
                   <span class="text-body font-semibold block">KEPALA SEKOLAH</span>
-                  <span class="text-sm font-bold text-heading block mt-0.5">{{ $settingsWaliKelas?->principal_name ?? '-' }}</span>
+                  <span class="text-sm font-bold text-heading block mt-0.5">
+                     {{ $settingsWaliKelas?->principal_name ?? '-' }}
+                     @if($settingsWaliKelas?->principal_nip)
+                        <span class="text-xs text-body font-normal block mt-0.5">NIP. {{ $settingsWaliKelas->principal_nip }}</span>
+                     @endif
+                  </span>
                </div>
                <div class="p-3 rounded-base bg-neutral-secondary-soft dark:bg-neutral-secondary-medium/40 border border-default">
                   <span class="text-body font-semibold block">WALI KELAS</span>

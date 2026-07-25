@@ -32,6 +32,7 @@ class SettingsWaliKelasFactory extends Factory
             'npsn' => fake()->numerify('########'),
             'school_address' => fake()->address(),
             'principal_name' => fake()->name(),
+            'principal_nip' => fake()->numerify('##################'),
             'school_logo' => 'logos/'.fake()->word().'.png',
             'teacher_name' => fake()->name(),
             'teacher_nip' => fake()->numerify('##################'),

@@ -59,6 +59,7 @@ class SettingsWaliKelasTest extends TestCase
             'npsn' => '12345678',
             'school_address' => 'Jl. Merdeka No. 1',
             'principal_name' => 'Dr. H. Ahmad',
+            'principal_nip' => '198001012005011002',
             'teacher_name' => 'Budi Santoso, S.Pd',
             'teacher_nip' => '198501012010011001',
             'teacher_email' => 'budi@school.sch.id',
@@ -83,6 +84,7 @@ class SettingsWaliKelasTest extends TestCase
         $this->assertDatabaseHas('settings_wali_kelas', [
             'school_name' => 'SMA Negeri 1 Jakarta',
             'npsn' => '12345678',
+            'principal_nip' => '198001012005011002',
         ]);
     }
 
@@ -118,6 +120,7 @@ class SettingsWaliKelasTest extends TestCase
             'npsn' => '87654321',
             'school_address' => 'Jl. Pemuda No. 2',
             'principal_name' => 'Drs. Supriadi',
+            'principal_nip' => '197501012000011003',
             'teacher_name' => 'Siti Rahma, M.Pd',
             'teacher_nip' => '199001012015012002',
             'teacher_email' => 'siti@school.sch.id',
@@ -137,6 +140,7 @@ class SettingsWaliKelasTest extends TestCase
         $this->assertDatabaseHas('settings_wali_kelas', [
             'id' => $setting->id,
             'school_name' => 'SMA Negeri 2 Jakarta Updated',
+            'principal_nip' => '197501012000011003',
         ]);
     }
 

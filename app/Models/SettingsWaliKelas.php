@@ -13,6 +13,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
     'npsn',
     'school_address',
     'principal_name',
+    'principal_nip',
     'school_logo',
     'teacher_name',
     'teacher_nip',
