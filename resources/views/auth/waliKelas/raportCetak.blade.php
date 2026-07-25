@@ -261,7 +261,7 @@
                     <td>{{ $settingsWaliKelas?->school_address ?? 'Jl. Pendidikan No. 140' }}</td>
                     <td style="white-space: nowrap;">Semester</td>
                     <td>:</td>
-                    <td>{{ $academicYear?->semester ?? 'Genap' }}</td>
+                    <td>{{ $academicYear?->semester ? ucfirst(strtolower($academicYear->semester)) : '-' }}</td>
                 </tr>
                 <tr>
                     <td style="white-space: nowrap;">Nama Peserta Didik</td>
@@ -269,7 +269,7 @@
                     <td class="font-bold">{{ strtoupper($student->name) }}</td>
                     <td style="white-space: nowrap;">Tahun Pelajaran</td>
                     <td>:</td>
-                    <td>{{ $academicYear?->academic_year ?? '2025/2026' }}</td>
+                    <td>{{ $academicYear?->year ?? '-' }}</td>
                 </tr>
                 <tr>
                     <td style="white-space: nowrap;">NIS / NISN</td>
