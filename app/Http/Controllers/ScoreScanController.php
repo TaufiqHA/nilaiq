@@ -14,39 +14,40 @@ class ScoreScanController extends Controller
      */
     public function scan(Request $request): JsonResponse
     {
-        $request->validate([
-            'image' => ['required', 'image', 'max:10240'],
-            'students' => ['required', 'json'],
-        ]);
+        try {
+            $request->validate([
+                'image' => ['required', 'image', 'max:10240'],
+                'students' => ['required', 'json'],
+            ]);
 
-        $students = json_decode($request->input('students'), true);
-        $imageFile = $request->file('image');
+            $students = json_decode($request->input('students'), true);
+            $imageFile = $request->file('image');
 
-        if (! $imageFile) {
-            return response()->json([
-                'success' => false,
-                'message' => 'No image file uploaded.',
-            ], 400);
-        }
+            if (! $imageFile) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No image file uploaded.',
+                ], 400);
+            }
 
-        $imageData = base64_encode(file_get_contents($imageFile->getRealPath()));
-        $mimeType = $imageFile->getMimeType();
+            $imageData = base64_encode(file_get_contents($imageFile->getRealPath()));
+            $mimeType = $imageFile->getMimeType();
 
-        $apiKey = config('services.gemini.key');
+            $apiKey = config('services.gemini.key');
 
-        if (! $apiKey) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Gemini API Key is not configured. Please add GEMINI_API_KEY to your .env file.',
-            ], 500);
-        }
+            if (! $apiKey) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Gemini API Key is not configured. Please add GEMINI_API_KEY to your .env file.',
+                ], 500);
+            }
 
-        /** @var array<int, array{id: int, name: string}> $students */
-        $studentListStr = collect($students)->map(function (array $student): string {
-            return "ID: {$student['id']}, Name: {$student['name']}";
-        })->implode("\n");
+            /** @var array<int, array{id: int, name: string}> $students */
+            $studentListStr = collect($students)->map(function (array $student): string {
+                return "ID: {$student['id']}, Name: {$student['name']}";
+            })->implode("\n");
 
-        $prompt = "You are a teacher's assistant. Analyze the uploaded image which is a photo of a grading sheet (daftar nilai) containing handwritten scores.
+            $prompt = "You are a teacher's assistant. Analyze the uploaded image which is a photo of a grading sheet (daftar nilai) containing handwritten scores.
 Your task is to map each student's grade in the image to the following list of active students:
 ---
 {$studentListStr}
@@ -64,7 +65,6 @@ Return a strict JSON output matching this schema:
 
 Do not return any explanation, markdown formatting (like ```json), or extra text. Only return the JSON array.";
 
-        try {
             $response = Http::timeout(30)
                 ->withHeaders([
                     'Content-Type' => 'application/json',
@@ -130,8 +130,10 @@ Do not return any explanation, markdown formatting (like ```json), or extra text
                 'data' => $extractedData,
             ]);
 
-        } catch (\Exception $e) {
-            Log::error('Score Scan Exception: '.$e->getMessage());
+        } catch (\Illuminate\Validation\ValidationException $e) {
+            throw $e;
+        } catch (\Throwable $e) {
+            Log::error('Score Scan Exception: '.$e->getMessage()."\n".$e->getTraceAsString());
 
             return response()->json([
                 'success' => false,

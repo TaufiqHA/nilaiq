@@ -219,6 +219,15 @@
                         </svg>
                         <span>Import Excel</span>
                     </button>
+                    
+                    <button type="button" onclick="document.getElementById('scan-camera-input').click()" class="w-full md:w-auto text-white bg-indigo-600 hover:bg-indigo-700 box-border border border-transparent focus:ring-4 focus:ring-indigo-300 shadow-xs font-medium leading-5 rounded-base text-sm px-4 py-2.5 focus:outline-none cursor-pointer inline-flex items-center justify-center gap-2">
+                        <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6.827 6.175A2.31 2.31 0 0 1 5.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 0 0-1.134-.175 2.31 2.31 0 0 1-1.64-1.055l-.822-1.316a2.192 2.192 0 0 0-1.736-1.039 48.774 48.774 0 0 0-5.232 0 2.192 2.192 0 0 0-1.736 1.039l-.821 1.316Z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 12.75a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0ZM18.75 10.5h.008v.008h-.008V10.5Z" />
+                        </svg>
+                        <span>Scan Foto Nilai</span>
+                    </button>
+                    <input type="file" id="scan-camera-input" accept="image/*" capture="environment" class="hidden" onchange="scanHandwrittenGrades(this)">
                 </div>
             </div>
 
@@ -258,6 +267,7 @@
                                     <!-- Input Nilai -->
                                     <td class="px-4 py-3 text-center whitespace-nowrap">
                                         <input type="number"
+                                               id="score-{{ $student->id }}"
                                                name="scores[{{ $index }}][nilai]"
                                                value="{{ $currentNilai }}"
                                                min="0"
@@ -314,6 +324,18 @@
             </div>
         </form>
     @endif
+</div>
+
+<!-- Scan Loading Overlay -->
+<div id="scan-loading-overlay" class="fixed inset-0 z-[100] hidden items-center justify-center bg-black/60 backdrop-blur-xs">
+    <div class="bg-white dark:bg-neutral-primary-soft p-6 rounded-base border border-default shadow-lg max-w-sm w-full text-center mx-4">
+        <svg class="animate-spin h-10 w-10 text-brand mx-auto mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+        <h3 class="text-lg font-bold text-heading mb-1">Menganalisis Foto Nilai</h3>
+        <p class="text-sm text-body">Membaca tulisan tangan nilai siswa menggunakan AI. Mohon tunggu beberapa saat...</p>
+    </div>
 </div>
  
 <!-- MODAL IMPORT NILAI VIA EXCEL -->
@@ -728,6 +750,83 @@
         } else {
             confirmBtn.disabled = false;
         }
+    }
+
+    function scanHandwrittenGrades(inputElement) {
+        if (!inputElement.files || inputElement.files.length === 0) {
+            return;
+        }
+        
+        const file = inputElement.files[0];
+        const overlay = document.getElementById('scan-loading-overlay');
+        if (overlay) {
+            overlay.classList.remove('hidden');
+            overlay.classList.add('flex');
+        }
+
+        const studentsList = @json($students->map(function($s) {
+            return ['id' => $s->id, 'name' => $s->name];
+        }));
+
+        const formData = new FormData();
+        formData.append('image', file);
+        formData.append('students', JSON.stringify(studentsList));
+
+        fetch('{{ route("score-scan") }}', {
+            method: 'POST',
+            headers: {
+                'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                'Accept': 'application/json'
+            },
+            body: formData
+        })
+        .then(async response => {
+            const contentType = response.headers.get('content-type');
+            if (contentType && contentType.includes('application/json')) {
+                const data = await response.json();
+                if (!response.ok) {
+                    throw data;
+                }
+                return data;
+            } else {
+                const text = await response.text();
+                console.error('Raw response:', text);
+                const match = text.match(/<title>(.*?)<\/title>/i);
+                const errorTitle = match ? match[1] : 'Internal Server Error';
+                throw { message: `Server returned non-JSON response (${response.status}): ${errorTitle}. Silakan periksa console log browser untuk detail error.` };
+            }
+        })
+        .then(result => {
+            if (result.success && result.data) {
+                let successCount = 0;
+                result.data.forEach(item => {
+                    const studentId = item.student_id;
+                    const score = item.score;
+                    
+                    const scoreInput = document.getElementById(`score-${studentId}`);
+                    if (scoreInput) {
+                        scoreInput.value = score !== null ? Math.round(score) : '';
+                        updateKkmBadge(scoreInput, {{ $selectedMapel->kkm ?? 75 }});
+                        successCount++;
+                    }
+                });
+                
+                alert(`Berhasil mendeteksi nilai untuk ${successCount} siswa.`);
+            } else {
+                alert('Gagal mendeteksi nilai dari gambar: ' + (result.message || 'Format tidak dikenal.'));
+            }
+        })
+        .catch(error => {
+            console.error('Scan Error:', error);
+            alert('Gagal memproses gambar: ' + (error.message || 'Terjadi kesalahan pada server/API. Pastikan GEMINI_API_KEY sudah dikonfigurasi di file .env.'));
+        })
+        .finally(() => {
+            inputElement.value = '';
+            if (overlay) {
+                overlay.classList.remove('flex');
+                overlay.classList.add('hidden');
+            }
+        });
     }
 
     document.addEventListener('DOMContentLoaded', () => {
