@@ -6,6 +6,9 @@ use App\Models\Classes;
 use App\Models\Students;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Http;
 use Tests\TestCase;
 
 class StudentsTest extends TestCase
@@ -391,5 +394,118 @@ class StudentsTest extends TestCase
 
         $response->assertStatus(200);
         $this->assertDatabaseHas('students', ['nis' => '88800', 'birth_date' => null]);
+    }
+
+    /**
+     * Test that guests cannot access student scan.
+     */
+    public function test_guest_cannot_access_student_scan(): void
+    {
+        $response = $this->post(route('students.scan-image'), [
+            'image' => UploadedFile::fake()->image('students.jpg'),
+        ]);
+
+        $response->assertRedirect(route('login'));
+    }
+
+    /**
+     * Test validation rules for student scan endpoint.
+     */
+    public function test_student_scan_requires_image(): void
+    {
+        /** @var User $user */
+        $user = User::factory()->create(['role' => 'mapel']);
+
+        $response = $this->actingAs($user)->postJson(route('students.scan-image'), []);
+
+        $response->assertStatus(422)
+            ->assertJsonValidationErrors(['image']);
+    }
+
+    /**
+     * Test scan returns 500 error when Gemini API Key is missing.
+     */
+    public function test_student_scan_fails_without_api_key(): void
+    {
+        /** @var User $user */
+        $user = User::factory()->create(['role' => 'mapel']);
+        Config::set('services.gemini.key', null);
+
+        $response = $this->actingAs($user)->postJson(route('students.scan-image'), [
+            'image' => UploadedFile::fake()->image('students.jpg'),
+        ]);
+
+        $response->assertStatus(500)
+            ->assertJson([
+                'success' => false,
+                'message' => 'Gemini API Key is not configured. Please add GEMINI_API_KEY to your .env file.',
+            ]);
+    }
+
+    /**
+     * Test successful student scanning with mocked Gemini API.
+     */
+    public function test_scan_student_image_successfully(): void
+    {
+        /** @var User $user */
+        $user = User::factory()->create(['role' => 'mapel']);
+        Config::set('services.gemini.key', 'fake-key');
+
+        $geminiResponse = [
+            'candidates' => [
+                [
+                    'content' => [
+                        'parts' => [
+                            [
+                                'text' => json_encode([
+                                    [
+                                        'name' => 'Ahmad Fauzi',
+                                        'nis' => '12345',
+                                        'nisn' => '012345',
+                                        'gender' => 'L',
+                                        'birth_place' => 'Jakarta',
+                                        'birth_date' => '2010-08-15',
+                                        'parent_name' => 'Budi',
+                                        'parent_phone' => '08123456789',
+                                        'address' => 'Jl. Mawar No. 5',
+                                    ],
+                                ]),
+                            ],
+                        ],
+                    ],
+                ],
+            ],
+        ];
+
+        Http::fake([
+            'https://generativelanguage.googleapis.com/*' => Http::response($geminiResponse, 200),
+        ]);
+
+        $response = $this->actingAs($user)->postJson(route('students.scan-image'), [
+            'image' => UploadedFile::fake()->image('students.jpg'),
+        ]);
+
+        $response->assertStatus(200)
+            ->assertJson([
+                'success' => true,
+                'data' => [
+                    [
+                        'name' => 'Ahmad Fauzi',
+                        'nis' => '12345',
+                        'nisn' => '012345',
+                        'gender' => 'L',
+                        'birth_place' => 'Jakarta',
+                        'birth_date' => '2010-08-15',
+                        'parent_name' => 'Budi',
+                        'parent_phone' => '08123456789',
+                        'address' => 'Jl. Mawar No. 5',
+                    ],
+                ],
+            ]);
+
+        Http::assertSent(function ($request): bool {
+            return str_contains($request->url(), 'gemini-3.5-flash') &&
+                   $request->method() === 'POST';
+        });
     }
 }

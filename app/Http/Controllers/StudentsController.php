@@ -6,6 +6,9 @@ use App\Models\Students;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\ValidationException;
 
 class StudentsController extends Controller
 {
@@ -115,6 +118,144 @@ class StudentsController extends Controller
             'message' => count($validated['students']).' siswa berhasil diimport.',
             'data' => $updatedStudents,
         ]);
+    }
+
+    /**
+     * Scan student list image and extract details using Gemini.
+     */
+    public function scanImage(Request $request): JsonResponse
+    {
+        try {
+            $request->validate([
+                'image' => ['required', 'image', 'max:10240'],
+            ]);
+
+            $imageFile = $request->file('image');
+
+            if (! $imageFile) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'No image file uploaded.',
+                ], 400);
+            }
+
+            $imageData = base64_encode(file_get_contents($imageFile->getRealPath()));
+            $mimeType = $imageFile->getMimeType();
+
+            $apiKey = config('services.gemini.key');
+
+            if (! $apiKey) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Gemini API Key is not configured. Please add GEMINI_API_KEY to your .env file.',
+                ], 500);
+            }
+
+            $prompt = "You are a teacher's assistant. Analyze the uploaded image which is a photo/scan of a student list (daftar siswa) containing handwritten or printed text.
+Your task is to extract information about the students listed in the image.
+For each student, extract:
+- Name (nama)
+- NIS (Nomor Induk Siswa) - if available, otherwise null
+- NISN (Nomor Induk Siswa Nasional) - if available, otherwise null
+- Gender (L/P) - if available, map to 'L' (Laki-laki) or 'P' (Perempuan) or leave as null if not clear
+- Birth Place (tempat lahir) - if available, otherwise null
+- Birth Date (tanggal lahir) - if available (in YYYY-MM-DD format if possible), otherwise null
+- Parent/Guardian Name (nama orang tua/wali) - if available, otherwise null
+- Parent/Guardian Phone (nomor telepon wali) - if available, otherwise null
+- Address (alamat) - if available, otherwise null
+
+Return a strict JSON output matching this schema:
+[
+  {
+    \"name\": \"Student Full Name\",
+    \"nis\": \"123456\" or null,
+    \"nisn\": \"00123456\" or null,
+    \"gender\": \"L\" or \"P\" or null,
+    \"birth_place\": \"City Name\" or null,
+    \"birth_date\": \"YYYY-MM-DD\" or null,
+    \"parent_name\": \"Parent Name\" or null,
+    \"parent_phone\": \"Phone Number\" or null,
+    \"address\": \"Address\" or null
+  }
+]
+
+Do not return any explanation, markdown formatting (like ```json), or extra text. Only return the JSON array.";
+
+            $response = Http::timeout(30)
+                ->withHeaders([
+                    'Content-Type' => 'application/json',
+                ])
+                ->post("https://generativelanguage.googleapis.com/v1beta/models/gemini-3.5-flash:generateContent?key={$apiKey}", [
+                    'contents' => [
+                        [
+                            'parts' => [
+                                ['text' => $prompt],
+                                [
+                                    'inlineData' => [
+                                        'mimeType' => $mimeType,
+                                        'data' => $imageData,
+                                    ],
+                                ],
+                            ],
+                        ],
+                    ],
+                ]);
+
+            if ($response->failed()) {
+                Log::error('Gemini API Error: '.$response->body());
+
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Failed to connect to Gemini API. Error: '.$response->status(),
+                ], 500);
+            }
+
+            /** @var string|null $textResponse */
+            $textResponse = $response->json('candidates.0.content.parts.0.text');
+
+            if (! $textResponse) {
+                Log::error('Gemini API response part text is empty: '.json_encode($response->json()));
+
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Gemini API returned an empty response.',
+                ], 500);
+            }
+
+            $cleaned = trim($textResponse);
+            if (str_starts_with($cleaned, '```')) {
+                $cleaned = preg_replace('/^```(?:json)?\s*/i', '', $cleaned);
+                $cleaned = preg_replace('/\s*```$/', '', $cleaned);
+                $cleaned = trim($cleaned);
+            }
+
+            /** @var array|null $extractedData */
+            $extractedData = json_decode($cleaned, true);
+
+            if (json_last_error() !== JSON_ERROR_NONE) {
+                Log::error('Gemini Invalid JSON parsing: '.$textResponse);
+
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Failed to parse JSON response from Gemini API.',
+                ], 500);
+            }
+
+            return response()->json([
+                'success' => true,
+                'data' => $extractedData,
+            ]);
+
+        } catch (ValidationException $e) {
+            throw $e;
+        } catch (\Throwable $e) {
+            Log::error('Student Scan Exception: '.$e->getMessage()."\n".$e->getTraceAsString());
+
+            return response()->json([
+                'success' => false,
+                'message' => 'An error occurred during scanning: '.$e->getMessage(),
+            ], 500);
+        }
     }
 
     /**

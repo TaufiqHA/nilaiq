@@ -207,6 +207,18 @@
                         Import Excel
                     </button>
 
+                    <button type="button" data-modal-target="scan-modal" data-modal-toggle="scan-modal"
+                        onclick="prepareScanStudents()"
+                        class="bg-amber-600 hover:bg-amber-700 text-white px-4 py-2 rounded-base text-sm font-bold shadow-md shadow-amber-600/10 transition-all duration-200 cursor-pointer flex items-center justify-center gap-2">
+                        <svg class="w-4.5 h-4.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M6.827 6.175A2.31 2.31 0 0 1 5.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 0 0-1.134-.175 2.31 2.31 0 0 1-1.64-1.055l-.822-1.316a2.192 2.192 0 0 0-1.736-1.039 48.774 48.774 0 0 0-5.232 0 2.192 2.192 0 0 0-1.736 1.039l-.821 1.316Z" />
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M16.5 12.75a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0ZM18.75 10.5h.008v.008h-.008V10.5Z" />
+                        </svg>
+                        Scan Gambar
+                    </button>
+
                     <button type="button" onclick="prepareAddStudent()" data-modal-target="student-modal"
                         data-modal-toggle="student-modal"
                         class="bg-brand hover:bg-brand-strong text-white px-4 py-2 rounded-base text-sm font-bold shadow-md shadow-brand/10 transition-all duration-200 cursor-pointer flex items-center justify-center gap-2">
@@ -681,6 +693,147 @@
                                 d="M12 9v6m3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
                         </svg>
                         Mulai Import
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal Dialog 5: Scan Student Image using Flowbite component structure -->
+    <div id="scan-modal" tabindex="-1" aria-hidden="true"
+        class="hidden overflow-y-auto overflow-x-hidden fixed top-0 right-0 left-0 z-50 justify-center items-center w-full md:inset-0 h-[calc(100%-1rem)] max-h-full bg-black/50 backdrop-blur-xs">
+        <div class="relative p-4 w-full max-w-6xl max-h-full">
+            <!-- Modal content -->
+            <div
+                class="relative bg-white rounded-base shadow-lg dark:bg-neutral-primary-soft border border-default p-4 md:p-6 flex flex-col max-h-[90vh]">
+                <!-- Modal header -->
+                <div class="flex items-center justify-between border-b border-default pb-4 md:pb-5 shrink-0">
+                    <h3 id="scan-modal-title" class="text-lg font-bold text-heading">
+                        Scan & Ekstrak Daftar Siswa dari Gambar
+                    </h3>
+                    <button type="button"
+                        class="text-body bg-transparent hover:bg-neutral-secondary-soft hover:text-heading rounded-lg text-sm w-8 h-8 ms-auto inline-flex justify-center items-center dark:hover:bg-neutral-tertiary cursor-pointer"
+                        data-modal-hide="scan-modal">
+                        <svg class="w-3 h-3" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none"
+                            viewBox="0 0 14 14">
+                            <path stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                d="m1 1 6 6m0 0 6 6M7 7l6-6M7 7l-6 6" />
+                        </svg>
+                        <span class="sr-only">Close modal</span>
+                    </button>
+                </div>
+                <!-- Modal body -->
+                <div class="py-4 md:py-6 overflow-y-auto flex-1 space-y-6">
+                    <!-- Dropzone / Image file input -->
+                    <div id="scan-upload-area">
+                        <label class="block mb-2 text-sm font-semibold text-heading">Pilih Gambar Daftar Siswa (Tulisan Tangan / Ketikan)</label>
+                        <div class="flex flex-col md:flex-row gap-6">
+                            <div class="flex items-center justify-center w-full md:w-1/2">
+                                <label id="scan-dropzone" for="scan-file-input"
+                                    class="flex flex-col items-center justify-center w-full h-48 border-2 border-dashed border-default rounded-base cursor-pointer bg-neutral-secondary-medium/20 hover:bg-neutral-secondary-medium/40 transition-colors duration-150">
+                                    <div class="flex flex-col items-center justify-center pt-5 pb-6 text-center px-4">
+                                        <svg class="w-10 h-10 mb-3 text-neutral-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                        </svg>
+                                        <p class="mb-1 text-xs text-body"><span class="font-bold">Klik untuk unggah</span> atau drag and drop</p>
+                                        <p class="text-[10px] text-body opacity-80">JPG, JPEG, PNG, atau WEBP (Maks. 10MB)</p>
+                                    </div>
+                                    <input id="scan-file-input" type="file" accept="image/*" class="hidden"
+                                        onchange="handleScanFileSelect(event)" />
+                                </label>
+                            </div>
+                            <!-- Image preview area -->
+                            <div class="w-full md:w-1/2 border border-default rounded-base bg-neutral-secondary-medium/10 dark:bg-neutral-primary-soft flex items-center justify-center h-48 overflow-hidden relative">
+                                <img id="scan-img-preview" class="max-h-full max-w-full object-contain hidden" alt="Preview Gambar">
+                                <span id="scan-preview-placeholder" class="text-xs text-neutral-400">Preview gambar akan muncul di sini</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Processing / Loading state -->
+                    <div id="scan-loading" class="hidden flex flex-col items-center justify-center py-8 space-y-3">
+                        <svg class="animate-spin h-10 w-10 text-brand" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+                        </svg>
+                        <p class="text-sm font-semibold text-heading">Mengekstrak tulisan dari gambar...</p>
+                        <p class="text-xs text-body">Harap tunggu sebentar, Gemini sedang menganalisis gambar Anda.</p>
+                    </div>
+
+                    <!-- Scan Errors Container -->
+                    <div id="scan-errors-container"
+                        class="hidden text-sm text-red-600 dark:text-red-400 bg-red-50 dark:bg-red-950/20 p-4 rounded-base border border-red-200 dark:border-red-900/30">
+                        <div class="flex items-center gap-1.5 mb-2 font-bold">
+                            <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+                                <path stroke-linecap="round" stroke-linejoin="round"
+                                    d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                            </svg>
+                            <span>Ditemukan beberapa kesalahan:</span>
+                        </div>
+                        <ul class="list-disc pl-5 space-y-1 text-xs" id="scan-errors-list"></ul>
+                    </div>
+
+                    <!-- Preview / Editable Table Container -->
+                    <div id="scan-preview-section" class="hidden space-y-4">
+                        <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 bg-neutral-secondary-medium/50 dark:bg-neutral-primary-soft p-3 rounded-base border border-default">
+                            <div>
+                                <h4 class="font-bold text-heading text-sm">Hasil Ekstraksi Gemini AI:</h4>
+                                <p class="text-[11px] text-body">Anda dapat langsung mengedit sel tabel di bawah untuk memperbaiki tulisan atau melengkapi kolom merah.</p>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <button type="button" onclick="autoFillEmptyScanFields()"
+                                    class="bg-brand/10 hover:bg-brand/20 text-brand border border-brand/20 px-3 py-1.5 rounded text-xs font-bold transition-all duration-150 cursor-pointer flex items-center gap-1.5">
+                                    <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M19.5 12c0-1.232-.046-2.453-.138-3.662a4.006 4.006 0 00-3.7-3.7 48.656 48.656 0 00-7.324 0 4.006 4.006 0 00-3.7 3.7C4.547 9.547 4.5 10.768 4.5 12s.047 2.453.138 3.662a4.006 4.006 0 003.7 3.7 48.656 48.656 0 007.324 0 4.006 4.006 0 003.7-3.7c.092-1.209.138-2.43.138-3.662z" />
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 10.5l3 3 3-3" />
+                                    </svg>
+                                    Isi Otomatis Data Kosong
+                                </button>
+                                <span id="scan-preview-count"
+                                    class="px-2.5 py-1 rounded text-xs font-bold bg-brand/15 text-brand border border-brand/20">0 Siswa</span>
+                             </div>
+                        </div>
+
+                        <!-- Responsive Container and Inputs -->
+                        <div class="relative overflow-x-auto border border-default rounded-base max-h-[40vh]">
+                            <table class="w-full text-xs text-left text-body">
+                                <thead
+                                    class="text-[10px] font-bold text-heading uppercase bg-neutral-secondary-medium border-b border-default select-none sticky top-0 z-10">
+                                    <tr>
+                                        <th scope="col" class="px-4 py-2.5 text-center w-10">No</th>
+                                        <th scope="col" class="px-4 py-2.5 min-w-[150px]">Nama Lengkap *</th>
+                                        <th scope="col" class="px-4 py-2.5 min-w-[100px]">NIS *</th>
+                                        <th scope="col" class="px-4 py-2.5 min-w-[100px]">NISN *</th>
+                                        <th scope="col" class="px-4 py-2.5 min-w-[80px]">L/P *</th>
+                                        <th scope="col" class="px-4 py-2.5 min-w-[120px]">Tempat Lahir *</th>
+                                        <th scope="col" class="px-4 py-2.5 min-w-[100px]">Tgl Lahir (YYYY-MM-DD)</th>
+                                        <th scope="col" class="px-4 py-2.5 min-w-[120px]">Nama Wali *</th>
+                                        <th scope="col" class="px-4 py-2.5 min-w-[110px]">No. HP Wali *</th>
+                                        <th scope="col" class="px-4 py-2.5 min-w-[150px]">Alamat *</th>
+                                        <th scope="col" class="px-4 py-2.5 min-w-[120px]">Status Validasi</th>
+                                        <th scope="col" class="px-4 py-2.5 text-center w-12">Aksi</th>
+                                    </tr>
+                                </thead>
+                                <tbody id="scan-preview-body" class="divide-y divide-default">
+                                    <!-- JS will render preview rows with editable inputs -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+                <!-- Modal footer -->
+                <div class="flex items-center justify-end gap-3 border-t border-default pt-4 md:pt-5 shrink-0">
+                    <button data-modal-hide="scan-modal" type="button"
+                        class="text-body bg-neutral-secondary-medium box-border border border-default-medium hover:bg-neutral-tertiary-medium hover:text-heading focus:ring-4 focus:ring-neutral-tertiary shadow-xs font-semibold leading-5 rounded-base text-sm px-5 py-2.5 focus:outline-none cursor-pointer">Batal</button>
+                    <button type="button" onclick="submitScanImport()" id="btn-confirm-scan-import"
+                        class="inline-flex items-center text-white bg-brand hover:bg-brand-strong box-border border border-transparent focus:ring-4 focus:ring-brand-medium shadow-xs font-bold leading-5 rounded-base text-sm px-5 py-2.5 focus:outline-none cursor-pointer disabled:bg-neutral-tertiary disabled:text-fg-disabled disabled:cursor-not-allowed"
+                        disabled>
+                        <svg class="w-4 h-4 me-1.5 -ms-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                            stroke-width="2.5">
+                            <path stroke-linecap="round" stroke-linejoin="round"
+                                d="M12 9v6m3-3H9m12 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        Simpan Siswa
                     </button>
                 </div>
             </div>
@@ -1502,6 +1655,440 @@
         }
 
 
+        // Setup and state for Bulk Image Scan
+        let studentsToScan = [];
+
+        function prepareScanStudents() {
+            studentsToScan = [];
+            document.getElementById('scan-file-input').value = '';
+            document.getElementById('scan-img-preview').src = '';
+            document.getElementById('scan-img-preview').classList.add('hidden');
+            document.getElementById('scan-preview-placeholder').classList.remove('hidden');
+            document.getElementById('scan-errors-container').classList.add('hidden');
+            document.getElementById('scan-errors-list').innerHTML = '';
+            document.getElementById('scan-preview-section').classList.add('hidden');
+            document.getElementById('scan-preview-body').innerHTML = '';
+            document.getElementById('scan-upload-area').classList.remove('hidden');
+
+            const confirmBtn = document.getElementById('btn-confirm-scan-import');
+            confirmBtn.disabled = true;
+            confirmBtn.innerText = 'Simpan Siswa';
+        }
+
+        // Handle file selection for scan
+        function handleScanFileSelect(event) {
+            const file = event.target.files[0];
+            processScanFile(file);
+        }
+
+        // Process image scan file
+        function processScanFile(file) {
+            if (!file) return;
+
+            const fileExt = file.name.split('.').pop().toLowerCase();
+            const maxSizeBytes = 10 * 1024 * 1024; // 10MB
+
+            if (file.size > maxSizeBytes) {
+                alert('Ukuran file gambar melebihi batas 10MB.');
+                return;
+            }
+
+            const allowedExts = ['jpg', 'jpeg', 'png', 'webp'];
+            if (!allowedExts.includes(fileExt)) {
+                alert('Format file tidak didukung. Harap pilih gambar JPG, JPEG, PNG, atau WEBP.');
+                return;
+            }
+
+            // Display preview image
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const imgPreview = document.getElementById('scan-img-preview');
+                imgPreview.src = e.target.result;
+                imgPreview.classList.remove('hidden');
+                document.getElementById('scan-preview-placeholder').classList.add('hidden');
+            };
+            reader.readAsDataURL(file);
+
+            // Execute upload & extraction
+            executeScanExtraction(file);
+        }
+
+        // Execute scan extraction via AJAX
+        function executeScanExtraction(file) {
+            const uploadArea = document.getElementById('scan-upload-area');
+            const loadingArea = document.getElementById('scan-loading');
+            const errorsContainer = document.getElementById('scan-errors-container');
+            const errorsList = document.getElementById('scan-errors-list');
+            const previewSection = document.getElementById('scan-preview-section');
+
+            uploadArea.classList.add('hidden');
+            loadingArea.classList.remove('hidden');
+            errorsContainer.classList.add('hidden');
+            errorsList.innerHTML = '';
+            previewSection.classList.add('hidden');
+
+            const formData = new FormData();
+            formData.append('image', file);
+
+            fetch("{{ route('students.scan-image') }}", {
+                method: 'POST',
+                headers: {
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                body: formData
+            })
+            .then(async response => {
+                const result = await response.json();
+                if (!response.ok) {
+                    throw result;
+                }
+                return result;
+            })
+            .then(result => {
+                loadingArea.classList.add('hidden');
+                uploadArea.classList.remove('hidden');
+
+                if (result.success && Array.isArray(result.data)) {
+                    // Populate and validate
+                    studentsToScan = result.data.map((student, idx) => ({
+                        rowNum: idx + 1,
+                        name: student.name || '',
+                        nis: student.nis || '',
+                        nisn: student.nisn || '',
+                        gender: student.gender || '',
+                        birth_place: student.birth_place || '',
+                        birth_date: student.birth_date ? student.birth_date.split('T')[0] : '',
+                        parent_name: student.parent_name || '',
+                        parent_phone: student.parent_phone || '',
+                        address: student.address || '',
+                        status: 'ACTIVE',
+                        errors: []
+                    }));
+
+                    validateScanData();
+                    displayScanPreview();
+                } else {
+                    throw { message: 'Data hasil ekstraksi tidak valid.' };
+                }
+            })
+            .catch(err => {
+                loadingArea.classList.add('hidden');
+                uploadArea.classList.remove('hidden');
+                
+                const li = document.createElement('li');
+                li.innerText = err.message || 'Gagal mengekstrak gambar. Pastikan gambar jelas dan memiliki tulisan yang terbaca.';
+                errorsList.appendChild(li);
+                errorsContainer.classList.remove('hidden');
+            });
+        }
+
+        // Validate extraction data
+        function validateScanData() {
+            studentsToScan.forEach((student, idx) => {
+                student.errors = [];
+                
+                // Perform validation checks
+                if (!student.name || student.name.trim() === '') student.errors.push('Nama wajib diisi');
+                if (!student.nis || student.nis.trim() === '') student.errors.push('NIS wajib diisi');
+                if (!student.nisn || student.nisn.trim() === '') student.errors.push('NISN wajib diisi');
+                
+                // Clean and check Gender
+                let gender = String(student.gender || '').trim().toUpperCase();
+                if (gender.startsWith('L') || gender === 'LAKI' || gender === 'LAKI-LAKI') {
+                    student.gender = 'L';
+                } else if (gender.startsWith('P') || gender === 'PEREMPUAN') {
+                    student.gender = 'P';
+                } else {
+                    student.gender = '';
+                }
+                if (!['L', 'P'].includes(student.gender)) {
+                    student.errors.push('JK harus L/P');
+                }
+
+                if (!student.birth_place || student.birth_place.trim() === '') student.errors.push('Tempat lahir wajib diisi');
+                
+                if (student.birth_date && student.birth_date.trim() !== '') {
+                    const d = new Date(student.birth_date);
+                    if (isNaN(d.getTime())) {
+                        student.errors.push('Format tgl lahir tidak valid (YYYY-MM-DD)');
+                    }
+                }
+                
+                if (!student.parent_name || student.parent_name.trim() === '') student.errors.push('Nama wali wajib diisi');
+                if (!student.parent_phone || student.parent_phone.trim() === '') student.errors.push('No HP wali wajib diisi');
+                if (!student.address || student.address.trim() === '') student.errors.push('Alamat wajib diisi');
+
+                // Check NIS/NISN uniqueness in payload itself
+                const duplicateNis = studentsToScan.some((s, sIdx) => sIdx !== idx && s.nis && s.nis === student.nis);
+                if (duplicateNis) {
+                    student.errors.push('NIS duplikat dalam daftar');
+                }
+                const duplicateNisn = studentsToScan.some((s, sIdx) => sIdx !== idx && s.nisn && s.nisn === student.nisn);
+                if (duplicateNisn) {
+                    student.errors.push('NISN duplikat dalam daftar');
+                }
+            });
+        }
+
+        // Display extraction preview
+        function displayScanPreview() {
+            const previewSection = document.getElementById('scan-preview-section');
+            const previewCount = document.getElementById('scan-preview-count');
+            const previewBody = document.getElementById('scan-preview-body');
+            const confirmBtn = document.getElementById('btn-confirm-scan-import');
+            
+            previewBody.innerHTML = '';
+            previewCount.innerText = `${studentsToScan.length} Siswa`;
+            previewSection.classList.remove('hidden');
+
+            let hasErrors = false;
+
+            studentsToScan.forEach((student, index) => {
+                const row = document.createElement('tr');
+                const hasErr = student.errors.length > 0;
+                if (hasErr) hasErrors = true;
+
+                row.className = hasErr
+                    ? 'bg-red-50/50 dark:bg-red-950/20 text-red-900 dark:text-red-300 border-b border-red-200 dark:border-red-900/30'
+                    : 'hover:bg-neutral-secondary-soft dark:hover:bg-neutral-tertiary border-b border-default';
+
+                const validationStatus = hasErr
+                    ? `<span class="font-bold text-red-600 dark:text-red-400 text-[10px]" title="${student.errors.join(', ')}">${student.errors.slice(0, 2).join(', ')}${student.errors.length > 2 ? '...' : ''}</span>`
+                    : '<span class="text-emerald-600 dark:text-emerald-400 font-semibold">Valid</span>';
+
+                // We render text inputs so they can be modified
+                row.innerHTML = `
+                    <td class="px-3 py-2 text-center font-semibold select-none">${student.rowNum}</td>
+                    <td class="px-2 py-2">
+                        <input type="text" value="${student.name}" oninput="updateScanField(${index}, 'name', this.value)"
+                            class="w-full bg-white dark:bg-neutral-primary border border-default rounded px-2 py-1 text-xs text-heading focus:outline-none focus:border-brand ${!student.name ? 'border-red-500 dark:border-red-500' : ''}">
+                    </td>
+                    <td class="px-2 py-2">
+                        <input type="text" value="${student.nis}" oninput="updateScanField(${index}, 'nis', this.value)"
+                            class="w-full bg-white dark:bg-neutral-primary border border-default rounded px-2 py-1 text-xs text-heading font-mono focus:outline-none focus:border-brand ${!student.nis ? 'border-red-500 dark:border-red-500' : ''}">
+                    </td>
+                    <td class="px-2 py-2">
+                        <input type="text" value="${student.nisn}" oninput="updateScanField(${index}, 'nisn', this.value)"
+                            class="w-full bg-white dark:bg-neutral-primary border border-default rounded px-2 py-1 text-xs text-heading font-mono focus:outline-none focus:border-brand ${!student.nisn ? 'border-red-500 dark:border-red-500' : ''}">
+                    </td>
+                    <td class="px-2 py-2">
+                        <select onchange="updateScanField(${index}, 'gender', this.value)"
+                            class="w-full bg-white dark:bg-neutral-primary border border-default rounded px-2 py-1 text-xs text-heading focus:outline-none focus:border-brand ${!['L', 'P'].includes(student.gender) ? 'border-red-500 dark:border-red-500' : ''}">
+                            <option value="" disabled ${!student.gender ? 'selected' : ''}>-- Choose --</option>
+                            <option value="L" ${student.gender === 'L' ? 'selected' : ''}>L</option>
+                            <option value="P" ${student.gender === 'P' ? 'selected' : ''}>P</option>
+                        </select>
+                    </td>
+                    <td class="px-2 py-2">
+                        <input type="text" value="${student.birth_place}" oninput="updateScanField(${index}, 'birth_place', this.value)"
+                            class="w-full bg-white dark:bg-neutral-primary border border-default rounded px-2 py-1 text-xs text-heading focus:outline-none focus:border-brand ${!student.birth_place ? 'border-red-500 dark:border-red-500' : ''}">
+                    </td>
+                    <td class="px-2 py-2">
+                        <input type="date" value="${student.birth_date || ''}" onchange="updateScanField(${index}, 'birth_date', this.value)"
+                            class="w-full bg-white dark:bg-neutral-primary border border-default rounded px-2 py-1 text-xs text-heading focus:outline-none focus:border-brand">
+                    </td>
+                    <td class="px-2 py-2">
+                        <input type="text" value="${student.parent_name}" oninput="updateScanField(${index}, 'parent_name', this.value)"
+                            class="w-full bg-white dark:bg-neutral-primary border border-default rounded px-2 py-1 text-xs text-heading focus:outline-none focus:border-brand ${!student.parent_name ? 'border-red-500 dark:border-red-500' : ''}">
+                    </td>
+                    <td class="px-2 py-2">
+                        <input type="text" value="${student.parent_phone}" oninput="updateScanField(${index}, 'parent_phone', this.value)"
+                            class="w-full bg-white dark:bg-neutral-primary border border-default rounded px-2 py-1 text-xs text-heading focus:outline-none focus:border-brand ${!student.parent_phone ? 'border-red-500 dark:border-red-500' : ''}">
+                    </td>
+                    <td class="px-2 py-2">
+                        <textarea oninput="updateScanField(${index}, 'address', this.value)" rows="1"
+                            class="w-full bg-white dark:bg-neutral-primary border border-default rounded px-2 py-0.5 text-xs text-heading focus:outline-none focus:border-brand ${!student.address ? 'border-red-500 dark:border-red-500' : ''}">${student.address}</textarea>
+                    </td>
+                    <td class="px-3 py-2 whitespace-nowrap text-center">${validationStatus}</td>
+                    <td class="px-3 py-2 text-center">
+                        <button type="button" onclick="removeScanRow(${index})" class="text-fg-danger-strong hover:text-red-800 transition-colors" title="Hapus Baris">
+                            <svg class="w-4.5 h-4.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                        </button>
+                    </td>
+                `;
+                previewBody.appendChild(row);
+            });
+
+            confirmBtn.disabled = hasErrors || studentsToScan.length === 0;
+        }
+
+        // Update single field in list
+        function updateScanField(index, field, value) {
+            if (studentsToScan[index]) {
+                studentsToScan[index][field] = value;
+                validateScanData();
+                displayScanPreview();
+            }
+        }
+
+        // Remove row from scan list
+        function removeScanRow(index) {
+            studentsToScan.splice(index, 1);
+            // Re-index
+            studentsToScan.forEach((s, idx) => {
+                s.rowNum = idx + 1;
+            });
+            validateScanData();
+            displayScanPreview();
+        }
+
+        // Auto-fill empty/missing fields with sequential/default values
+        function autoFillEmptyScanFields() {
+            const timestamp = Date.now().toString().slice(-6);
+            let activeStudentCount = 0;
+            
+            // Try to find count of active students or current length
+            const targetClass = classesData.find(c => c.id === currentClassId);
+            if (targetClass && targetClass.students) {
+                activeStudentCount = targetClass.students.length;
+            }
+
+            const defaultBirthDate = new Date();
+            defaultBirthDate.setFullYear(defaultBirthDate.getFullYear() - 12); // default age 12
+            const defaultBirthDateStr = defaultBirthDate.toISOString().split('T')[0];
+
+            studentsToScan.forEach((student, idx) => {
+                const seq = activeStudentCount + idx + 1;
+                
+                if (!student.nis || student.nis.trim() === '') {
+                    student.nis = `NIS-${timestamp}-${seq}`;
+                }
+                if (!student.nisn || student.nisn.trim() === '') {
+                    student.nisn = `NISN-${timestamp}-${seq}`;
+                }
+                if (!student.gender || student.gender.trim() === '') {
+                    student.gender = 'L'; // Default to Laki-laki
+                }
+                if (!student.birth_place || student.birth_place.trim() === '') {
+                    student.birth_place = 'Tempat Lahir';
+                }
+                if (!student.birth_date || student.birth_date.trim() === '') {
+                    student.birth_date = defaultBirthDateStr;
+                }
+                if (!student.parent_name || student.parent_name.trim() === '') {
+                    student.parent_name = '-';
+                }
+                if (!student.parent_phone || student.parent_phone.trim() === '') {
+                    student.parent_phone = '-';
+                }
+                if (!student.address || student.address.trim() === '') {
+                    student.address = '-';
+                }
+            });
+
+            validateScanData();
+            displayScanPreview();
+        }
+
+        // Submit Scan imported data to server
+        function submitScanImport() {
+            if (studentsToScan.length === 0) return;
+
+            const confirmBtn = document.getElementById('btn-confirm-scan-import');
+            confirmBtn.disabled = true;
+            const originalText = confirmBtn.innerText;
+            confirmBtn.innerText = 'Mengimport...';
+
+            const payload = {
+                class_id: currentClassId,
+                students: studentsToScan.map(s => ({
+                    nis: s.nis,
+                    nisn: s.nisn,
+                    name: s.name,
+                    gender: s.gender,
+                    birth_place: s.birth_place,
+                    birth_date: s.birth_date,
+                    address: s.address,
+                    parent_name: s.parent_name,
+                    parent_phone: s.parent_phone,
+                    status: s.status
+                }))
+            };
+
+            fetch("{{ route('students.import') }}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                body: JSON.stringify(payload)
+            })
+            .then(async response => {
+                const result = await response.json();
+                if (!response.ok) {
+                    throw result;
+                }
+                return result;
+            })
+            .then(result => {
+                confirmBtn.disabled = false;
+                confirmBtn.innerText = originalText;
+
+                // Update local classesData array
+                const targetClass = classesData.find(c => c.id === currentClassId);
+                if (targetClass) {
+                    targetClass.students = result.data;
+                    currentClassStudents = result.data;
+
+                    // Update class card count text
+                    const countEl = document.getElementById(`student-count-${currentClassId}`);
+                    if (countEl) {
+                        countEl.innerText = `${result.data.length} Siswa`;
+                    }
+
+                    // Refresh the student list table
+                    showClassStudents(currentClassId);
+                }
+
+                // Close modal
+                const closeBtn = document.querySelector('[data-modal-hide="scan-modal"]');
+                if (closeBtn) {
+                    closeBtn.click();
+                }
+
+                showToast(result.message || 'Siswa berhasil diimport.');
+            })
+            .catch(errors => {
+                confirmBtn.disabled = false;
+                confirmBtn.innerText = originalText;
+
+                const errorContainer = document.getElementById('scan-errors-container');
+                const errorList = document.getElementById('scan-errors-list');
+                errorList.innerHTML = '';
+
+                if (errors.errors) {
+                    Object.keys(errors.errors).forEach(key => {
+                        const match = key.match(/students\.(\d+)\.(\w+)/);
+                        let rowMsg = '';
+                        if (match) {
+                            const idx = parseInt(match[1]);
+                            const studentName = studentsToScan[idx] ? studentsToScan[idx].name : '';
+                            rowMsg = `Baris ${idx + 1} (${studentName}): `;
+                        }
+
+                        errors.errors[key].forEach(err => {
+                            const li = document.createElement('li');
+                            li.innerText = rowMsg + err;
+                            errorList.appendChild(li);
+                        });
+                    });
+                    errorContainer.classList.remove('hidden');
+                    errorContainer.scrollIntoView({ behavior: 'smooth' });
+                } else {
+                    const li = document.createElement('li');
+                    li.innerText = errors.message || 'Terjadi kesalahan sistem.';
+                    errorList.appendChild(li);
+                    errorContainer.classList.remove('hidden');
+                    errorContainer.scrollIntoView({ behavior: 'smooth' });
+                }
+            });
+        }
+
+
         // Auto-hide success alert after 3 seconds
         document.addEventListener('DOMContentLoaded', () => {
             const successAlert = document.getElementById('alert-success');
@@ -1550,6 +2137,43 @@
                     if (files && files.length > 0) {
                         fileInput.files = files; // Synchronize file input value
                         processFile(files[0]);
+                    }
+                }, false);
+            }
+
+            // Drag and drop image scan upload functionality
+            const scanDropzone = document.getElementById('scan-dropzone');
+            const scanFileInput = document.getElementById('scan-file-input');
+
+            if (scanDropzone && scanFileInput) {
+                // Prevent default drag behaviors for window & dropzone
+                ['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+                    scanDropzone.addEventListener(eventName, preventDefaults, false);
+                });
+
+                // Highlight dropzone on drag enter & over
+                ['dragenter', 'dragover'].forEach(eventName => {
+                    scanDropzone.addEventListener(eventName, () => {
+                        scanDropzone.classList.remove('border-default', 'bg-neutral-secondary-medium/20', 'hover:bg-neutral-secondary-medium/40');
+                        scanDropzone.classList.add('border-brand', 'bg-brand/10');
+                    }, false);
+                });
+
+                // Unhighlight dropzone on drag leave, drag end, and drop
+                ['dragleave', 'dragend', 'drop'].forEach(eventName => {
+                    scanDropzone.addEventListener(eventName, () => {
+                        scanDropzone.classList.remove('border-brand', 'bg-brand/10');
+                        scanDropzone.classList.add('border-default', 'bg-neutral-secondary-medium/20', 'hover:bg-neutral-secondary-medium/40');
+                    }, false);
+                });
+
+                // Handle file drop
+                scanDropzone.addEventListener('drop', (e) => {
+                    const dt = e.dataTransfer;
+                    const files = dt.files;
+                    if (files && files.length > 0) {
+                        scanFileInput.files = files; // Synchronize file input value
+                        processScanFile(files[0]);
                     }
                 }, false);
             }

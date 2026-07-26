@@ -93,6 +93,7 @@ Route::middleware('auth')->group(function () {
         Route::delete('classes/{class}/delete', [ClassesController::class, 'delete'])->name('classes.delete');
 
         Route::post('students/import', [StudentsController::class, 'import'])->name('students.import');
+        Route::post('students/scan-image', [StudentsController::class, 'scanImage'])->name('students.scan-image');
         Route::resource('students', StudentsController::class);
         Route::delete('students/{student}/delete', [StudentsController::class, 'delete'])->name('students.delete');
 
