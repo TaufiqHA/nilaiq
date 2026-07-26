@@ -27,6 +27,14 @@
                         <span class="ms-3">VPS Monitoring</span>
                      </a>
                   </li>
+                  <li>
+                     <a href="{{ route('admin.users.index') }}" class="flex items-center px-2 py-1.5 {{ request()->routeIs('admin.users.*') ? 'bg-neutral-tertiary text-fg-brand font-bold' : 'text-body hover:bg-neutral-tertiary hover:text-fg-brand' }} rounded-base group transition-all duration-200">
+                        <svg class="w-5 h-5 transition duration-75 {{ request()->routeIs('admin.users.*') ? 'text-fg-brand' : 'group-hover:text-fg-brand' }}" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                           <path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.109A11.386 11.386 0 0110.089 20c-2.202 0-4.275-.626-6.033-1.71L3.75 18c0-2.485 3.014-4.5 6.75-4.5 1.705 0 3.259.418 4.414 1.107m0 0a5.228 5.228 0 00.356-.2c1.219-.77 2.157-1.936 2.625-3.324M18 9.75a3 3 0 11-6 0 3 3 0 016 0zm-3 0a3.75 3.75 0 11-7.5 0 3.75 3.75 0 017.5 0z" />
+                        </svg>
+                        <span class="ms-3">Manajemen User</span>
+                     </a>
+                  </li>
                </ul>
             </div>
          </div>

@@ -3,6 +3,7 @@
 use App\Http\Controllers\AbsensiController;
 use App\Http\Controllers\AcademicYearController;
 use App\Http\Controllers\Admin\MonitoringController;
+use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\AssignmentMeetingsController;
 use App\Http\Controllers\AssignmentScoresController;
 use App\Http\Controllers\AttendanceMeetingsController;
@@ -199,5 +200,7 @@ Route::middleware('auth')->group(function () {
     // Admin Routes Group
     Route::middleware(['admin'])->prefix('admin')->name('admin.')->group(function () {
         Route::get('/monitoring', [MonitoringController::class, 'index'])->name('monitoring');
+        Route::resource('users', UserController::class);
+        Route::delete('users/{user}/delete', [UserController::class, 'delete'])->name('users.delete');
     });
 });
