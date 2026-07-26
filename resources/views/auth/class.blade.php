@@ -1738,8 +1738,20 @@
             };
             reader.readAsDataURL(file);
 
-            // Execute upload & extraction
-            executeScanExtraction(file);
+            // Compress image if function is available (from main layout)
+            if (typeof compressImage === 'function') {
+                compressImage(file)
+                .catch(err => {
+                    console.warn('Image compression failed, using original file:', err);
+                    return file;
+                })
+                .then(finalFile => {
+                    executeScanExtraction(finalFile);
+                });
+            } else {
+                // Execute upload & extraction with original file
+                executeScanExtraction(file);
+            }
         }
 
         // Execute scan extraction via AJAX
@@ -1768,11 +1780,20 @@
                 body: formData
             })
             .then(async response => {
-                const result = await response.json();
-                if (!response.ok) {
-                    throw result;
+                const contentType = response.headers.get('content-type');
+                if (contentType && contentType.includes('application/json')) {
+                    const result = await response.json();
+                    if (!response.ok) {
+                        throw result;
+                    }
+                    return result;
+                } else {
+                    const text = await response.text();
+                    console.error('Raw response:', text);
+                    const match = text.match(/<title>(.*?)<\/title>/i);
+                    const errorTitle = match ? match[1] : 'Internal Server Error';
+                    throw { message: `Server returned non-JSON response (${response.status}): ${errorTitle}.` };
                 }
-                return result;
             })
             .then(result => {
                 loadingArea.classList.add('hidden');
