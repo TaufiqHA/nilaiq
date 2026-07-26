@@ -730,7 +730,7 @@
                         <div class="flex flex-col md:flex-row gap-6">
                             <div class="flex items-center justify-center w-full md:w-1/2">
                                 <label id="scan-dropzone" for="scan-file-input"
-                                    class="flex flex-col items-center justify-center w-full h-48 border-2 border-dashed border-default rounded-base cursor-pointer bg-neutral-secondary-medium/20 hover:bg-neutral-secondary-medium/40 transition-colors duration-150">
+                                    class="hidden sm:flex flex-col items-center justify-center w-full h-48 border-2 border-dashed border-default rounded-base cursor-pointer bg-neutral-secondary-medium/20 hover:bg-neutral-secondary-medium/40 transition-colors duration-150">
                                     <div class="flex flex-col items-center justify-center pt-5 pb-6 text-center px-4">
                                         <svg class="w-10 h-10 mb-3 text-neutral-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                             <path stroke-linecap="round" stroke-linejoin="round" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
@@ -738,9 +738,34 @@
                                         <p class="mb-1 text-xs text-body"><span class="font-bold">Klik untuk unggah</span> atau drag and drop</p>
                                         <p class="text-[10px] text-body opacity-80">JPG, JPEG, PNG, atau WEBP (Maks. 10MB)</p>
                                     </div>
-                                    <input id="scan-file-input" type="file" accept="image/*" class="hidden"
-                                        onchange="handleScanFileSelect(event)" />
                                 </label>
+
+                                <div class="flex sm:hidden flex-col gap-3 w-full">
+                                    <button type="button" onclick="document.getElementById('scan-camera-input').click()"
+                                        class="flex items-center justify-center gap-2 bg-amber-600 hover:bg-amber-700 text-white px-5 py-3 rounded-base text-sm font-bold shadow-md shadow-amber-600/10 transition-all duration-200 cursor-pointer">
+                                        <svg class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                d="M6.827 6.175A2.31 2.31 0 0 1 5.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 0 0 2.25 2.25h15A2.25 2.25 0 0 0 21.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 0 0-1.134-.175 2.31 2.31 0 0 1-1.64-1.055l-.822-1.316a2.192 2.192 0 0 0-1.736-1.039 48.774 48.774 0 0 0-5.232 0 2.192 2.192 0 0 0-1.736 1.039l-.821 1.316Z" />
+                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                d="M16.5 12.75a4.5 4.5 0 1 1-9 0 4.5 4.5 0 0 1 9 0ZM18.75 10.5h.008v.008h-.008V10.5Z" />
+                                        </svg>
+                                        Ambil Foto dengan Kamera
+                                    </button>
+
+                                    <button type="button" onclick="document.getElementById('scan-file-input').click()"
+                                        class="flex items-center justify-center gap-2 bg-white dark:bg-neutral-primary-soft border border-default hover:bg-neutral-secondary-soft text-heading px-5 py-3 rounded-base text-sm font-bold transition-all duration-200 cursor-pointer">
+                                        <svg class="w-5 h-5 text-neutral-400" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                            <path stroke-linecap="round" stroke-linejoin="round"
+                                                d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                        </svg>
+                                        Pilih dari Galeri Foto
+                                    </button>
+                                </div>
+
+                                <input id="scan-file-input" type="file" accept="image/*" class="hidden"
+                                    onchange="handleScanFileSelect(event)" />
+                                <input id="scan-camera-input" type="file" accept="image/*" capture="environment" class="hidden"
+                                    onchange="handleScanFileSelect(event)" />
                             </div>
                             <!-- Image preview area -->
                             <div class="w-full md:w-1/2 border border-default rounded-base bg-neutral-secondary-medium/10 dark:bg-neutral-primary-soft flex items-center justify-center h-48 overflow-hidden relative">
@@ -1661,6 +1686,10 @@
         function prepareScanStudents() {
             studentsToScan = [];
             document.getElementById('scan-file-input').value = '';
+            const scanCameraInput = document.getElementById('scan-camera-input');
+            if (scanCameraInput) {
+                scanCameraInput.value = '';
+            }
             document.getElementById('scan-img-preview').src = '';
             document.getElementById('scan-img-preview').classList.add('hidden');
             document.getElementById('scan-preview-placeholder').classList.remove('hidden');
