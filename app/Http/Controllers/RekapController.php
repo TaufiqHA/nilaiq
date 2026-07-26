@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AcademicYear;
 use App\Models\AssignmentMeetings;
 use App\Models\AssignmentScores;
 use App\Models\Classes;
@@ -22,7 +23,10 @@ class RekapController extends Controller
      */
     public function index(): View
     {
-        $classes = Classes::with(['academicYear', 'students'])->get();
+        $activeYear = AcademicYear::getActive();
+        $classes = $activeYear
+            ? Classes::where('academic_year_id', $activeYear->id)->with(['academicYear', 'students'])->get()
+            : Classes::with(['academicYear', 'students'])->get();
         $settings = Settings::first();
 
         return view('auth.rekap', compact('classes', 'settings'));

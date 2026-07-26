@@ -31,14 +31,17 @@ class ClassWaliKelasController extends Controller
         }
 
         $userId = auth()->id();
-        $classWaliKelas = ClassWaliKelas::with(['academicYear', 'user'])
-            ->where('user_id', $userId)
-            ->first();
+        $activeAcademicYear = AcademicYear::getActive();
+        $classWaliKelas = $activeAcademicYear
+            ? ClassWaliKelas::with(['academicYear', 'user'])
+                ->where('user_id', $userId)
+                ->where('academic_year_id', $activeAcademicYear->id)
+                ->first()
+            : ClassWaliKelas::with(['academicYear', 'user'])
+                ->where('user_id', $userId)
+                ->first();
 
         $academicYears = AcademicYear::where('user_id', $userId)->get();
-        if ($academicYears->isEmpty()) {
-            $academicYears = AcademicYear::all();
-        }
 
         return view('auth.waliKelas.kelas', compact('classWaliKelas', 'academicYears'));
     }
@@ -51,7 +54,10 @@ class ClassWaliKelasController extends Controller
         $validated = $request->validate($this->validationRules());
 
         $classWaliKelas = ClassWaliKelas::updateOrCreate(
-            ['user_id' => $validated['user_id']],
+            [
+                'user_id' => $validated['user_id'],
+                'academic_year_id' => $validated['academic_year_id'],
+            ],
             $validated
         );
 

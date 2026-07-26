@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AcademicYear;
 use App\Models\AssignmentMeetings;
 use App\Models\AssignmentScores;
 use App\Models\AttendanceMeetings;
@@ -27,8 +28,16 @@ class AttendanceMeetingsController extends Controller
      */
     public function index(Request $request): JsonResponse|View
     {
-        $meetings = AttendanceMeetings::with(['class.students', 'attendances'])->get();
-        $classes = Classes::with('students')->get();
+        $activeYear = AcademicYear::getActive();
+        if ($activeYear) {
+            $meetings = AttendanceMeetings::whereHas('class', fn ($q) => $q->where('academic_year_id', $activeYear->id))
+                ->with(['class.students', 'attendances'])
+                ->get();
+            $classes = Classes::where('academic_year_id', $activeYear->id)->with('students')->get();
+        } else {
+            $meetings = AttendanceMeetings::with(['class.students', 'attendances'])->get();
+            $classes = Classes::with('students')->get();
+        }
 
         if ($request->wantsJson()) {
             return response()->json($meetings);
@@ -67,8 +76,16 @@ class AttendanceMeetingsController extends Controller
             return response()->json($attendanceMeeting);
         }
 
-        $meetings = AttendanceMeetings::with(['class.students', 'attendances'])->get();
-        $classes = Classes::with('students')->get();
+        $activeYear = AcademicYear::getActive();
+        if ($activeYear) {
+            $meetings = AttendanceMeetings::whereHas('class', fn ($q) => $q->where('academic_year_id', $activeYear->id))
+                ->with(['class.students', 'attendances'])
+                ->get();
+            $classes = Classes::where('academic_year_id', $activeYear->id)->with('students')->get();
+        } else {
+            $meetings = AttendanceMeetings::with(['class.students', 'attendances'])->get();
+            $classes = Classes::with('students')->get();
+        }
 
         return view('auth.absensi', compact('meetings', 'classes', 'attendanceMeeting'));
     }
@@ -138,7 +155,10 @@ class AttendanceMeetingsController extends Controller
     public function rekapAbsensi(Request $request): View
     {
         $classId = $request->query('class_id');
-        $classes = Classes::all();
+        $activeYear = AcademicYear::getActive();
+        $classes = $activeYear
+            ? Classes::where('academic_year_id', $activeYear->id)->get()
+            : Classes::all();
 
         $selectedClass = null;
         $students = collect();

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AcademicYear;
 use App\Models\ClassWaliKelas;
 use App\Models\MapelSettings;
 use App\Models\SettingsWaliKelas;
@@ -18,7 +19,11 @@ class RaportController extends Controller
     public function index(Request $request): View
     {
         $userId = auth()->id();
-        $classWaliKelas = ClassWaliKelas::where('user_id', $userId)->first();
+        $activeAcademicYear = AcademicYear::getActive();
+
+        $classWaliKelas = $activeAcademicYear
+            ? ClassWaliKelas::where('user_id', $userId)->where('academic_year_id', $activeAcademicYear->id)->first()
+            : ClassWaliKelas::where('user_id', $userId)->first();
 
         $search = $request->input('search');
 
@@ -38,19 +43,21 @@ class RaportController extends Controller
             $students = $query->orderBy('name', 'asc')->get();
         }
 
-        $settingsWaliKelas = SettingsWaliKelas::whereHas('academicYear', function ($q) use ($userId) {
-            $q->where('user_id', $userId);
-        })->first() ?? SettingsWaliKelas::first();
+        $settingsWaliKelas = $activeAcademicYear
+            ? SettingsWaliKelas::where('academicYear_id', $activeAcademicYear->id)->first()
+            : (SettingsWaliKelas::whereHas('academicYear', function ($q) use ($userId) {
+                $q->where('user_id', $userId);
+            })->first() ?? SettingsWaliKelas::first());
 
         $mapelSettings = collect();
         if ($settingsWaliKelas) {
             $mapelSettings = MapelSettings::where('settingsWaliKelas_id', $settingsWaliKelas->id)->get();
         }
-        if ($mapelSettings->isEmpty()) {
-            $mapelSettings = MapelSettings::all();
-        }
+        $academicYears = auth()->check()
+            ? AcademicYear::where('user_id', auth()->id())->get()
+            : AcademicYear::all();
 
-        return view('auth.waliKelas.raport', compact('students', 'classWaliKelas', 'search', 'mapelSettings'));
+        return view('auth.waliKelas.raport', compact('classWaliKelas', 'students', 'settingsWaliKelas', 'mapelSettings', 'academicYears', 'search'));
     }
 
     /**
@@ -93,7 +100,10 @@ class RaportController extends Controller
     public function cetakSemua(): View
     {
         $userId = auth()->id();
-        $classWaliKelas = ClassWaliKelas::where('user_id', $userId)->first();
+        $activeAcademicYear = AcademicYear::getActive();
+        $classWaliKelas = $activeAcademicYear
+            ? ClassWaliKelas::where('user_id', $userId)->where('academic_year_id', $activeAcademicYear->id)->first()
+            : ClassWaliKelas::where('user_id', $userId)->first();
 
         if (! $classWaliKelas) {
             abort(404, 'Data Kelas Wali Kelas tidak ditemukan.');

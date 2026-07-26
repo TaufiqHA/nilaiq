@@ -32,7 +32,7 @@ class WaliKelasDashboardTest extends TestCase
 
         $response = $this->actingAs($user)->get(route('wali-kelas.dashboard'));
 
-        $response->assertStatus(403);
+        $response->assertRedirect(route('dashboard'));
     }
 
     /**

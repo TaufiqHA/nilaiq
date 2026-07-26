@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AcademicYear;
 use App\Models\ClassWaliKelas;
 use App\Models\MapelSettings;
 use App\Models\SettingsWaliKelas;
@@ -17,7 +18,11 @@ class RekapNilaiController extends Controller
     public function index(Request $request): View
     {
         $userId = auth()->id();
-        $classWaliKelas = ClassWaliKelas::where('user_id', $userId)->first();
+        $activeAcademicYear = AcademicYear::getActive();
+
+        $classWaliKelas = $activeAcademicYear
+            ? ClassWaliKelas::where('user_id', $userId)->where('academic_year_id', $activeAcademicYear->id)->first()
+            : null;
 
         $students = collect();
         $mapelSettings = collect();
@@ -27,9 +32,11 @@ class RekapNilaiController extends Controller
         $highestAverage = 0;
         $lowestAverage = 0;
 
-        $settingsWaliKelas = SettingsWaliKelas::whereHas('academicYear', function ($q) use ($userId) {
-            $q->where('user_id', $userId);
-        })->first() ?? SettingsWaliKelas::first();
+        $settingsWaliKelas = $activeAcademicYear
+            ? SettingsWaliKelas::where('academicYear_id', $activeAcademicYear->id)->first()
+            : (SettingsWaliKelas::whereHas('academicYear', function ($q) use ($userId) {
+                $q->where('user_id', $userId);
+            })->first() ?? SettingsWaliKelas::first());
 
         if ($settingsWaliKelas) {
             $mapelSettings = MapelSettings::where('settingsWaliKelas_id', $settingsWaliKelas->id)->get();

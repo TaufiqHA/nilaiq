@@ -16,7 +16,10 @@ class ClassesController extends Controller
      */
     public function index(Request $request): JsonResponse|View
     {
-        $classes = Classes::with(['academicYear', 'students'])->get();
+        $activeYear = AcademicYear::getActive();
+        $classes = $activeYear
+            ? Classes::where('academic_year_id', $activeYear->id)->with(['academicYear', 'students'])->get()
+            : Classes::with(['academicYear', 'students'])->get();
         $academicYears = AcademicYear::where('user_id', auth()->id())
             ->orderBy('year', 'desc')
             ->orderBy('semester', 'asc')
@@ -59,7 +62,10 @@ class ClassesController extends Controller
             return response()->json($class);
         }
 
-        $classes = Classes::with(['academicYear', 'students'])->get();
+        $activeYear = AcademicYear::getActive();
+        $classes = $activeYear
+            ? Classes::where('academic_year_id', $activeYear->id)->with(['academicYear', 'students'])->get()
+            : Classes::with(['academicYear', 'students'])->get();
         $academicYears = AcademicYear::where('user_id', auth()->id())
             ->orderBy('year', 'desc')
             ->orderBy('semester', 'asc')

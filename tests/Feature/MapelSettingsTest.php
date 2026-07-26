@@ -23,12 +23,12 @@ class MapelSettingsTest extends TestCase
         $settingsWaliKelas = SettingsWaliKelas::factory()->create(['academicYear_id' => $academicYear->id]);
         $mapelSetting = MapelSettings::factory()->create(['settingsWaliKelas_id' => $settingsWaliKelas->id]);
 
-        $this->getJson(route('mapel-settings.index'))->assertStatus(401);
-        $this->getJson(route('mapel-settings.show', $mapelSetting))->assertStatus(401);
-        $this->postJson(route('mapel-settings.store'), [])->assertStatus(401);
-        $this->putJson(route('mapel-settings.update', $mapelSetting), [])->assertStatus(401);
-        $this->deleteJson(route('mapel-settings.destroy', $mapelSetting))->assertStatus(401);
-        $this->deleteJson(route('mapel-settings.delete', $mapelSetting))->assertStatus(401);
+        $this->getJson(route('wali-kelas.mapel-settings.index'))->assertStatus(401);
+        $this->getJson(route('wali-kelas.mapel-settings.show', $mapelSetting))->assertStatus(401);
+        $this->postJson(route('wali-kelas.mapel-settings.store'), [])->assertStatus(401);
+        $this->putJson(route('wali-kelas.mapel-settings.update', $mapelSetting), [])->assertStatus(401);
+        $this->deleteJson(route('wali-kelas.mapel-settings.destroy', $mapelSetting))->assertStatus(401);
+        $this->deleteJson(route('wali-kelas.mapel-settings.delete', $mapelSetting))->assertStatus(401);
     }
 
     /**
@@ -41,12 +41,12 @@ class MapelSettingsTest extends TestCase
         $settingsWaliKelas = SettingsWaliKelas::factory()->create(['academicYear_id' => $academicYear->id]);
         $mapelSetting = MapelSettings::factory()->create(['settingsWaliKelas_id' => $settingsWaliKelas->id]);
 
-        $this->actingAs($user)->getJson(route('mapel-settings.index'))->assertStatus(403);
-        $this->actingAs($user)->getJson(route('mapel-settings.show', $mapelSetting))->assertStatus(403);
-        $this->actingAs($user)->postJson(route('mapel-settings.store'), [])->assertStatus(403);
-        $this->actingAs($user)->putJson(route('mapel-settings.update', $mapelSetting), [])->assertStatus(403);
-        $this->actingAs($user)->deleteJson(route('mapel-settings.destroy', $mapelSetting))->assertStatus(403);
-        $this->actingAs($user)->deleteJson(route('mapel-settings.delete', $mapelSetting))->assertStatus(403);
+        $this->actingAs($user)->getJson(route('wali-kelas.mapel-settings.index'))->assertStatus(403);
+        $this->actingAs($user)->getJson(route('wali-kelas.mapel-settings.show', $mapelSetting))->assertStatus(403);
+        $this->actingAs($user)->postJson(route('wali-kelas.mapel-settings.store'), [])->assertStatus(403);
+        $this->actingAs($user)->putJson(route('wali-kelas.mapel-settings.update', $mapelSetting), [])->assertStatus(403);
+        $this->actingAs($user)->deleteJson(route('wali-kelas.mapel-settings.destroy', $mapelSetting))->assertStatus(403);
+        $this->actingAs($user)->deleteJson(route('wali-kelas.mapel-settings.delete', $mapelSetting))->assertStatus(403);
     }
 
     /**
@@ -62,7 +62,7 @@ class MapelSettingsTest extends TestCase
             'mapel' => 'Matematika',
         ]);
 
-        $response = $this->actingAs($user)->getJson(route('mapel-settings.index'));
+        $response = $this->actingAs($user)->getJson(route('wali-kelas.mapel-settings.index'));
 
         $response->assertStatus(200);
         $response->assertJsonFragment([
@@ -89,7 +89,7 @@ class MapelSettingsTest extends TestCase
             'mapel' => 'Kimia',
         ]);
 
-        $response = $this->actingAs($user)->getJson(route('mapel-settings.index', ['settingsWaliKelas_id' => $settings1->id]));
+        $response = $this->actingAs($user)->getJson(route('wali-kelas.mapel-settings.index', ['settingsWaliKelas_id' => $settings1->id]));
 
         $response->assertStatus(200);
         $response->assertJsonFragment(['mapel' => 'Fisika']);
@@ -112,7 +112,7 @@ class MapelSettingsTest extends TestCase
             'kkm' => 75,
         ];
 
-        $response = $this->actingAs($user)->postJson(route('mapel-settings.store'), $data);
+        $response = $this->actingAs($user)->postJson(route('wali-kelas.mapel-settings.store'), $data);
 
         $response->assertStatus(201);
         $response->assertJsonStructure([
@@ -145,7 +145,7 @@ class MapelSettingsTest extends TestCase
         $settingsWaliKelas = SettingsWaliKelas::factory()->create(['academicYear_id' => $academicYear->id]);
         $mapelSetting = MapelSettings::factory()->create(['settingsWaliKelas_id' => $settingsWaliKelas->id]);
 
-        $response = $this->actingAs($user)->getJson(route('mapel-settings.show', $mapelSetting));
+        $response = $this->actingAs($user)->getJson(route('wali-kelas.mapel-settings.show', $mapelSetting));
 
         $response->assertStatus(200);
         $response->assertJson([
@@ -173,7 +173,7 @@ class MapelSettingsTest extends TestCase
             'kkm' => 80,
         ];
 
-        $response = $this->actingAs($user)->putJson(route('mapel-settings.update', $mapelSetting), $updatedData);
+        $response = $this->actingAs($user)->putJson(route('wali-kelas.mapel-settings.update', $mapelSetting), $updatedData);
 
         $response->assertStatus(200);
         $response->assertJsonStructure([
@@ -199,7 +199,7 @@ class MapelSettingsTest extends TestCase
         $settingsWaliKelas = SettingsWaliKelas::factory()->create(['academicYear_id' => $academicYear->id]);
         $mapelSetting = MapelSettings::factory()->create(['settingsWaliKelas_id' => $settingsWaliKelas->id]);
 
-        $response = $this->actingAs($user)->deleteJson(route('mapel-settings.destroy', $mapelSetting));
+        $response = $this->actingAs($user)->deleteJson(route('wali-kelas.mapel-settings.destroy', $mapelSetting));
 
         $response->assertStatus(200);
         $response->assertJson([
@@ -221,7 +221,7 @@ class MapelSettingsTest extends TestCase
         $settingsWaliKelas = SettingsWaliKelas::factory()->create(['academicYear_id' => $academicYear->id]);
         $mapelSetting = MapelSettings::factory()->create(['settingsWaliKelas_id' => $settingsWaliKelas->id]);
 
-        $response = $this->actingAs($user)->deleteJson(route('mapel-settings.delete', $mapelSetting));
+        $response = $this->actingAs($user)->deleteJson(route('wali-kelas.mapel-settings.delete', $mapelSetting));
 
         $response->assertStatus(200);
         $response->assertJson([
@@ -240,7 +240,7 @@ class MapelSettingsTest extends TestCase
     {
         $user = User::factory()->create(['role' => 'wali_kelas']);
 
-        $response = $this->actingAs($user)->postJson(route('mapel-settings.store'), []);
+        $response = $this->actingAs($user)->postJson(route('wali-kelas.mapel-settings.store'), []);
 
         $response->assertStatus(422);
         $response->assertJsonValidationErrors([

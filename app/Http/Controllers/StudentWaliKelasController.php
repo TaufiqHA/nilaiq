@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AcademicYear;
 use App\Models\ClassWaliKelas;
 use App\Models\StudentWaliKelas;
 use Illuminate\Contracts\View\View;
@@ -33,7 +34,10 @@ class StudentWaliKelasController extends Controller
         }
 
         $userId = auth()->id();
-        $classWaliKelas = ClassWaliKelas::where('user_id', $userId)->first();
+        $activeAcademicYear = AcademicYear::getActive();
+        $classWaliKelas = $activeAcademicYear
+            ? ClassWaliKelas::where('user_id', $userId)->where('academic_year_id', $activeAcademicYear->id)->first()
+            : ClassWaliKelas::where('user_id', $userId)->first();
 
         $students = collect();
         if ($classWaliKelas) {

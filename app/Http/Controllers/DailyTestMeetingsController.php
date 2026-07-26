@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AcademicYear;
 use App\Models\Classes;
 use App\Models\DailyTestMeetings;
 use Illuminate\Http\JsonResponse;
@@ -16,8 +17,16 @@ class DailyTestMeetingsController extends Controller
      */
     public function index(Request $request): JsonResponse|View
     {
-        $meetings = DailyTestMeetings::with(['class.students', 'scores'])->get();
-        $classes = Classes::with('students')->get();
+        $activeYear = AcademicYear::getActive();
+        if ($activeYear) {
+            $meetings = DailyTestMeetings::whereHas('class', fn ($q) => $q->where('academic_year_id', $activeYear->id))
+                ->with(['class.students', 'scores'])
+                ->get();
+            $classes = Classes::where('academic_year_id', $activeYear->id)->with('students')->get();
+        } else {
+            $meetings = DailyTestMeetings::with(['class.students', 'scores'])->get();
+            $classes = Classes::with('students')->get();
+        }
 
         if ($request->wantsJson()) {
             return response()->json($meetings);
@@ -56,8 +65,16 @@ class DailyTestMeetingsController extends Controller
             return response()->json($dailyTestMeeting);
         }
 
-        $meetings = DailyTestMeetings::with(['class.students', 'scores'])->get();
-        $classes = Classes::with('students')->get();
+        $activeYear = AcademicYear::getActive();
+        if ($activeYear) {
+            $meetings = DailyTestMeetings::whereHas('class', fn ($q) => $q->where('academic_year_id', $activeYear->id))
+                ->with(['class.students', 'scores'])
+                ->get();
+            $classes = Classes::where('academic_year_id', $activeYear->id)->with('students')->get();
+        } else {
+            $meetings = DailyTestMeetings::with(['class.students', 'scores'])->get();
+            $classes = Classes::with('students')->get();
+        }
 
         return view('auth.UlanganHarian', compact('meetings', 'classes', 'dailyTestMeeting'));
     }

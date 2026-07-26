@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AcademicYear;
 use App\Models\Students;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
@@ -17,7 +18,10 @@ class StudentsController extends Controller
      */
     public function index(): JsonResponse
     {
-        $students = Students::with('class')->get();
+        $activeYear = AcademicYear::getActive();
+        $students = $activeYear
+            ? Students::whereHas('class', fn ($q) => $q->where('academic_year_id', $activeYear->id))->with('class')->get()
+            : Students::with('class')->get();
 
         return response()->json($students);
     }

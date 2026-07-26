@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AcademicYear;
 use App\Models\Classes;
 use App\Models\FinalExams;
 use Illuminate\Http\JsonResponse;
@@ -16,8 +17,16 @@ class FinalExamsController extends Controller
      */
     public function index(Request $request): JsonResponse|View
     {
-        $exams = FinalExams::with(['class.students', 'scores'])->get();
-        $classes = Classes::with('students')->get();
+        $activeYear = AcademicYear::getActive();
+        if ($activeYear) {
+            $exams = FinalExams::whereHas('class', fn ($q) => $q->where('academic_year_id', $activeYear->id))
+                ->with(['class.students', 'scores'])
+                ->get();
+            $classes = Classes::where('academic_year_id', $activeYear->id)->with('students')->get();
+        } else {
+            $exams = FinalExams::with(['class.students', 'scores'])->get();
+            $classes = Classes::with('students')->get();
+        }
 
         if ($request->wantsJson()) {
             return response()->json($exams);
@@ -56,8 +65,16 @@ class FinalExamsController extends Controller
             return response()->json($finalExam);
         }
 
-        $exams = FinalExams::with(['class.students', 'scores'])->get();
-        $classes = Classes::with('students')->get();
+        $activeYear = AcademicYear::getActive();
+        if ($activeYear) {
+            $exams = FinalExams::whereHas('class', fn ($q) => $q->where('academic_year_id', $activeYear->id))
+                ->with(['class.students', 'scores'])
+                ->get();
+            $classes = Classes::where('academic_year_id', $activeYear->id)->with('students')->get();
+        } else {
+            $exams = FinalExams::with(['class.students', 'scores'])->get();
+            $classes = Classes::with('students')->get();
+        }
 
         return view('auth.pas', compact('exams', 'classes', 'finalExam'));
     }

@@ -33,7 +33,7 @@ class ClassesTest extends TestCase
     public function test_authenticated_user_can_access_classes_index(): void
     {
         /** @var User $user */
-        $user = User::factory()->create();
+        $user = User::factory()->create(['role' => 'mapel']);
         $academicYear = AcademicYear::factory()->create(['user_id' => $user->id]);
         Classes::factory()->count(3)->create(['academic_year_id' => $academicYear->id]);
 
@@ -51,7 +51,7 @@ class ClassesTest extends TestCase
     public function test_authenticated_user_can_access_classes_index_json(): void
     {
         /** @var User $user */
-        $user = User::factory()->create();
+        $user = User::factory()->create(['role' => 'mapel']);
         $class = Classes::factory()->create();
 
         $response = $this->actingAs($user)->getJson(route('classes.index'));
@@ -70,7 +70,7 @@ class ClassesTest extends TestCase
     public function test_authenticated_user_can_store_class(): void
     {
         /** @var User $user */
-        $user = User::factory()->create();
+        $user = User::factory()->create(['role' => 'mapel']);
         $academicYear = AcademicYear::factory()->create();
         $classData = [
             'academic_year_id' => $academicYear->id,
@@ -94,7 +94,7 @@ class ClassesTest extends TestCase
     public function test_store_class_validation(): void
     {
         /** @var User $user */
-        $user = User::factory()->create();
+        $user = User::factory()->create(['role' => 'mapel']);
 
         // Test required fields
         $response = $this->actingAs($user)->post(route('classes.store'), []);
@@ -114,7 +114,7 @@ class ClassesTest extends TestCase
     public function test_authenticated_user_can_view_class_details(): void
     {
         /** @var User $user */
-        $user = User::factory()->create();
+        $user = User::factory()->create(['role' => 'mapel']);
         $academicYear = AcademicYear::factory()->create(['user_id' => $user->id]);
         $class = Classes::factory()->create(['academic_year_id' => $academicYear->id]);
 
@@ -131,7 +131,7 @@ class ClassesTest extends TestCase
     public function test_authenticated_user_can_update_class(): void
     {
         /** @var User $user */
-        $user = User::factory()->create();
+        $user = User::factory()->create(['role' => 'mapel']);
         $class = Classes::factory()->create();
         $academicYear = AcademicYear::factory()->create();
 
@@ -158,7 +158,7 @@ class ClassesTest extends TestCase
     public function test_authenticated_user_can_delete_class_via_destroy(): void
     {
         /** @var User $user */
-        $user = User::factory()->create();
+        $user = User::factory()->create(['role' => 'mapel']);
         $class = Classes::factory()->create();
 
         $response = $this->actingAs($user)->delete(route('classes.destroy', $class));
@@ -177,7 +177,7 @@ class ClassesTest extends TestCase
     public function test_authenticated_user_can_delete_class_via_delete_alias(): void
     {
         /** @var User $user */
-        $user = User::factory()->create();
+        $user = User::factory()->create(['role' => 'mapel']);
         $class = Classes::factory()->create();
 
         $response = $this->actingAs($user)->delete(route('classes.delete', $class));

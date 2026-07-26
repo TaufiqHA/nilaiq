@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AcademicYear;
 use App\Models\AssignmentMeetings;
 use App\Models\Classes;
 use Illuminate\Http\JsonResponse;
@@ -16,8 +17,16 @@ class AssignmentMeetingsController extends Controller
      */
     public function index(Request $request): JsonResponse|View
     {
-        $meetings = AssignmentMeetings::with(['class.students', 'scores'])->get();
-        $classes = Classes::with('students')->get();
+        $activeYear = AcademicYear::getActive();
+        if ($activeYear) {
+            $meetings = AssignmentMeetings::whereHas('class', fn ($q) => $q->where('academic_year_id', $activeYear->id))
+                ->with(['class.students', 'scores'])
+                ->get();
+            $classes = Classes::where('academic_year_id', $activeYear->id)->with('students')->get();
+        } else {
+            $meetings = AssignmentMeetings::with(['class.students', 'scores'])->get();
+            $classes = Classes::with('students')->get();
+        }
 
         if ($request->wantsJson()) {
             return response()->json($meetings);
@@ -56,8 +65,16 @@ class AssignmentMeetingsController extends Controller
             return response()->json($assignmentMeeting);
         }
 
-        $meetings = AssignmentMeetings::with(['class.students', 'scores'])->get();
-        $classes = Classes::with('students')->get();
+        $activeYear = AcademicYear::getActive();
+        if ($activeYear) {
+            $meetings = AssignmentMeetings::whereHas('class', fn ($q) => $q->where('academic_year_id', $activeYear->id))
+                ->with(['class.students', 'scores'])
+                ->get();
+            $classes = Classes::where('academic_year_id', $activeYear->id)->with('students')->get();
+        } else {
+            $meetings = AssignmentMeetings::with(['class.students', 'scores'])->get();
+            $classes = Classes::with('students')->get();
+        }
 
         return view('auth.tugas', compact('meetings', 'classes', 'assignmentMeeting'));
     }

@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AcademicYear;
 use App\Models\Classes;
 use App\Models\MidtermExams;
 use Illuminate\Http\JsonResponse;
@@ -16,8 +17,16 @@ class MidtermExamsController extends Controller
      */
     public function index(Request $request): JsonResponse|View
     {
-        $exams = MidtermExams::with(['class.students', 'scores'])->get();
-        $classes = Classes::with('students')->get();
+        $activeYear = AcademicYear::getActive();
+        if ($activeYear) {
+            $exams = MidtermExams::whereHas('class', fn ($q) => $q->where('academic_year_id', $activeYear->id))
+                ->with(['class.students', 'scores'])
+                ->get();
+            $classes = Classes::where('academic_year_id', $activeYear->id)->with('students')->get();
+        } else {
+            $exams = MidtermExams::with(['class.students', 'scores'])->get();
+            $classes = Classes::with('students')->get();
+        }
 
         if ($request->wantsJson()) {
             return response()->json($exams);
@@ -56,8 +65,16 @@ class MidtermExamsController extends Controller
             return response()->json($midtermExam);
         }
 
-        $exams = MidtermExams::with(['class.students', 'scores'])->get();
-        $classes = Classes::with('students')->get();
+        $activeYear = AcademicYear::getActive();
+        if ($activeYear) {
+            $exams = MidtermExams::whereHas('class', fn ($q) => $q->where('academic_year_id', $activeYear->id))
+                ->with(['class.students', 'scores'])
+                ->get();
+            $classes = Classes::where('academic_year_id', $activeYear->id)->with('students')->get();
+        } else {
+            $exams = MidtermExams::with(['class.students', 'scores'])->get();
+            $classes = Classes::with('students')->get();
+        }
 
         return view('auth.pts', compact('exams', 'classes', 'midtermExam'));
     }

@@ -259,4 +259,33 @@ class ClassWaliKelasTest extends TestCase
             'user_id',
         ]);
     }
+
+    /**
+     * Test wali_kelas can access informasi kelas view, showing only their academic years and the manage button.
+     */
+    public function test_wali_kelas_can_access_informasi_kelas_view_with_filtered_academic_years(): void
+    {
+        $user = User::factory()->create(['role' => 'wali_kelas']);
+        $otherUser = User::factory()->create(['role' => 'wali_kelas']);
+
+        $myYear = AcademicYear::factory()->create([
+            'user_id' => $user->id,
+            'year' => '2026/2027',
+            'semester' => 'GANJIL',
+        ]);
+
+        $otherYear = AcademicYear::factory()->create([
+            'user_id' => $otherUser->id,
+            'year' => '2027/2028',
+            'semester' => 'GENAP',
+        ]);
+
+        $response = $this->actingAs($user)->get(route('wali-kelas.informasi-kelas'));
+
+        $response->assertStatus(200);
+        $response->assertSee('2026/2027 - Semester GANJIL');
+        $response->assertDontSee('2027/2028 - Semester GENAP');
+        $response->assertSee('academic-year-modal');
+        $response->assertSee('Kelola');
+    }
 }

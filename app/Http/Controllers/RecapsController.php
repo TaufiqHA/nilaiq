@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AcademicYear;
 use App\Models\Classes;
 use App\Models\Recaps;
 use App\Models\Settings;
@@ -17,7 +18,10 @@ class RecapsController extends Controller
      */
     public function index(): JsonResponse
     {
-        $recaps = Recaps::with(['academicYear', 'class', 'student'])->get();
+        $activeYear = AcademicYear::getActive();
+        $recaps = $activeYear
+            ? Recaps::where('academic_year_id', $activeYear->id)->with(['academicYear', 'class', 'student'])->get()
+            : Recaps::with(['academicYear', 'class', 'student'])->get();
 
         return response()->json($recaps);
     }
@@ -27,7 +31,10 @@ class RecapsController extends Controller
      */
     public function nilaiAkhirView(Request $request): View
     {
-        $classes = Classes::with(['academicYear', 'students'])->get();
+        $activeYear = AcademicYear::getActive();
+        $classes = $activeYear
+            ? Classes::where('academic_year_id', $activeYear->id)->with(['academicYear', 'students'])->get()
+            : Classes::with(['academicYear', 'students'])->get();
         $settings = Settings::first();
 
         $selectedClassId = $request->input('class_id', $classes->first()?->id);

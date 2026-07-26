@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AcademicYear;
 use App\Models\ClassWaliKelas;
 use App\Models\MapelSettings;
 use App\Models\NilaiMapel;
@@ -40,16 +41,22 @@ class NilaiMapelController extends Controller
         }
 
         $userId = auth()->id();
-        $classWaliKelas = ClassWaliKelas::where('user_id', $userId)->first();
+        $activeAcademicYear = AcademicYear::getActive();
+
+        $classWaliKelas = $activeAcademicYear
+            ? ClassWaliKelas::where('user_id', $userId)->where('academic_year_id', $activeAcademicYear->id)->first()
+            : null;
 
         $students = collect();
         $mapelSettings = collect();
         $selectedMapel = null;
         $nilaiMapelsKeyed = collect();
 
-        $settingsWaliKelas = SettingsWaliKelas::whereHas('academicYear', function ($q) use ($userId) {
-            $q->where('user_id', $userId);
-        })->first() ?? SettingsWaliKelas::first();
+        $settingsWaliKelas = $activeAcademicYear
+            ? SettingsWaliKelas::where('academicYear_id', $activeAcademicYear->id)->first()
+            : (SettingsWaliKelas::whereHas('academicYear', function ($q) use ($userId) {
+                $q->where('user_id', $userId);
+            })->first() ?? SettingsWaliKelas::first());
 
         if ($settingsWaliKelas) {
             $mapelSettings = MapelSettings::where('settingsWaliKelas_id', $settingsWaliKelas->id)->get();
@@ -223,7 +230,10 @@ class NilaiMapelController extends Controller
     public function exportTemplate(Request $request): StreamedResponse|RedirectResponse
     {
         $userId = auth()->id();
-        $classWaliKelas = ClassWaliKelas::where('user_id', $userId)->first();
+        $activeAcademicYear = AcademicYear::getActive();
+        $classWaliKelas = $activeAcademicYear
+            ? ClassWaliKelas::where('user_id', $userId)->where('academic_year_id', $activeAcademicYear->id)->first()
+            : ClassWaliKelas::where('user_id', $userId)->first();
         if (! $classWaliKelas) {
             return redirect()->back()->with('error', 'Anda belum mengatur informasi kelas.');
         }
@@ -304,7 +314,10 @@ class NilaiMapelController extends Controller
     public function import(Request $request): RedirectResponse
     {
         $userId = auth()->id();
-        $classWaliKelas = ClassWaliKelas::where('user_id', $userId)->first();
+        $activeAcademicYear = AcademicYear::getActive();
+        $classWaliKelas = $activeAcademicYear
+            ? ClassWaliKelas::where('user_id', $userId)->where('academic_year_id', $activeAcademicYear->id)->first()
+            : ClassWaliKelas::where('user_id', $userId)->first();
         if (! $classWaliKelas) {
             return redirect()->back()->with('error', 'Anda belum mengatur informasi kelas.');
         }

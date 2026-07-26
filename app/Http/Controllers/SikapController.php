@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AcademicYear;
 use App\Models\ClassWaliKelas;
 use App\Models\Sikap;
 use App\Models\StudentWaliKelas;
@@ -28,7 +29,10 @@ class SikapController extends Controller
         }
 
         $userId = auth()->id();
-        $classWaliKelas = ClassWaliKelas::where('user_id', $userId)->first();
+        $activeAcademicYear = AcademicYear::getActive();
+        $classWaliKelas = $activeAcademicYear
+            ? ClassWaliKelas::where('user_id', $userId)->where('academic_year_id', $activeAcademicYear->id)->first()
+            : ClassWaliKelas::where('user_id', $userId)->first();
 
         $students = collect();
         if ($classWaliKelas) {

@@ -17,8 +17,16 @@ class SettingsWaliKelasController extends Controller
      */
     public function index(Request $request): View|JsonResponse
     {
-        $settingsWaliKelas = SettingsWaliKelas::with('academicYear')->first();
-        $settings = SettingsWaliKelas::with('academicYear')->get();
+        $userId = auth()->id();
+        $activeAcademicYear = AcademicYear::getActive();
+
+        $settingsWaliKelas = $activeAcademicYear
+            ? SettingsWaliKelas::where('academicYear_id', $activeAcademicYear->id)->with('academicYear')->first()
+            : SettingsWaliKelas::with('academicYear')->first();
+
+        $settings = $activeAcademicYear
+            ? SettingsWaliKelas::where('academicYear_id', $activeAcademicYear->id)->with('academicYear')->get()
+            : SettingsWaliKelas::with('academicYear')->get();
 
         if ($request->wantsJson()) {
             return response()->json($settings);
@@ -39,7 +47,7 @@ class SettingsWaliKelasController extends Controller
             $validated['school_logo'] = $path;
         }
 
-        $existing = SettingsWaliKelas::first();
+        $existing = SettingsWaliKelas::where('academicYear_id', $validated['academicYear_id'])->first();
         if ($existing) {
             $existing->update($validated);
             $settingsWaliKelas = $existing;
@@ -122,7 +130,12 @@ class SettingsWaliKelasController extends Controller
      */
     private function renderMasterDataView(?SettingsWaliKelas $settingsWaliKelas = null): View
     {
-        $settingsWaliKelas = $settingsWaliKelas ?? SettingsWaliKelas::with('academicYear')->first();
+        $userId = auth()->id();
+        $activeAcademicYear = AcademicYear::getActive();
+
+        $settingsWaliKelas = $settingsWaliKelas ?? ($activeAcademicYear
+            ? SettingsWaliKelas::where('academicYear_id', $activeAcademicYear->id)->with('academicYear')->first()
+            : SettingsWaliKelas::with('academicYear')->first());
 
         $mapelSettings = $settingsWaliKelas
             ? MapelSettings::where('settingsWaliKelas_id', $settingsWaliKelas->id)->get()
