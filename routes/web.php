@@ -28,6 +28,7 @@ use App\Http\Controllers\RaportController;
 use App\Http\Controllers\RecapsController;
 use App\Http\Controllers\RekapController;
 use App\Http\Controllers\RekapNilaiController;
+use App\Http\Controllers\ScoreScanController;
 use App\Http\Controllers\SettingsController;
 use App\Http\Controllers\SettingsWaliKelasController;
 use App\Http\Controllers\SikapController;
@@ -57,6 +58,7 @@ Route::middleware('guest')->group(function () {
 Route::middleware('auth')->group(function () {
     // Auth & Account
     Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
+    Route::post('/score-scan', [ScoreScanController::class, 'scan'])->name('score-scan');
     Route::get('/me', [AuthController::class, 'me'])->name('me');
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile');
     Route::put('/profile', [ProfileController::class, 'update'])->name('profile.update');

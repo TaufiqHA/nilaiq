@@ -39,5 +39,96 @@
     <div class="p-4 sm:ml-64">
         @yield('content')
     </div>
+
+    <!-- Global Scan Loading Overlay -->
+    <div id="scan-loading-overlay" class="fixed inset-0 z-[100] hidden items-center justify-center bg-black/60 backdrop-blur-xs">
+        <div class="bg-white dark:bg-neutral-primary-soft p-6 rounded-base border border-default shadow-lg max-w-sm w-full text-center mx-4">
+            <svg class="animate-spin h-10 w-10 text-brand mx-auto mb-4" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+                <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+                <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+            </svg>
+            <h3 class="text-lg font-bold text-heading mb-1">Menganalisis Foto Nilai</h3>
+            <p class="text-sm text-body">Membaca tulisan tangan nilai siswa menggunakan AI. Mohon tunggu beberapa saat...</p>
+        </div>
+    </div>
+
+    <script>
+        window.scanGrades = function(inputElement, studentsList) {
+            if (!inputElement.files || inputElement.files.length === 0) {
+                return;
+            }
+            
+            const file = inputElement.files[0];
+            const overlay = document.getElementById('scan-loading-overlay');
+            if (overlay) {
+                overlay.classList.remove('hidden');
+                overlay.classList.add('flex');
+            }
+
+            const formData = new FormData();
+            formData.append('image', file);
+            formData.append('students', JSON.stringify(studentsList.map(s => ({ id: s.id, name: s.name }))));
+
+            fetch('{{ route("score-scan") }}', {
+                method: 'POST',
+                headers: {
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'Accept': 'application/json'
+                },
+                body: formData
+            })
+            .then(async response => {
+                const data = await response.json();
+                if (!response.ok) {
+                    throw data;
+                }
+                return data;
+            })
+            .then(result => {
+                if (result.success && result.data) {
+                    let successCount = 0;
+                    result.data.forEach(item => {
+                        const studentId = item.student_id;
+                        const score = item.score;
+                        
+                        const scoreInput = document.getElementById(`score-${studentId}`);
+                        if (scoreInput) {
+                            scoreInput.disabled = false;
+                            scoreInput.value = score !== null ? score : '';
+                            
+                            // Mark as unsaved so user can review and save
+                            if (typeof window.markUnsaved === 'function') {
+                                window.markUnsaved(studentId);
+                            } else if (typeof markUnsaved === 'function') {
+                                markUnsaved(studentId);
+                            }
+                            successCount++;
+                        }
+                    });
+                    
+                    if (typeof showToast === 'function') {
+                        showToast(`Berhasil mendeteksi nilai untuk ${successCount} siswa.`);
+                    } else if (typeof window.showToast === 'function') {
+                        window.showToast(`Berhasil mendeteksi nilai untuk ${successCount} siswa.`);
+                    } else {
+                        alert(`Berhasil mendeteksi nilai untuk ${successCount} siswa.`);
+                    }
+                } else {
+                    alert('Gagal mendeteksi nilai dari gambar: ' + (result.message || 'Format tidak dikenal.'));
+                }
+            })
+            .catch(error => {
+                console.error('Scan Error:', error);
+                alert('Gagal memproses gambar: ' + (error.message || 'Terjadi kesalahan pada server/API. Pastikan GEMINI_API_KEY sudah dikonfigurasi di file .env.'));
+            })
+            .finally(() => {
+                inputElement.value = '';
+                if (overlay) {
+                    overlay.classList.remove('flex');
+                    overlay.classList.add('hidden');
+                }
+            });
+        };
+    </script>
 </body>
 </html>
