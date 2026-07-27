@@ -23,6 +23,7 @@ use App\Http\Controllers\MapelSettingsController;
 use App\Http\Controllers\MidtermExamsController;
 use App\Http\Controllers\MidtermScoresController;
 use App\Http\Controllers\NilaiMapelController;
+use App\Http\Controllers\PortalOrtuController;
 use App\Http\Controllers\PrestasiController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\RaportController;
@@ -50,6 +51,16 @@ Route::middleware('guest')->group(function () {
 
     Route::post('/login', [AuthController::class, 'login']);
 });
+
+/*
+|--------------------------------------------------------------------------
+| Portal Orang Tua Routes
+|--------------------------------------------------------------------------
+*/
+Route::get('/portal-ortu', [PortalOrtuController::class, 'index'])->name('portal-ortu.index');
+Route::post('/portal-ortu', [PortalOrtuController::class, 'search'])->name('portal-ortu.search');
+Route::get('/portal-ortu/dashboard', [PortalOrtuController::class, 'dashboard'])->name('portal-ortu.dashboard');
+Route::post('/portal-ortu/exit', [PortalOrtuController::class, 'exit'])->name('portal-ortu.exit');
 
 /*
 |--------------------------------------------------------------------------

@@ -6,6 +6,7 @@ use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\ValidationException;
 
 class ScoreScanController extends Controller
 {
@@ -130,7 +131,7 @@ Do not return any explanation, markdown formatting (like ```json), or extra text
                 'data' => $extractedData,
             ]);
 
-        } catch (\Illuminate\Validation\ValidationException $e) {
+        } catch (ValidationException $e) {
             throw $e;
         } catch (\Throwable $e) {
             Log::error('Score Scan Exception: '.$e->getMessage()."\n".$e->getTraceAsString());
