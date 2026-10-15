@@ -25,12 +25,20 @@ class AttendancesController extends Controller
     {
         $validated = $request->validate($this->validationRules());
 
-        $attendance = Attendances::create($validated);
+        $attendance = Attendances::updateOrCreate(
+            [
+                'attendance_meeting_id' => $validated['attendance_meeting_id'],
+                'student_id' => $validated['student_id'],
+            ],
+            $validated
+        );
 
         return response()->json([
-            'message' => 'Attendance created successfully.',
+            'message' => $attendance->wasRecentlyCreated
+                ? 'Attendance created successfully.'
+                : 'Attendance updated successfully.',
             'data' => $attendance->load(['attendanceMeeting', 'student']),
-        ], 201);
+        ], $attendance->wasRecentlyCreated ? 201 : 200);
     }
 
     /**
@@ -79,11 +87,12 @@ class AttendancesController extends Controller
     /**
      * Get the validation rules for the attendance request.
      *
-     * @return array<string, array<int, string>>
+     * @return array<string, array<int, mixed>>
      */
     private function validationRules(): array
     {
         return [
+            'client_uuid' => ['nullable', 'uuid'],
             'attendance_meeting_id' => ['required', 'exists:attendance_meetings,id'],
             'student_id' => ['required', 'exists:students,id'],
             'status' => ['required', 'in:HADIR,IZIN,SAKIT,ALFA'],
