@@ -53,6 +53,21 @@ class AttendanceMeetingsController extends Controller
     {
         $validated = $request->validate($this->validationRules());
 
+        if (! empty($validated['client_uuid'])) {
+            $existing = AttendanceMeetings::where('client_uuid', $validated['client_uuid'])->first();
+
+            if ($existing) {
+                if ($request->wantsJson()) {
+                    return response()->json([
+                        'message' => 'Attendance meeting already exists.',
+                        'data' => $existing->load('class'),
+                    ]);
+                }
+
+                return redirect()->route('attendance-meetings.index')->with('success', 'Attendance meeting already exists.');
+            }
+        }
+
         $meeting = AttendanceMeetings::create($validated);
 
         if ($request->wantsJson()) {
@@ -136,11 +151,12 @@ class AttendanceMeetingsController extends Controller
     /**
      * Get the validation rules for the attendance meeting request.
      *
-     * @return array<string, array<int, string>>
+     * @return array<string, array<int, mixed>>
      */
     private function validationRules(): array
     {
         return [
+            'client_uuid' => ['nullable', 'uuid'],
             'class_id' => ['required', 'exists:classes,id'],
             'title' => ['required', 'string', 'max:255'],
             'meeting_date' => ['required', 'date'],
@@ -152,7 +168,7 @@ class AttendanceMeetingsController extends Controller
     /**
      * Display a recap of the attendance meetings for a class.
      */
-    public function rekapAbsensi(Request $request): View
+    public function rekapAbsensi(Request $request): View|JsonResponse
     {
         $classId = $request->query('class_id');
         $activeYear = AcademicYear::getActive();
@@ -219,6 +235,15 @@ class AttendanceMeetingsController extends Controller
         }
 
         $settings = Settings::first();
+
+        if ($request->wantsJson()) {
+            return response()->json([
+                'class' => $selectedClass,
+                'students' => $students,
+                'meetings' => $meetings,
+                'attendances' => $attendances,
+            ]);
+        }
 
         return view('auth.rekapAbsensi', compact(
             'classes',
