@@ -1,58 +1,215 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+<div align="center">
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+# NilaiQ
 
-## About Laravel
+**Sistem Informasi Manajemen Nilai & Raport Sekolah**
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+Kelola nilai harian, absensi, ekstrakurikuler, hingga cetak raport — semua dalam satu aplikasi yang rapi, cepat, dan siap pakai.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+[![Laravel](https://img.shields.io/badge/Laravel-13-FF2D20?style=for-the-badge&logo=laravel&logoColor=white)](https://laravel.com)
+[![PHP](https://img.shields.io/badge/PHP-8.3%2B-777BB4?style=for-the-badge&logo=php&logoColor=white)](https://www.php.net)
+[![Tailwind CSS](https://img.shields.io/badge/Tailwind_CSS-4-06B6D4?style=for-the-badge&logo=tailwindcss&logoColor=white)](https://tailwindcss.com)
+[![PHPUnit](https://img.shields.io/badge/Tests-PHPUnit-3C9CD7?style=for-the-badge&logo=phpunit&logoColor=white)](https://phpunit.de)
+[![License](https://img.shields.io/badge/License-MIT-green?style=for-the-badge)](https://opensource.org/licenses/MIT)
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+</div>
 
-## Learning Laravel
+---
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+## Tentang NilaiQ
 
-In addition, [Laracasts](https://laracasts.com) contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+**NilaiQ** adalah aplikasi berbasis web untuk membantu **Guru Mapel**, **Wali Kelas**, dan **Admin** dalam mengelola seluruh proses penilaian di sekolah. Mulai dari input nilai ulangan harian, tugas, PTS, PAS, rekap absensi, prestasi siswa, sampai **mencetak raport** lengkap dengan lampiran — semuanya tercatat otomatis dan konsisten.
 
-You can also watch bite-sized lessons with real-world projects on [Laravel Learn](https://laravel.com/learn), where you will be guided through building a Laravel application from scratch while learning PHP fundamentals.
+Dibangun dengan **Laravel 13** dan **Tailwind CSS 4**, NilaiQ mengusung antarmuka modern (mode terang/gelap) serta dukungan API untuk aplikasi mobile, sehingga bisa digunakan dari mana saja.
 
-## Agentic Development
+---
 
-Laravel's predictable structure and conventions make it ideal for AI coding agents like Claude Code, Cursor, and GitHub Copilot. Install [Laravel Boost](https://laravel.com/docs/ai) to supercharge your AI workflow:
+## Fitur Unggulan
+
+### Guru Mapel
+- **Dashboard interaktif** — ringkasan aktivitas penilaian
+- **Manajemen penilaian lengkap** — Ulangan Harian, Tugas, PTS, dan PAS
+- **Absensi pertemuan** — catat kehadiran per pertemuan dengan tipe kegiatan
+- **Scan nilai dari gambar (AI)** — ekstrak nilai otomatis dari foto daftar nilai menggunakan Google Gemini
+- **Rekap nilai & nilai akhir** — kalkulasi otomatis dari seluruh komponen penilaian
+- **Manajemen siswa & kelas** — termasuk impor massal dari file Excel
+- **Backup database** — unduh & pulihkan cadangan data
+
+### Wali Kelas
+- **Informasi kelas & siswa** — data kelas binaan dalam satu tempat
+- **Pengaturan mata pelajaran** — atur mapel, kelompok, dan bobot penilaian
+- **Ekstrakurikuler, prestasi & sikap** — dokumentasi lengkap perkembangan siswa
+- **Catatan wali kelas** — pesan dan bimbingan untuk setiap siswa
+- **Nilai mapel** — input manual atau impor dari template Excel
+- **Cetak raport** — raport per siswa atau cetak semua sekaligus
+- **Rekap nilai kelas** — gambaran menyeluruh capaian siswa
+
+### Admin
+- **Monitoring server** — pantau CPU, memori, disk, dan uptime
+- **Manajemen pengguna** — kelola akun guru, wali kelas, dan admin
+
+### Umum
+- **Mode terang & gelap** yang nyaman di mata
+- **REST API (Sanctum)** — siap diintegrasikan dengan aplikasi mobile
+- **Sinkronisasi offline-first** — didukung `client_uuid` untuk data pertemuan & nilai
+- **Antarmuka Bahasa Indonesia** — ramah pengguna untuk guru
+
+---
+
+## Teknologi
+
+| Lapisan | Teknologi |
+| --- | --- |
+| **Framework** | Laravel 13 |
+| **Bahasa** | PHP 8.3+ |
+| **Frontend** | Blade + Tailwind CSS 4 + Flowbite |
+| **Build Tool** | Vite 8 |
+| **Database** | SQLite / MySQL / PostgreSQL (mendukung semua driver Laravel) |
+| **Autentikasi** | Session (web) & Laravel Sanctum (API) |
+| **Excel** | PhpSpreadsheet |
+| **Backup** | Spatie Laravel Backup + Google Drive |
+| **AI** | Google Gemini (OCR daftar nilai) |
+| **Testing** | PHPUnit 12 |
+| **Code Style** | Laravel Pint |
+
+---
+
+## Mulai Cepat
+
+### Prasyarat
+- PHP **8.3+** beserta ekstensi standar Laravel
+- Composer
+- Node.js & npm
+
+### Instalasi
 
 ```bash
-composer require laravel/boost --dev
+# 1. Kloning repositori
+git clone https://github.com/TaufiqHA/nilaiq.git
+cd nilaiq
 
-php artisan boost:install
+# 2. Jalankan setup otomatis (install, .env, key, migrate, build)
+composer setup
+
+# 3. Jalankan server pengembangan
+composer dev
 ```
 
-Boost provides your agent 15+ tools and skills that help agents build Laravel applications while following best practices.
+`composer dev` menjalankan **server Laravel**, **queue worker**, dan **Vite** secara bersamaan. Buka `http://localhost:8000` dan masuk menggunakan akun yang ada.
 
-## Contributing
+> Ingin menjalankan langkah secara manual? Lihat perintah `composer setup` di `composer.json`.
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+### Konfigurasi Opsional
 
-## Code of Conduct
+Tambahkan pada file `.env` untuk mengaktifkan integrasi lanjutan:
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+```dotenv
+# Google Gemini — untuk fitur scan nilai dari gambar
+GEMINI_API_KEY=your-api-key
 
-## Security Vulnerabilities
+# Google Drive — untuk penyimpanan cadangan backup
+GOOGLE_DRIVE_CLIENT_ID=
+GOOGLE_DRIVE_CLIENT_SECRET=
+GOOGLE_DRIVE_REFRESH_TOKEN=
+GOOGLE_DRIVE_FOLDER=
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+---
 
-## License
+## Peran Pengguna
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+NilaiQ mengelola akses berdasarkan tiga peran:
+
+| Peran | Akses | Deskripsi |
+| --- | --- | --- |
+| `admin` | `/admin/monitoring`, `/admin/users` | Monitoring server & manajemen pengguna |
+| `mapel` | `/dashboard`, `/students`, `/attendance-meetings`, dll. | Guru mata pelajaran — input & kelola nilai |
+| `wali_kelas` | `/wali-kelas/*` | Wali kelas — informasi kelas, raport & rekap |
+
+---
+
+## API
+
+NilaiQ menyediakan REST API yang diautentikasi dengan **Sanctum**, khusus untuk peran **Guru Mapel**:
+
+| Method | Endpoint | Keterangan |
+| --- | --- | --- |
+| `GET` | `/api/health` | Health check |
+| `POST` | `/api/login` | Login & dapatkan token |
+| `GET` | `/api/me` | Profil pengguna aktif |
+| `GET` | `/api/dashboard` | Data dashboard |
+| — | `/api/attendance-meetings` | CRUD pertemuan absensi |
+| — | `/api/attendances` | CRUD kehadiran |
+| — | `/api/daily-test-meetings` | CRUD pertemuan ulangan harian |
+| — | `/api/daily-test-scores` | CRUD nilai ulangan harian |
+
+> Semua endpoint terproteksi menggunakan middleware `auth:sanctum` + `mapel`.
+
+---
+
+## Pengujian
+
+```bash
+# Semua test
+php artisan test --compact
+
+# Test spesifik
+php artisan test --compact tests/Feature/RaportControllerTest.php
+
+# Filter berdasarkan nama test
+php artisan test --compact --filter=testName
+```
+
+Menjaga kualitas kode dengan **Laravel Pint**:
+
+```bash
+vendor/bin/pint
+```
+
+---
+
+## Struktur Proyek
+
+```
+nilaiq/
+├── app/
+│   ├── Http/
+│   │   ├── Controllers/      # Controller web & API
+│   │   └── Middleware/       # Admin, Mapel, WaliKelas
+│   └── Models/               # Model Eloquent (Nilai, Absensi, Raport, dll.)
+├── database/
+│   ├── migrations/           # Struktur tabel
+│   └── seeders/              # Data awal & akun default
+├── resources/
+│   ├── views/                # Blade: auth, admin, waliKelas, komponen
+│   ├── css/
+│   └── js/                   # Flowbite & logika tema
+├── routes/
+│   ├── web.php               # Rute web berbasis peran
+│   └── api.php               # Rute REST API (Sanctum)
+└── tests/                    # Pengujian fitur (PHPUnit)
+```
+
+---
+
+## Kontribusi
+
+Kontribusi selalu terbuka! Silakan **fork** repositori ini, buat *branch* fitur, lalu ajukan **Pull Request**.
+
+1. Fork repositori
+2. Buat branch: `git checkout -b fitur/fitur-baru`
+3. Commit perubahan: `git commit -m "Menambahkan fitur baru"`
+4. Push: `git push origin fitur/fitur-baru`
+5. Buka Pull Request
+
+---
+
+## Lisensi
+
+NilaiQ adalah perangkat lunak open-source yang dirilis di bawah [MIT License](https://opensource.org/licenses/MIT).
+
+<div align="center">
+
+Dibuat untuk mempermudah pendidikan Indonesia.
+
+</div>
