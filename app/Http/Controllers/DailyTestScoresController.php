@@ -25,12 +25,31 @@ class DailyTestScoresController extends Controller
     {
         $validated = $request->validate($this->validationRules());
 
-        $score = DailyTestScores::create($validated);
+        if (! empty($validated['client_uuid'])) {
+            $existing = DailyTestScores::where('client_uuid', $validated['client_uuid'])->first();
+
+            if ($existing) {
+                return response()->json([
+                    'message' => 'Daily test score already exists.',
+                    'data' => $existing->load(['dailyTestMeeting', 'student']),
+                ]);
+            }
+        }
+
+        $score = DailyTestScores::updateOrCreate(
+            [
+                'daily_test_meeting_id' => $validated['daily_test_meeting_id'],
+                'student_id' => $validated['student_id'],
+            ],
+            $validated
+        );
 
         return response()->json([
-            'message' => 'Daily test score created successfully.',
+            'message' => $score->wasRecentlyCreated
+                ? 'Daily test score created successfully.'
+                : 'Daily test score updated successfully.',
             'data' => $score->load(['dailyTestMeeting', 'student']),
-        ], 201);
+        ], $score->wasRecentlyCreated ? 201 : 200);
     }
 
     /**
@@ -84,6 +103,7 @@ class DailyTestScoresController extends Controller
     private function validationRules(): array
     {
         return [
+            'client_uuid' => ['nullable', 'uuid'],
             'daily_test_meeting_id' => ['required', 'exists:daily_test_meetings,id'],
             'student_id' => ['required', 'exists:students,id'],
             'score' => ['required', 'numeric', 'min:0', 'max:100'],

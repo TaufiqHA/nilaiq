@@ -42,6 +42,21 @@ class DailyTestMeetingsController extends Controller
     {
         $validated = $request->validate($this->validationRules());
 
+        if (! empty($validated['client_uuid'])) {
+            $existing = DailyTestMeetings::where('client_uuid', $validated['client_uuid'])->first();
+
+            if ($existing) {
+                if ($request->wantsJson()) {
+                    return response()->json([
+                        'message' => 'Daily test meeting already exists.',
+                        'data' => $existing->load('class'),
+                    ]);
+                }
+
+                return redirect()->route('daily-test-meetings.index')->with('success', 'Daily test meeting already exists.');
+            }
+        }
+
         $meeting = DailyTestMeetings::create($validated);
 
         if ($request->wantsJson()) {
@@ -130,6 +145,7 @@ class DailyTestMeetingsController extends Controller
     private function validationRules(): array
     {
         return [
+            'client_uuid' => ['nullable', 'uuid'],
             'class_id' => ['required', 'exists:classes,id'],
             'title' => ['required', 'string', 'max:255'],
             'test_date' => ['required', 'date'],
