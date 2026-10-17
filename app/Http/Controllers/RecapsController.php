@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Http\Controllers\Concerns\CalculatesClassRecap;
 use App\Models\AcademicYear;
 use App\Models\Classes;
 use App\Models\Recaps;
@@ -13,6 +14,8 @@ use Illuminate\Http\Request;
 
 class RecapsController extends Controller
 {
+    use CalculatesClassRecap;
+
     /**
      * Display a listing of the recaps in JSON.
      */
@@ -41,6 +44,7 @@ class RecapsController extends Controller
         $selectedClass = null;
         $students = collect();
         $recapsKeyed = collect();
+        $finalScoresKeyed = collect();
 
         if ($selectedClassId) {
             $selectedClass = Classes::with('academicYear')->find($selectedClassId);
@@ -52,6 +56,9 @@ class RecapsController extends Controller
                 $recapsKeyed = Recaps::where('class_id', $selectedClassId)
                     ->get()
                     ->keyBy('student_id');
+
+                $recapData = $this->buildClassRecap($selectedClass);
+                $finalScoresKeyed = $this->resolveFinalScores($recapData, $students, $recapsKeyed);
             }
         }
 
@@ -61,7 +68,8 @@ class RecapsController extends Controller
             'selectedClassId',
             'selectedClass',
             'students',
-            'recapsKeyed'
+            'recapsKeyed',
+            'finalScoresKeyed'
         ));
     }
 
@@ -80,10 +88,19 @@ class RecapsController extends Controller
 
         $class = Classes::with('academicYear')->find($validated['class_id']);
 
+        $recapData = $this->buildClassRecap($class);
+        $autoScores = collect($recapData['rekap'])
+            ->mapWithKeys(fn (array $item): array => [$item['student']->id => (float) $item['rata_rata']]);
+
         foreach ($validated['recaps'] as $item) {
             $scoreVal = (isset($item['final_score_result']) && $item['final_score_result'] !== '')
                 ? floatval($item['final_score_result'])
                 : null;
+
+            if ($scoreVal === null && $recapData['total_meetings'] > 0) {
+                $scoreVal = $autoScores->get($item['student_id']);
+            }
+
             $descVal = ! empty($item['competency_description']) ? $item['competency_description'] : null;
 
             Recaps::updateOrCreate(

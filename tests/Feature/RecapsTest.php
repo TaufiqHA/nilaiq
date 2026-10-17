@@ -3,7 +3,11 @@
 namespace Tests\Feature;
 
 use App\Models\AcademicYear;
+use App\Models\AssignmentMeetings;
+use App\Models\AssignmentScores;
 use App\Models\Classes;
+use App\Models\DailyTestMeetings;
+use App\Models\DailyTestScores;
 use App\Models\Recaps;
 use App\Models\Students;
 use App\Models\User;
@@ -264,6 +268,196 @@ class RecapsTest extends TestCase
             'student_id' => $student2->id,
             'final_score_result' => 90.00,
             'competency_description' => 'Luar biasa',
+        ]);
+    }
+
+    /**
+     * Test Nilai Akhir is automatically filled with the average of all assessments.
+     */
+    public function test_nilai_akhir_view_automatically_fills_average_scores(): void
+    {
+        /** @var User $user */
+        $user = User::factory()->create(['role' => 'mapel']);
+        $academicYear = AcademicYear::factory()->create();
+        $class = Classes::factory()->create(['academic_year_id' => $academicYear->id]);
+        $student = Students::factory()->create(['class_id' => $class->id]);
+
+        $dailyMeeting = DailyTestMeetings::factory()->create(['class_id' => $class->id]);
+        DailyTestScores::factory()->create([
+            'daily_test_meeting_id' => $dailyMeeting->id,
+            'student_id' => $student->id,
+            'score' => 90.00,
+        ]);
+
+        $assignmentMeeting = AssignmentMeetings::factory()->create(['class_id' => $class->id]);
+        AssignmentScores::factory()->create([
+            'assignment_meeting_id' => $assignmentMeeting->id,
+            'student_id' => $student->id,
+            'score' => 80.00,
+        ]);
+
+        $response = $this->actingAs($user)->get(route('nilai-akhir.index', ['class_id' => $class->id]));
+
+        $response->assertStatus(200);
+        $response->assertViewHas('finalScoresKeyed', function ($scores) use ($student): bool {
+            return $scores->get($student->id) === 85.0;
+        });
+    }
+
+    /**
+     * Test a saved final score is kept until a newer assessment is added.
+     */
+    public function test_nilai_akhir_view_keeps_saved_score_until_new_assessment(): void
+    {
+        /** @var User $user */
+        $user = User::factory()->create(['role' => 'mapel']);
+        $academicYear = AcademicYear::factory()->create();
+        $class = Classes::factory()->create(['academic_year_id' => $academicYear->id]);
+        $student = Students::factory()->create(['class_id' => $class->id]);
+
+        $dailyMeeting = DailyTestMeetings::factory()->create(['class_id' => $class->id]);
+        DailyTestScores::factory()->create([
+            'daily_test_meeting_id' => $dailyMeeting->id,
+            'student_id' => $student->id,
+            'score' => 90.00,
+        ]);
+
+        $assignmentMeeting = AssignmentMeetings::factory()->create(['class_id' => $class->id]);
+        AssignmentScores::factory()->create([
+            'assignment_meeting_id' => $assignmentMeeting->id,
+            'student_id' => $student->id,
+            'score' => 80.00,
+        ]);
+
+        $this->travel(1)->seconds();
+
+        Recaps::factory()->create([
+            'academic_year_id' => $academicYear->id,
+            'class_id' => $class->id,
+            'student_id' => $student->id,
+            'final_score_result' => 70.00,
+        ]);
+
+        $response = $this->actingAs($user)->get(route('nilai-akhir.index', ['class_id' => $class->id]));
+
+        $response->assertStatus(200);
+        $response->assertViewHas('finalScoresKeyed', function ($scores) use ($student): bool {
+            return $scores->get($student->id) === 70.0;
+        });
+    }
+
+    /**
+     * Test the final score is recalculated when a new assessment is added.
+     */
+    public function test_nilai_akhir_view_recalculates_average_after_new_assessment(): void
+    {
+        /** @var User $user */
+        $user = User::factory()->create(['role' => 'mapel']);
+        $academicYear = AcademicYear::factory()->create();
+        $class = Classes::factory()->create(['academic_year_id' => $academicYear->id]);
+        $student = Students::factory()->create(['class_id' => $class->id]);
+
+        $dailyMeeting = DailyTestMeetings::factory()->create(['class_id' => $class->id]);
+        DailyTestScores::factory()->create([
+            'daily_test_meeting_id' => $dailyMeeting->id,
+            'student_id' => $student->id,
+            'score' => 90.00,
+        ]);
+
+        $assignmentMeeting = AssignmentMeetings::factory()->create(['class_id' => $class->id]);
+        AssignmentScores::factory()->create([
+            'assignment_meeting_id' => $assignmentMeeting->id,
+            'student_id' => $student->id,
+            'score' => 80.00,
+        ]);
+
+        $this->travel(1)->seconds();
+
+        Recaps::factory()->create([
+            'academic_year_id' => $academicYear->id,
+            'class_id' => $class->id,
+            'student_id' => $student->id,
+            'final_score_result' => 70.00,
+        ]);
+
+        $this->travel(1)->seconds();
+
+        $newDailyMeeting = DailyTestMeetings::factory()->create(['class_id' => $class->id]);
+        DailyTestScores::factory()->create([
+            'daily_test_meeting_id' => $newDailyMeeting->id,
+            'student_id' => $student->id,
+            'score' => 100.00,
+        ]);
+
+        $response = $this->actingAs($user)->get(route('nilai-akhir.index', ['class_id' => $class->id]));
+
+        $response->assertStatus(200);
+        $response->assertViewHas('finalScoresKeyed', function ($scores) use ($student): bool {
+            return $scores->get($student->id) === 90.0;
+        });
+    }
+
+    /**
+     * Test Nilai Akhir stays empty when the class has no assessments.
+     */
+    public function test_nilai_akhir_view_is_empty_without_assessments(): void
+    {
+        /** @var User $user */
+        $user = User::factory()->create(['role' => 'mapel']);
+        $academicYear = AcademicYear::factory()->create();
+        $class = Classes::factory()->create(['academic_year_id' => $academicYear->id]);
+        $student = Students::factory()->create(['class_id' => $class->id]);
+
+        $response = $this->actingAs($user)->get(route('nilai-akhir.index', ['class_id' => $class->id]));
+
+        $response->assertStatus(200);
+        $response->assertViewHas('finalScoresKeyed', function ($scores) use ($student): bool {
+            return $scores->get($student->id) === null;
+        });
+    }
+
+    /**
+     * Test batch store fills an empty final score with the calculated average.
+     */
+    public function test_batch_store_fills_empty_final_score_with_average(): void
+    {
+        /** @var User $user */
+        $user = User::factory()->create(['role' => 'mapel']);
+        $academicYear = AcademicYear::factory()->create();
+        $class = Classes::factory()->create(['academic_year_id' => $academicYear->id]);
+        $student = Students::factory()->create(['class_id' => $class->id]);
+
+        $dailyMeeting = DailyTestMeetings::factory()->create(['class_id' => $class->id]);
+        DailyTestScores::factory()->create([
+            'daily_test_meeting_id' => $dailyMeeting->id,
+            'student_id' => $student->id,
+            'score' => 90.00,
+        ]);
+
+        $assignmentMeeting = AssignmentMeetings::factory()->create(['class_id' => $class->id]);
+        AssignmentScores::factory()->create([
+            'assignment_meeting_id' => $assignmentMeeting->id,
+            'student_id' => $student->id,
+            'score' => 80.00,
+        ]);
+
+        $response = $this->actingAs($user)->post(route('recaps.batch'), [
+            'class_id' => $class->id,
+            'recaps' => [
+                [
+                    'student_id' => $student->id,
+                    'final_score_result' => null,
+                    'competency_description' => 'Baik',
+                ],
+            ],
+        ]);
+
+        $response->assertRedirect(route('nilai-akhir.index', ['class_id' => $class->id]));
+
+        $this->assertDatabaseHas('recaps', [
+            'class_id' => $class->id,
+            'student_id' => $student->id,
+            'final_score_result' => 85.00,
         ]);
     }
 }

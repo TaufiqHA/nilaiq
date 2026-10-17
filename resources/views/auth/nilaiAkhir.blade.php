@@ -88,6 +88,14 @@
             <p class="text-body text-sm">
                 {{ $selectedClass ? 'Kelas ' . $selectedClass->name . ' • Tahun Ajaran ' . ($selectedClass->academicYear?->year ?? '-') . ' (' . ($selectedClass->academicYear?->semester ?? '-') . ')' : 'Pilih kelas untuk mengelola nilai akhir.' }}
             </p>
+            @if($selectedClass)
+            <p class="text-xs text-body mt-2 flex items-center gap-1.5">
+                <svg class="w-4 h-4 shrink-0 text-brand" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+                Nilai Akhir otomatis diisi dari rata-rata seluruh penilaian (UH, Tugas, PTS, PAS) dan diperbarui saat ada penilaian baru.
+            </p>
+            @endif
         </div>
 
         @if($selectedClass)
@@ -176,7 +184,7 @@
                             @forelse($students as $index => $student)
                                 @php
                                     $recap = $recapsKeyed->get($student->id);
-                                    $score = $recap ? $recap->final_score_result : null;
+                                    $score = $finalScoresKeyed->get($student->id);
                                     $desc = $recap ? $recap->competency_description : '';
                                 @endphp
                                 <tr class="student-row hover:bg-neutral-secondary-soft dark:hover:bg-neutral-tertiary transition-colors duration-150" data-name="{{ strtolower($student->name) }}" data-nis="{{ $student->nis ?? '' }}" data-student-id="{{ $student->id }}">
@@ -280,7 +288,7 @@
             @foreach($students as $index => $student)
                 @php
                     $recap = $recapsKeyed->get($student->id);
-                    $score = $recap?->final_score_result;
+                    $score = $finalScoresKeyed->get($student->id);
                     $desc = $recap?->competency_description;
                 @endphp
                 <tr class="border border-black">
