@@ -293,14 +293,14 @@ class RecapsTest extends TestCase
         AssignmentScores::factory()->create([
             'assignment_meeting_id' => $assignmentMeeting->id,
             'student_id' => $student->id,
-            'score' => 80.00,
+            'score' => 81.00,
         ]);
 
         $response = $this->actingAs($user)->get(route('nilai-akhir.index', ['class_id' => $class->id]));
 
         $response->assertStatus(200);
         $response->assertViewHas('finalScoresKeyed', function ($scores) use ($student): bool {
-            return $scores->get($student->id) === 85.0;
+            return $scores->get($student->id) === 86;
         });
     }
 
@@ -335,14 +335,14 @@ class RecapsTest extends TestCase
             'academic_year_id' => $academicYear->id,
             'class_id' => $class->id,
             'student_id' => $student->id,
-            'final_score_result' => 70.00,
+            'final_score_result' => 70.60,
         ]);
 
         $response = $this->actingAs($user)->get(route('nilai-akhir.index', ['class_id' => $class->id]));
 
         $response->assertStatus(200);
         $response->assertViewHas('finalScoresKeyed', function ($scores) use ($student): bool {
-            return $scores->get($student->id) === 70.0;
+            return $scores->get($student->id) === 71;
         });
     }
 
@@ -393,7 +393,7 @@ class RecapsTest extends TestCase
 
         $response->assertStatus(200);
         $response->assertViewHas('finalScoresKeyed', function ($scores) use ($student): bool {
-            return $scores->get($student->id) === 90.0;
+            return $scores->get($student->id) === 90;
         });
     }
 
@@ -457,7 +457,7 @@ class RecapsTest extends TestCase
         $this->assertDatabaseHas('recaps', [
             'class_id' => $class->id,
             'student_id' => $student->id,
-            'final_score_result' => 85.00,
+            'final_score_result' => 85,
         ]);
     }
 }

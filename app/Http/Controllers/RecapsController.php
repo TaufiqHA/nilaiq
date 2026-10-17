@@ -90,7 +90,7 @@ class RecapsController extends Controller
 
         $recapData = $this->buildClassRecap($class);
         $autoScores = collect($recapData['rekap'])
-            ->mapWithKeys(fn (array $item): array => [$item['student']->id => (float) $item['rata_rata']]);
+            ->mapWithKeys(fn (array $item): array => [$item['student']->id => (int) round($item['rata_rata'])]);
 
         foreach ($validated['recaps'] as $item) {
             $scoreVal = (isset($item['final_score_result']) && $item['final_score_result'] !== '')

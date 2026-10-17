@@ -199,7 +199,7 @@
                                         {{ $student->nis ?? '-' }} / {{ $student->nisn ?? '-' }}
                                     </td>
                                     <td class="px-4 py-4 text-center">
-                                        <input type="number" step="0.01" min="0" max="100" name="recaps[{{ $index }}][final_score_result]" id="input-score-{{ $index }}" value="{{ $score !== null ? number_format($score, 2, '.', '') : '' }}" placeholder="0.00" class="w-28 mx-auto text-center font-mono font-bold text-heading bg-white dark:bg-neutral-primary-soft border border-default rounded-base py-1.5 px-2 focus:ring-brand focus:border-brand">
+                                        <input type="number" step="1" min="0" max="100" name="recaps[{{ $index }}][final_score_result]" id="input-score-{{ $index }}" value="{{ $score !== null ? number_format(round($score), 0, '.', '') : '' }}" placeholder="0" class="w-28 mx-auto text-center font-mono font-bold text-heading bg-white dark:bg-neutral-primary-soft border border-default rounded-base py-1.5 px-2 focus:ring-brand focus:border-brand">
                                     </td>
                                     <td class="px-6 py-4">
                                         <textarea name="recaps[{{ $index }}][competency_description]" id="input-desc-{{ $index }}" rows="2" placeholder="Masukkan deskripsi capaian pembelajaran..." class="w-full text-sm text-heading bg-white dark:bg-neutral-primary-soft border border-default rounded-base p-2 focus:ring-brand focus:border-brand">{{ $desc }}</textarea>

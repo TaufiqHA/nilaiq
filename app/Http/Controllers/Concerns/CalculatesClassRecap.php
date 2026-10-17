@@ -170,12 +170,12 @@ trait CalculatesClassRecap
      * @param  array{rekap: array<int, array{student: Students, rata_rata: float}>, total_meetings: int, latest_assessment_at: Carbon|null}  $recapData
      * @param  Collection<int, Students>  $students
      * @param  Collection<int, Recaps>  $recapsKeyed
-     * @return Collection<int, float|null>
+     * @return Collection<int, int|null>
      */
     protected function resolveFinalScores(array $recapData, Collection $students, Collection $recapsKeyed): Collection
     {
         $autoScores = collect($recapData['rekap'])
-            ->mapWithKeys(fn (array $item): array => [$item['student']->id => (float) $item['rata_rata']]);
+            ->mapWithKeys(fn (array $item): array => [$item['student']->id => (int) round($item['rata_rata'])]);
 
         $hasAssessments = $recapData['total_meetings'] > 0;
         $latestAssessmentAt = $recapData['latest_assessment_at'];
@@ -190,10 +190,10 @@ trait CalculatesClassRecap
                 && ($latestAssessmentAt === null || $recap->updated_at->greaterThanOrEqualTo($latestAssessmentAt));
 
             if ($savedScoreIsCurrent) {
-                return [$student->id => (float) $savedScore];
+                return [$student->id => (int) round((float) $savedScore)];
             }
 
-            return [$student->id => $autoScore !== null ? (float) $autoScore : null];
+            return [$student->id => $autoScore !== null ? (int) round($autoScore) : null];
         });
     }
 
