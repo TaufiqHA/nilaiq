@@ -73,6 +73,36 @@ class AssignmentScoresTest extends TestCase
     }
 
     /**
+     * Test repeated score pair updates instead of duplicating rows.
+     */
+    public function test_store_assignment_score_updates_existing_pair(): void
+    {
+        /** @var User $user */
+        $user = User::factory()->create();
+        $meeting = AssignmentMeetings::factory()->create();
+        $student = Students::factory()->create();
+
+        $payload = [
+            'assignment_meeting_id' => $meeting->id,
+            'student_id' => $student->id,
+            'score' => 80,
+        ];
+
+        $first = $this->actingAs($user)->postJson(route('assignment-scores.store'), $payload);
+        $first->assertStatus(201);
+
+        $second = $this->actingAs($user)->postJson(
+            route('assignment-scores.store'),
+            [...$payload, 'score' => 95],
+        );
+        $second->assertStatus(200);
+        $second->assertJsonPath('message', 'Assignment score updated successfully.');
+        $second->assertJsonPath('data.score', 95);
+
+        $this->assertDatabaseCount('assignment_scores', 1);
+    }
+
+    /**
      * Test validation rules on store.
      */
     public function test_store_assignment_score_validation(): void

@@ -42,6 +42,21 @@ class AssignmentMeetingsController extends Controller
     {
         $validated = $request->validate($this->validationRules());
 
+        if (! empty($validated['client_uuid'])) {
+            $existing = AssignmentMeetings::where('client_uuid', $validated['client_uuid'])->first();
+
+            if ($existing) {
+                if ($request->wantsJson()) {
+                    return response()->json([
+                        'message' => 'Assignment meeting already exists.',
+                        'data' => $existing->load('class'),
+                    ]);
+                }
+
+                return redirect()->route('assignment-meetings.index')->with('success', 'Assignment meeting already exists.');
+            }
+        }
+
         $meeting = AssignmentMeetings::create($validated);
 
         if ($request->wantsJson()) {
@@ -130,6 +145,7 @@ class AssignmentMeetingsController extends Controller
     private function validationRules(): array
     {
         return [
+            'client_uuid' => ['nullable', 'uuid'],
             'class_id' => ['required', 'exists:classes,id'],
             'title' => ['required', 'string', 'max:255'],
             'assignment_date' => ['required', 'date'],

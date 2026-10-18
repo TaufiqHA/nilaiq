@@ -6,6 +6,7 @@ use App\Models\AssignmentMeetings;
 use App\Models\Classes;
 use App\Models\User;
 use Illuminate\Foundation\Testing\RefreshDatabase;
+use Illuminate\Support\Str;
 use Tests\TestCase;
 
 class AssignmentMeetingsTest extends TestCase
@@ -72,6 +73,33 @@ class AssignmentMeetingsTest extends TestCase
 
         $storedMeeting = AssignmentMeetings::first();
         $this->assertEquals('2026-07-18', $storedMeeting->assignment_date->format('Y-m-d'));
+    }
+
+    /**
+     * Test repeated client_uuid does not create duplicate meetings.
+     */
+    public function test_store_assignment_meeting_is_idempotent_by_client_uuid(): void
+    {
+        /** @var User $user */
+        $user = User::factory()->create();
+        $class = Classes::factory()->create();
+        $clientUuid = (string) Str::uuid();
+
+        $payload = [
+            'client_uuid' => $clientUuid,
+            'class_id' => $class->id,
+            'title' => 'Tugas Idempoten',
+            'assignment_date' => '2026-07-18',
+        ];
+
+        $first = $this->actingAs($user)->postJson(route('assignment-meetings.store'), $payload);
+        $first->assertStatus(201);
+
+        $second = $this->actingAs($user)->postJson(route('assignment-meetings.store'), $payload);
+        $second->assertStatus(200);
+        $second->assertJsonPath('message', 'Assignment meeting already exists.');
+
+        $this->assertDatabaseCount('assignment_meetings', 1);
     }
 
     /**

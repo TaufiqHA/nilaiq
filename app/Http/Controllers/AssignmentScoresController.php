@@ -25,12 +25,31 @@ class AssignmentScoresController extends Controller
     {
         $validated = $request->validate($this->validationRules());
 
-        $score = AssignmentScores::create($validated);
+        if (! empty($validated['client_uuid'])) {
+            $existing = AssignmentScores::where('client_uuid', $validated['client_uuid'])->first();
+
+            if ($existing) {
+                return response()->json([
+                    'message' => 'Assignment score already exists.',
+                    'data' => $existing->load(['assignmentMeeting', 'student']),
+                ]);
+            }
+        }
+
+        $score = AssignmentScores::updateOrCreate(
+            [
+                'assignment_meeting_id' => $validated['assignment_meeting_id'],
+                'student_id' => $validated['student_id'],
+            ],
+            $validated
+        );
 
         return response()->json([
-            'message' => 'Assignment score created successfully.',
+            'message' => $score->wasRecentlyCreated
+                ? 'Assignment score created successfully.'
+                : 'Assignment score updated successfully.',
             'data' => $score->load(['assignmentMeeting', 'student']),
-        ], 201);
+        ], $score->wasRecentlyCreated ? 201 : 200);
     }
 
     /**
@@ -84,6 +103,7 @@ class AssignmentScoresController extends Controller
     private function validationRules(): array
     {
         return [
+            'client_uuid' => ['nullable', 'uuid'],
             'assignment_meeting_id' => ['required', 'exists:assignment_meetings,id'],
             'student_id' => ['required', 'exists:students,id'],
             'score' => ['required', 'numeric', 'min:0', 'max:100'],
