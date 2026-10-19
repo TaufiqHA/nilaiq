@@ -6,6 +6,7 @@ use App\Models\AttendanceMeetings;
 use App\Models\Attendances;
 use App\Models\Classes;
 use App\Models\Students;
+use Carbon\CarbonInterface;
 
 /**
  * Computes attendance insights for a class using the same source data as the
@@ -29,9 +30,14 @@ class AttendanceInsightService
      *     average_percentage: float|null
      * }
      */
-    public function classAttendance(Classes $class): array
-    {
+    public function classAttendance(
+        Classes $class,
+        ?CarbonInterface $from = null,
+        ?CarbonInterface $to = null,
+    ): array {
         $meetings = AttendanceMeetings::where('class_id', $class->id)
+            ->when($from !== null, fn ($query) => $query->whereDate('meeting_date', '>=', $from))
+            ->when($to !== null, fn ($query) => $query->whereDate('meeting_date', '<=', $to))
             ->orderBy('meeting_date')
             ->orderBy('id')
             ->get();

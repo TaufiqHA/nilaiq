@@ -31,6 +31,22 @@ class TelegramIntent
 
     public const FULL_RECAP = 'full_class_recap';
 
+    public const BELOW_KKM = 'below_kkm';
+
+    public const MISSING_SCORES = 'missing_scores';
+
+    public const AT_RISK = 'at_risk_students';
+
+    public const COMPARE_CLASSES = 'compare_classes';
+
+    public const SEARCH_STUDENT = 'search_student';
+
+    public const EXPORT_ATTENDANCE = 'export_attendance';
+
+    public const EXPORT_SCORES = 'export_scores';
+
+    public const EXPORT_FULL = 'export_full';
+
     public const HELP = 'help';
 
     public const ASSESSMENT_DAILY_TEST = 'daily_test';
@@ -45,10 +61,13 @@ class TelegramIntent
         public readonly string $type,
         public readonly ?int $classId = null,
         public readonly ?int $studentId = null,
-        public readonly int $limit = 5,
+        public readonly int $limit = 10,
         public readonly ?string $assessmentType = null,
         public readonly bool $full = false,
         public readonly bool $descending = false,
+        public readonly ?int $secondaryClassId = null,
+        public readonly ?string $period = null,
+        public readonly ?string $searchTerm = null,
     ) {}
 
     /**
@@ -56,6 +75,10 @@ class TelegramIntent
      */
     public function needsClass(): bool
     {
-        return ! in_array($this->type, [self::LIST_CLASSES, self::HELP], true);
+        return ! in_array($this->type, [
+            self::LIST_CLASSES,
+            self::HELP,
+            self::SEARCH_STUDENT,
+        ], true);
     }
 }

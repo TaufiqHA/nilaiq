@@ -23,7 +23,15 @@ class RuleBasedTelegramIntentParser
         $compact = $this->compact($normalized);
         $classes = $classes->values();
 
+        if (preg_match('/^(?:cari|temukan|search)\s+(.+)$/u', $normalized, $matches) === 1) {
+            return new TelegramIntent(
+                TelegramIntent::SEARCH_STUDENT,
+                searchTerm: trim($matches[1]),
+            );
+        }
+
         $class = $this->matchClass($normalized, $compact, $classes);
+        $matchedClasses = $this->matchAllClasses($normalized, $compact, $classes);
         $student = $this->matchStudent($normalized, $classes, $class?->id);
 
         $classId = $class?->id;
@@ -43,6 +51,60 @@ class RuleBasedTelegramIntentParser
         $studentId = $student['student_id'];
         $limit = $this->extractLimit($normalized, $text);
         $assessment = $this->assessmentType($normalized);
+        $period = $this->period($normalized);
+
+        if ($matchedClasses->count() >= 2 && $this->hasAny($normalized, [
+            'bandingkan', 'perbandingan', 'dibanding', 'dibandingkan', 'versus', 'vs',
+        ])) {
+            return new TelegramIntent(
+                TelegramIntent::COMPARE_CLASSES,
+                classId: $matchedClasses[0]->id,
+                secondaryClassId: $matchedClasses[1]->id,
+            );
+        }
+
+        if ($this->hasAny($normalized, ['ekspor', 'export', 'unduh', 'download'])) {
+            if ($this->hasAny($normalized, [
+                'kehadiran', 'absen', 'absensi', 'hadir', 'alfa',
+            ])) {
+                return new TelegramIntent(TelegramIntent::EXPORT_ATTENDANCE, classId: $classId);
+            }
+
+            if ($this->hasAny($normalized, ['lengkap', 'semua'])) {
+                return new TelegramIntent(TelegramIntent::EXPORT_FULL, classId: $classId);
+            }
+
+            return new TelegramIntent(TelegramIntent::EXPORT_SCORES, classId: $classId);
+        }
+
+        if ($this->hasAny($normalized, [
+            'berisiko', 'perlu perhatian', 'perhatian khusus', 'rawan', 'akan tertinggal', 'kritis',
+        ])) {
+            return new TelegramIntent(TelegramIntent::AT_RISK, classId: $classId, limit: $limit);
+        }
+
+        if ($this->hasAny($normalized, [
+            'bawah kkm', 'di bawah kkm', 'belum tuntas', 'tidak tuntas', 'tidak lulus',
+        ]) || ($this->hasAny($normalized, ['kkm']) && $this->hasAny($normalized, ['bawah', 'kurang']))) {
+            return new TelegramIntent(
+                TelegramIntent::BELOW_KKM,
+                classId: $classId,
+                limit: $limit,
+                assessmentType: $assessment,
+            );
+        }
+
+        if ($this->hasAny($normalized, [
+            'belum punya nilai', 'belum ada nilai', 'belum diisi', 'belum dinilai',
+            'belum input nilai', 'nilai kosong', 'nilai belum lengkap', 'belum lengkap nilainya',
+        ])) {
+            return new TelegramIntent(
+                TelegramIntent::MISSING_SCORES,
+                classId: $classId,
+                limit: $limit,
+                assessmentType: $assessment,
+            );
+        }
 
         $isFullRecap = $this->hasAny($normalized, ['rekap lengkap', 'rekap semua', 'lengkap'])
             && $this->hasAny($normalized, ['rekap', 'ringkasan']);
@@ -91,6 +153,7 @@ class RuleBasedTelegramIntentParser
                     classId: $classId,
                     limit: $limit,
                     descending: true,
+                    period: $period,
                 );
             }
 
@@ -99,6 +162,7 @@ class RuleBasedTelegramIntentParser
                     TelegramIntent::LOWEST_ATTENDANCE,
                     classId: $classId,
                     limit: $limit,
+                    period: $period,
                 );
             }
 
@@ -108,6 +172,7 @@ class RuleBasedTelegramIntentParser
                     classId: $classId,
                     limit: $limit,
                     descending: true,
+                    period: $period,
                 );
             }
 
@@ -116,6 +181,7 @@ class RuleBasedTelegramIntentParser
                 classId: $classId,
                 limit: $limit,
                 full: $this->hasAny($normalized, ['semua', 'lengkap']),
+                period: $period,
             );
         }
 
@@ -226,6 +292,50 @@ class RuleBasedTelegramIntentParser
         usort($matches, fn (array $a, array $b): int => strlen($b[0]) <=> strlen($a[0]));
 
         return $matches[0][1];
+    }
+
+    /**
+     * Find every class mentioned in the text.
+     *
+     * @param  Collection<int, Classes>  $classes
+     * @return Collection<int, Classes>
+     */
+    private function matchAllClasses(string $normalized, string $compact, Collection $classes): Collection
+    {
+        $matches = [];
+
+        foreach ($classes as $class) {
+            foreach ($this->classKeys((string) $class->name) as $key) {
+                if ($key === '') {
+                    continue;
+                }
+
+                $keyCompact = $this->compact($key);
+                $keyFound = str_contains(' '.$normalized.' ', ' '.$key.' ')
+                    || ($keyCompact !== '' && str_contains($compact, $keyCompact));
+
+                if ($keyFound) {
+                    $matches[$class->id] = $class;
+
+                    break;
+                }
+            }
+        }
+
+        return collect(array_values($matches));
+    }
+
+    private function period(string $normalized): ?string
+    {
+        if ($this->hasAny($normalized, ['bulan lalu', 'bulan kemarin'])) {
+            return 'last_month';
+        }
+
+        if ($this->hasAny($normalized, ['bulan ini'])) {
+            return 'this_month';
+        }
+
+        return null;
     }
 
     /**
@@ -366,7 +476,7 @@ class RuleBasedTelegramIntentParser
             return 1;
         }
 
-        return 5;
+        return 10;
     }
 
     /**

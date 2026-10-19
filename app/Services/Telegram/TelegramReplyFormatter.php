@@ -67,6 +67,29 @@ class TelegramReplyFormatter
         ]);
     }
 
+    /**
+     * Remove the persistent reply keyboard from the user's Telegram client.
+     *
+     * @return array<string, mixed>
+     */
+    public function removeKeyboard(): array
+    {
+        return ['remove_keyboard' => true];
+    }
+
+    /**
+     * @return array<string, mixed>
+     */
+    public function onboardingKeyboard(): array
+    {
+        return ['inline_keyboard' => [[
+            [
+                'text' => 'Buka Profil NilaiQ',
+                'url' => rtrim((string) config('app.url'), '/').'/profile',
+            ],
+        ]]];
+    }
+
     public function linked(string $name): string
     {
         return implode("\n", [
@@ -86,37 +109,65 @@ class TelegramReplyFormatter
             'Contoh pertanyaan:',
             '• kehadiran terendah di kelas 7A',
             '• siapa yang paling sering alfa di kelas ini',
-            '• rekap kehadiran kelas 7A',
+            '• rekap kehadiran kelas 7A bulan ini',
             '• nilai PTS terendah di kelas 7A',
             '• rekap nilai kelas 7A',
             '• nilai Budi',
             '• rekap lengkap kelas 7A',
+            '• siapa yang nilainya di bawah KKM',
+            '• siapa yang belum punya nilai UH',
+            '• siswa yang perlu perhatian',
+            '• bandingkan kelas 7A dan 7B',
+            '• cari Budi',
+            '• unduh rekap absensi kelas 7A',
             '',
             'Perintah:',
             '/kelas — lihat atau pilih kelas',
             '/kelas 7A — jadikan 7A sebagai kelas aktif',
             '/rekap — rekap lengkap kelas aktif',
+            '/ekspor absensi|nilai|lengkap [kelas] — kirim file Excel',
+            '/cari nama — cari siswa di semua kelas Anda',
             '/status — status akun dan kelas aktif',
+            '/ping — cek bot aktif',
             '/putuskan — putuskan koneksi Telegram',
         ]);
+    }
+
+    public function pong(?string $botUsername = null): string
+    {
+        $username = $botUsername !== null && $botUsername !== ''
+            ? '@'.ltrim($botUsername, '@')
+            : 'Bot NilaiQ';
+
+        return 'pong — '.$this->escape($username).' aktif. Ketik /bantuan untuk melihat contoh pertanyaan.';
     }
 
     /**
      * @param  array<string, mixed>  $summary
      */
-    public function attendanceSummary(array $summary, bool $full, int $limit = 10): string
-    {
+    public function attendanceSummary(
+        array $summary,
+        bool $full,
+        int $limit = 10,
+        int $offset = 0,
+        ?string $periodLabel = null,
+    ): string {
         /** @var Classes $class */
         $class = $summary['class'];
         $rows = $summary['rows'];
         $lines = [
             '<b>Rekap Kehadiran — '.$this->escape($class->name).'</b>',
-            'Pertemuan tercatat: '.$summary['meeting_count'],
-            'Rata-rata kehadiran: '.$this->percent($summary['average_percentage']),
-            '',
         ];
 
-        $shown = $full ? $rows : array_slice($rows, 0, $limit);
+        if ($periodLabel !== null) {
+            $lines[] = 'Periode: '.$this->escape($periodLabel);
+        }
+
+        $lines[] = 'Pertemuan tercatat: '.$summary['meeting_count'];
+        $lines[] = 'Rata-rata kehadiran: '.$this->percent($summary['average_percentage']);
+        $lines[] = '';
+
+        $shown = $full ? $rows : array_slice($rows, $offset, $limit);
 
         if ($shown === []) {
             $lines[] = 'Belum ada siswa aktif di kelas ini.';
@@ -126,9 +177,9 @@ class TelegramReplyFormatter
             $lines[] = '<b>'.$this->escape($row['student']->name).'</b> — '.$this->attendanceLine($row);
         }
 
-        if (! $full && count($rows) > count($shown)) {
+        if (! $full && count($rows) > $offset + count($shown)) {
             $lines[] = '';
-            $lines[] = '…dan '.(count($rows) - count($shown)).' siswa lainnya. Ketik /rekap atau minta "rekap lengkap" untuk semua.';
+            $lines[] = '…dan '.(count($rows) - $offset - count($shown)).' siswa lainnya.';
         }
 
         return implode("\n", $lines);
@@ -138,7 +189,7 @@ class TelegramReplyFormatter
      * @param  array<string, mixed>  $summary
      * @param  array<int, array<string, mixed>>  $rows
      */
-    public function attendanceRanking(string $title, array $summary, array $rows, int $limit): string
+    public function attendanceRanking(string $title, array $summary, array $rows, int $limit, int $offset = 0): string
     {
         /** @var Classes $class */
         $class = $summary['class'];
@@ -154,8 +205,8 @@ class TelegramReplyFormatter
             return implode("\n", $lines);
         }
 
-        $rank = 1;
-        foreach (array_slice($rows, 0, $limit) as $row) {
+        $rank = $offset + 1;
+        foreach (array_slice($rows, $offset, $limit) as $row) {
             $lines[] = $rank.'. <b>'.$this->escape($row['student']->name).'</b> — '.$this->attendanceLine($row);
             $rank++;
         }
@@ -180,7 +231,7 @@ class TelegramReplyFormatter
     /**
      * @param  array<string, mixed>  $recap
      */
-    public function scoreRecap(array $recap, bool $full, int $limit = 10): string
+    public function scoreRecap(array $recap, bool $full, int $limit = 10, int $offset = 0): string
     {
         /** @var Classes $class */
         $class = $recap['class'];
@@ -191,7 +242,7 @@ class TelegramReplyFormatter
         ];
 
         $rows = $recap['rows'];
-        $shown = $full ? $rows : array_slice($rows, 0, $limit);
+        $shown = $full ? $rows : array_slice($rows, $offset, $limit);
 
         if ($shown === []) {
             $lines[] = 'Belum ada nilai untuk kelas ini.';
@@ -202,9 +253,9 @@ class TelegramReplyFormatter
                 .$this->number($row['rata_rata']).' | nilai akhir '.$this->scoreOrDash($row['final_score']);
         }
 
-        if (! $full && count($rows) > count($shown)) {
+        if (! $full && count($rows) > $offset + count($shown)) {
             $lines[] = '';
-            $lines[] = '…dan '.(count($rows) - count($shown)).' siswa lainnya. Minta "rekap nilai lengkap" untuk semua.';
+            $lines[] = '…dan '.(count($rows) - $offset - count($shown)).' siswa lainnya.';
         }
 
         return implode("\n", $lines);
@@ -214,7 +265,7 @@ class TelegramReplyFormatter
      * @param  array<string, mixed>  $recap
      * @param  array<int, array<string, mixed>>  $rows
      */
-    public function averageRanking(string $title, array $recap, array $rows, int $limit): string
+    public function averageRanking(string $title, array $recap, array $rows, int $limit, int $offset = 0): string
     {
         /** @var Classes $class */
         $class = $recap['class'];
@@ -230,8 +281,8 @@ class TelegramReplyFormatter
             return implode("\n", $lines);
         }
 
-        $rank = 1;
-        foreach (array_slice($rows, 0, $limit) as $row) {
+        $rank = $offset + 1;
+        foreach (array_slice($rows, $offset, $limit) as $row) {
             $lines[] = $rank.'. <b>'.$this->escape($row['student']->name).'</b> — rata-rata '
                 .$this->number($row['rata_rata']).' | peringkat kelas '.$row['peringkat'];
             $rank++;
@@ -244,7 +295,7 @@ class TelegramReplyFormatter
      * @param  array<string, mixed>  $recap
      * @param  array<int, array<string, mixed>>  $rows
      */
-    public function assessmentRanking(string $title, array $recap, array $rows, int $limit): string
+    public function assessmentRanking(string $title, array $recap, array $rows, int $limit, int $offset = 0): string
     {
         /** @var Classes $class */
         $class = $recap['class'];
@@ -259,8 +310,8 @@ class TelegramReplyFormatter
             return implode("\n", $lines);
         }
 
-        $rank = 1;
-        foreach (array_slice($rows, 0, $limit) as $row) {
+        $rank = $offset + 1;
+        foreach (array_slice($rows, $offset, $limit) as $row) {
             $lines[] = $rank.'. <b>'.$this->escape($row['student']->name).'</b> — '
                 .$this->number($row['average']).' ('.$row['count'].' nilai)';
             $rank++;
@@ -313,7 +364,7 @@ class TelegramReplyFormatter
      * @param  array<string, mixed>  $recap
      * @param  array<string, mixed>  $attendance
      */
-    public function fullRecap(array $recap, array $attendance, bool $full, int $limit = 10): string
+    public function fullRecap(array $recap, array $attendance, bool $full, int $limit = 10, int $offset = 0): string
     {
         /** @var Classes $class */
         $class = $recap['class'];
@@ -327,7 +378,7 @@ class TelegramReplyFormatter
         ];
 
         $rows = $recap['rows'];
-        $shown = $full ? $rows : array_slice($rows, 0, $limit);
+        $shown = $full ? $rows : array_slice($rows, $offset, $limit);
 
         if ($shown === []) {
             $lines[] = 'Belum ada data untuk kelas ini.';
@@ -341,12 +392,206 @@ class TelegramReplyFormatter
                 .' | alfa '.($attendanceRow['alfa'] ?? 0);
         }
 
-        if (! $full && count($rows) > count($shown)) {
+        if (! $full && count($rows) > $offset + count($shown)) {
             $lines[] = '';
-            $lines[] = '…dan '.(count($rows) - count($shown)).' siswa lainnya. Ketik /rekap untuk rekap lengkap.';
+            $lines[] = '…dan '.(count($rows) - $offset - count($shown)).' siswa lainnya.';
         }
 
         return implode("\n", $lines);
+    }
+
+    /**
+     * @param  array<int, array{student: mixed, score: float|null}>  $rows
+     */
+    public function belowKkm(
+        Classes $class,
+        array $rows,
+        float $kkm,
+        int $limit,
+        ?string $assessmentLabel = null,
+    ): string {
+        $title = $assessmentLabel !== null
+            ? $assessmentLabel.' di bawah KKM'
+            : 'Nilai akhir di bawah KKM';
+
+        $lines = [
+            '<b>'.$this->escape($title).' — '.$this->escape($class->name).'</b>',
+            'KKM: '.$this->number($kkm),
+            '',
+        ];
+
+        if ($rows === []) {
+            $lines[] = 'Tidak ada siswa yang berada di bawah KKM.';
+
+            return implode("\n", $lines);
+        }
+
+        $lines[] = count($rows).' siswa di bawah KKM:';
+
+        foreach (array_slice($rows, 0, $limit) as $row) {
+            $lines[] = '• <b>'.$this->escape($row['student']->name).'</b> — '.$this->number($row['score']);
+        }
+
+        if (count($rows) > $limit) {
+            $lines[] = '';
+            $lines[] = '…dan '.(count($rows) - $limit).' siswa lainnya.';
+        }
+
+        return implode("\n", $lines);
+    }
+
+    /**
+     * @param  array<int, array{student: mixed, missing: array<string, int>}>  $rows
+     * @param  array<string, int>  $counts
+     */
+    public function missingScores(
+        Classes $class,
+        array $rows,
+        array $counts,
+        int $limit,
+        ?string $assessmentLabel = null,
+    ): string {
+        $lines = [
+            '<b>Nilai Belum Lengkap — '.$this->escape($class->name).'</b>',
+            'Penilaian: '.$counts[TelegramIntent::ASSESSMENT_DAILY_TEST].' UH, '
+                .$counts[TelegramIntent::ASSESSMENT_ASSIGNMENT].' Tugas, '
+                .$counts[TelegramIntent::ASSESSMENT_MIDTERM].' PTS, '
+                .$counts[TelegramIntent::ASSESSMENT_FINAL].' PAS',
+            '',
+        ];
+
+        if (array_sum($counts) === 0) {
+            $lines[] = 'Belum ada penilaian pada kelas ini.';
+
+            return implode("\n", $lines);
+        }
+
+        if ($rows === []) {
+            $lines[] = $assessmentLabel !== null
+                ? 'Semua siswa sudah memiliki '.$assessmentLabel.'.'
+                : 'Semua nilai sudah lengkap.';
+
+            return implode("\n", $lines);
+        }
+
+        $lines[] = count($rows).' siswa memiliki nilai yang belum lengkap:';
+
+        foreach (array_slice($rows, 0, $limit) as $row) {
+            $missing = [];
+
+            foreach ($row['missing'] as $type => $count) {
+                if ($count > 0) {
+                    $missing[] = $this->assessmentLabel($type).' '.$count;
+                }
+            }
+
+            $lines[] = '• <b>'.$this->escape($row['student']->name).'</b> — '.implode(', ', $missing);
+        }
+
+        if (count($rows) > $limit) {
+            $lines[] = '';
+            $lines[] = '…dan '.(count($rows) - $limit).' siswa lainnya.';
+        }
+
+        return implode("\n", $lines);
+    }
+
+    /**
+     * @param  array<int, array{student: mixed, percentage: float|null, average: float|null, final_score: int|null, reasons: array<int, string>}>  $rows
+     */
+    public function atRisk(Classes $class, array $rows, ?float $kkm, int $limit): string
+    {
+        $lines = [
+            '<b>Siswa Perlu Perhatian — '.$this->escape($class->name).'</b>',
+        ];
+
+        if ($kkm !== null) {
+            $lines[] = 'KKM: '.$this->number($kkm);
+        }
+
+        $lines[] = '';
+
+        if ($rows === []) {
+            $lines[] = 'Tidak ada siswa yang memerlukan perhatian khusus saat ini.';
+
+            return implode("\n", $lines);
+        }
+
+        foreach (array_slice($rows, 0, $limit) as $row) {
+            $lines[] = '• <b>'.$this->escape($row['student']->name).'</b>'
+                .' — kehadiran '.$this->percent($row['percentage'])
+                .' | rata-rata '.$this->number($row['average'])
+                .' | '.implode(', ', $row['reasons']);
+        }
+
+        if (count($rows) > $limit) {
+            $lines[] = '';
+            $lines[] = '…dan '.(count($rows) - $limit).' siswa lainnya.';
+        }
+
+        return implode("\n", $lines);
+    }
+
+    /**
+     * @param  array<string, mixed>  $left
+     * @param  array<string, mixed>  $right
+     */
+    public function compareClasses(array $left, array $right): string
+    {
+        /** @var Classes $leftClass */
+        $leftClass = $left['class'];
+        /** @var Classes $rightClass */
+        $rightClass = $right['class'];
+
+        return implode("\n", [
+            '<b>Perbandingan Kelas</b>',
+            '',
+            '<b>'.$this->escape($leftClass->name).'</b>',
+            '• Siswa aktif: '.$left['students'],
+            '• Rata-rata kehadiran: '.$this->percent($left['average_percentage']),
+            '• Rata-rata nilai: '.$this->number($left['average_score']),
+            '• Di bawah KKM: '.$left['below_kkm'].' siswa',
+            '',
+            '<b>'.$this->escape($rightClass->name).'</b>',
+            '• Siswa aktif: '.$right['students'],
+            '• Rata-rata kehadiran: '.$this->percent($right['average_percentage']),
+            '• Rata-rata nilai: '.$this->number($right['average_score']),
+            '• Di bawah KKM: '.$right['below_kkm'].' siswa',
+        ]);
+    }
+
+    /**
+     * @param  array<int, array{student: mixed, class: Classes}>  $matches
+     */
+    public function searchResults(string $term, array $matches): string
+    {
+        $lines = ['<b>Hasil Pencarian: '.$this->escape($term).'</b>', ''];
+
+        if ($matches === []) {
+            $lines[] = 'Siswa tidak ditemukan di kelas-kelas Anda.';
+
+            return implode("\n", $lines);
+        }
+
+        foreach ($matches as $match) {
+            $lines[] = '• <b>'.$this->escape($match['student']->name).'</b> — '.$this->escape($match['class']->name);
+        }
+
+        $lines[] = '';
+        $lines[] = 'Ketik misalnya "nilai nama siswa" atau "kehadiran nama siswa" untuk detail.';
+
+        return implode("\n", $lines);
+    }
+
+    public function exportCaption(Classes $class, string $kind): string
+    {
+        $label = match ($kind) {
+            'attendance' => 'Rekap Kehadiran',
+            'full' => 'Rekap Lengkap',
+            default => 'Rekap Nilai',
+        };
+
+        return '<b>'.$label.' — '.$this->escape($class->name).'</b>';
     }
 
     public function status(string $name, string $role, string $className, ?string $telegramUsername): string

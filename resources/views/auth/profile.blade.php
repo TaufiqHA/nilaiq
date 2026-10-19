@@ -139,7 +139,7 @@
                 </form>
             @else
                 <p class="text-sm text-body">
-                    Hubungkan akun NilaiQ ke Telegram agar Anda bisa bertanya tentang kehadiran, nilai, dan rekap kelas langsung dari chat bot.
+                    Hubungkan akun NilaiQ ke Telegram agar Anda bisa bertanya tentang kehadiran, nilai, dan rekap kelas langsung dari chat bot, termasuk mengunduh rekap dalam bentuk Excel.
                 </p>
 
                 @if(session('telegram_link_url'))

@@ -28,6 +28,45 @@ class TelegramClient
     }
 
     /**
+     * Send a document (for example an Excel export) to a chat.
+     *
+     * @return array<string, mixed>
+     */
+    public function sendDocument(
+        int|string $chatId,
+        string $filePath,
+        string $filename,
+        ?string $caption = null,
+    ): array {
+        $token = (string) config('services.telegram.token');
+
+        if ($token === '') {
+            throw new RuntimeException('TELEGRAM_BOT_TOKEN belum dikonfigurasi.');
+        }
+
+        $handle = fopen($filePath, 'rb');
+
+        if ($handle === false) {
+            throw new RuntimeException('File ekspor tidak bisa dibuka: '.$filePath);
+        }
+
+        try {
+            $response = Http::timeout(60)
+                ->acceptJson()
+                ->attach('document', $handle, $filename)
+                ->post("https://api.telegram.org/bot{$token}/sendDocument", array_filter([
+                    'chat_id' => $chatId,
+                    'caption' => $caption,
+                    'parse_mode' => $caption !== null ? 'HTML' : null,
+                ]));
+        } finally {
+            fclose($handle);
+        }
+
+        return $this->decodeResponse('sendDocument', $response);
+    }
+
+    /**
      * Answer a callback query so Telegram stops the loading indicator.
      *
      * @return array<string, mixed>

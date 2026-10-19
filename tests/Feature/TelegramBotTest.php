@@ -8,6 +8,7 @@ use App\Models\Attendances;
 use App\Models\Classes;
 use App\Models\DailyTestMeetings;
 use App\Models\DailyTestScores;
+use App\Models\Settings;
 use App\Models\Students;
 use App\Models\TelegramContext;
 use App\Models\TelegramLink;
@@ -211,6 +212,142 @@ class TelegramBotTest extends TestCase
         $this->assertDatabaseMissing('telegram_contexts', ['chat_id' => self::CHAT_ID]);
     }
 
+    public function test_export_command_sends_excel_document(): void
+    {
+        $user = $this->createMapelWithClass();
+        $this->link($user);
+
+        $this->sendMessageUpdate('/ekspor absensi VII A', 20)->assertOk();
+
+        $this->assertTrue($this->hasSentDocument());
+    }
+
+    public function test_pagination_callback_shows_next_page(): void
+    {
+        $user = $this->createMapelWithClass();
+        $class = Classes::where('name', 'VII A')->firstOrFail();
+
+        for ($index = 1; $index <= 12; $index++) {
+            Students::factory()->create([
+                'class_id' => $class->id,
+                'name' => sprintf('Siswa %02d', $index),
+                'status' => 'ACTIVE',
+            ]);
+        }
+
+        $this->link($user);
+        $this->sendCallbackUpdate('v:a:'.$class->id.':2', 21)->assertOk();
+
+        $this->assertTrue($this->hasSentText('Siswa 12'));
+    }
+
+    public function test_below_kkm_query_lists_students(): void
+    {
+        Settings::factory()->create(['minimum_score' => 75]);
+
+        $user = $this->createMapelWithClass();
+        $this->link($user);
+
+        $this->sendMessageUpdate('siapa yang nilainya di bawah KKM di kelas VII A', 22)->assertOk();
+
+        $this->assertTrue($this->hasSentText('di bawah KKM'));
+        $this->assertTrue($this->hasSentText('Budi Santoso'));
+    }
+
+    public function test_missing_scores_query_lists_students(): void
+    {
+        $user = $this->createMapelWithClass();
+        $class = Classes::where('name', 'VII A')->firstOrFail();
+        $budi = Students::where('name', 'Budi Santoso')->firstOrFail();
+
+        $secondTest = DailyTestMeetings::factory()->create([
+            'class_id' => $class->id,
+            'test_date' => '2026-07-11',
+        ]);
+
+        DailyTestScores::factory()->create([
+            'daily_test_meeting_id' => $secondTest->id,
+            'student_id' => $budi->id,
+            'score' => 70,
+        ]);
+
+        $this->link($user);
+        $this->sendMessageUpdate('siapa yang belum punya nilai UH di kelas VII A', 23)->assertOk();
+
+        $this->assertTrue($this->hasSentText('Nilai Belum Lengkap'));
+        $this->assertTrue($this->hasSentText('Siti Aminah'));
+    }
+
+    public function test_at_risk_query_lists_students(): void
+    {
+        $user = $this->createMapelWithClass();
+        $this->link($user);
+
+        $this->sendMessageUpdate('siswa yang perlu perhatian di kelas VII A', 24)->assertOk();
+
+        $this->assertTrue($this->hasSentText('Siswa Perlu Perhatian'));
+        $this->assertTrue($this->hasSentText('Budi Santoso'));
+        $this->assertTrue($this->hasSentText('kehadiran rendah'));
+    }
+
+    public function test_compare_classes_query(): void
+    {
+        $user = $this->createMapelWithClass();
+        $year = AcademicYear::where('user_id', $user->id)->firstOrFail();
+        $otherClass = Classes::factory()->create([
+            'academic_year_id' => $year->id,
+            'name' => 'VII B',
+        ]);
+        Students::factory()->create([
+            'class_id' => $otherClass->id,
+            'name' => 'Andi Wijaya',
+            'status' => 'ACTIVE',
+        ]);
+
+        $this->link($user);
+        $this->sendMessageUpdate('bandingkan kelas VII A dan VII B', 25)->assertOk();
+
+        $this->assertTrue($this->hasSentText('Perbandingan Kelas'));
+        $this->assertTrue($this->hasSentText('VII B'));
+    }
+
+    public function test_search_command_finds_student_across_classes(): void
+    {
+        $user = $this->createMapelWithClass();
+        $this->link($user);
+
+        $this->sendMessageUpdate('/cari Budi', 26)->assertOk();
+
+        $this->assertTrue($this->hasSentText('Hasil Pencarian'));
+        $this->assertTrue($this->hasSentText('Budi Santoso'));
+        $this->assertTrue($this->hasSentText('VII A'));
+    }
+
+    public function test_ping_and_keyboard_shortcut(): void
+    {
+        $user = $this->createMapelWithClass();
+        $this->link($user);
+
+        $this->sendMessageUpdate('/ping', 27)->assertOk();
+        $this->assertTrue($this->hasSentText('pong'));
+
+        $this->sendMessageUpdate('/bantuan', 28)->assertOk();
+        $this->assertTrue($this->hasRemoveKeyboard());
+
+        $this->sendMessageUpdate('Kehadiran', 29)->assertOk();
+        $this->assertTrue($this->hasSentText('Rekap Kehadiran'));
+    }
+
+    public function test_remove_keyboard_command_cleans_up_linked_chats(): void
+    {
+        $user = $this->createMapelWithClass();
+        $this->link($user);
+
+        $this->artisan('telegram:remove-keyboard')->assertSuccessful();
+
+        $this->assertTrue($this->hasRemoveKeyboard());
+    }
+
     private function createMapelWithClass(string $className = 'VII A', string $secondStudentName = 'Siti Aminah'): User
     {
         $user = User::factory()->create(['role' => 'mapel']);
@@ -396,5 +533,22 @@ class TelegramBotTest extends TestCase
     private function sentMessageCount(): int
     {
         return count($this->sentTexts());
+    }
+
+    private function hasSentDocument(): bool
+    {
+        return collect(Http::recorded())
+            ->contains(fn (array $pair): bool => str_contains($pair[0]->url(), 'sendDocument'));
+    }
+
+    private function hasRemoveKeyboard(): bool
+    {
+        return collect(Http::recorded())
+            ->filter(fn (array $pair): bool => str_contains($pair[0]->url(), 'sendMessage'))
+            ->contains(function (array $pair): bool {
+                $markup = $pair[0]->data()['reply_markup'] ?? null;
+
+                return is_array($markup) && ($markup['remove_keyboard'] ?? false) === true;
+            });
     }
 }
