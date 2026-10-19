@@ -148,8 +148,61 @@ NilaiQ menyediakan REST API yang diautentikasi dengan **Sanctum**, khusus untuk 
 | — | `/api/midterm-scores` | CRUD nilai PTS |
 | — | `/api/final-exams` | CRUD ujian PAS |
 | — | `/api/final-scores` | CRUD nilai PAS |
+| `POST` | `/api/telegram/webhook` | Webhook Telegram (dilindungi secret header) |
 
-> Semua endpoint terproteksi menggunakan middleware `auth:sanctum` + `mapel`.
+> Semua endpoint di atas terproteksi menggunakan middleware `auth:sanctum` + `mapel`, kecuali webhook Telegram yang memakai secret header.
+
+## Telegram Bot
+
+Bot Telegram memungkinkan Guru Mapel bertanya tentang kehadiran, nilai, dan rekap kelas langsung dari chat. Pemrosesan pertanyaan menggunakan **parser rule-based** — tidak memakai layanan AI berbayar.
+
+### Setup
+
+1. Buat bot melalui [@BotFather](https://t.me/BotFather), lalu salin tokennya.
+2. Isi `.env`:
+
+```env
+TELEGRAM_BOT_TOKEN=token-dari-botfather
+TELEGRAM_BOT_USERNAME=nama_bot_tanpa_at
+TELEGRAM_WEBHOOK_SECRET=string-acak-panjang
+```
+
+3. Jalankan migrasi:
+
+```bash
+php artisan migrate
+```
+
+4. Untuk production, daftarkan webhook (server harus bisa diakses via HTTPS):
+
+```bash
+php artisan telegram:set-webhook https://domain-anda.com/api/telegram/webhook
+```
+
+5. Untuk development lokal tanpa tunnel, gunakan long polling:
+
+```bash
+php artisan telegram:delete-webhook
+php artisan telegram:poll
+```
+
+### Menghubungkan akun
+
+1. Login ke website sebagai Guru Mapel.
+2. Buka **Profil → Telegram Bot → Hubungkan Telegram**.
+3. Buka deep link atau kirim `/start <kode>` ke bot.
+4. Kode berlaku 15 menit dan hanya bisa dipakai sekali.
+
+### Contoh pertanyaan
+
+- `kehadiran terendah di kelas 7A`
+- `siapa yang paling sering alfa di kelas ini`
+- `nilai PTS terendah di kelas 7A`
+- `rekap nilai kelas 7A`
+- `nilai Budi`
+- `rekap lengkap kelas 7A`
+
+Perintah bot: `/kelas`, `/rekap`, `/status`, `/bantuan`, `/putuskan`.
 
 ---
 

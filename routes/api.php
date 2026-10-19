@@ -14,6 +14,7 @@ use App\Http\Controllers\FinalScoresController;
 use App\Http\Controllers\MidtermExamsController;
 use App\Http\Controllers\MidtermScoresController;
 use App\Http\Controllers\ScoreScanController;
+use App\Http\Controllers\TelegramWebhookController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -23,6 +24,9 @@ use Illuminate\Support\Facades\Route;
 */
 Route::get('/health', [AuthController::class, 'health']);
 Route::post('/login', [AuthController::class, 'login']);
+
+// Telegram bot webhook. Authentication uses the secret header, not Sanctum.
+Route::post('/telegram/webhook', [TelegramWebhookController::class, 'handle'])->name('telegram.webhook');
 
 /*
 |--------------------------------------------------------------------------

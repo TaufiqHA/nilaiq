@@ -99,6 +99,92 @@
                 </div>
             </form>
         </div>
+
+        @if($user->role === 'mapel')
+        <!-- 3. Telegram Bot Card -->
+        <div class="bg-neutral-primary-soft border border-default rounded-base p-6 shadow-sm space-y-4">
+            <div class="flex items-center justify-between border-b border-default pb-2">
+                <h3 class="text-lg font-bold text-heading">Telegram Bot</h3>
+                @if($telegramLink)
+                    <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-50 text-emerald-700 border border-emerald-200">Terhubung</span>
+                @else
+                    <span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-neutral-secondary-medium text-body border border-default">Belum terhubung</span>
+                @endif
+            </div>
+
+            @if(session('error'))
+                <div class="p-3 bg-rose-50 border border-rose-200 rounded-base text-rose-800 text-sm">
+                    {{ session('error') }}
+                </div>
+            @endif
+
+            @if($telegramLink)
+                <p class="text-sm text-body">
+                    Akun NilaiQ Anda terhubung ke chat Telegram
+                    @if($telegramLink->telegram_username)
+                        <span class="font-semibold text-heading">&#64;{{ $telegramLink->telegram_username }}</span>
+                    @else
+                        <span class="font-semibold text-heading">pribadi</span>
+                    @endif
+                    sejak {{ $telegramLink->linked_at?->translatedFormat('d F Y H:i') ?? '-' }}.
+                </p>
+                <p class="text-xs text-body">Buka Telegram, lalu chat bot dan ketik <code class="px-1 py-0.5 bg-neutral-secondary-medium rounded">/bantuan</code> untuk melihat contoh pertanyaan.</p>
+
+                <form action="{{ route('profile.telegram.unlink') }}" method="POST" class="pt-2">
+                    @csrf
+                    @method('DELETE')
+                    <button type="submit" class="inline-flex items-center justify-center px-4 py-2 bg-rose-600 text-white text-sm font-bold rounded-base hover:bg-rose-700 focus:outline-none transition-all duration-200 cursor-pointer shadow-sm">
+                        Putuskan Koneksi Telegram
+                    </button>
+                </form>
+            @else
+                <p class="text-sm text-body">
+                    Hubungkan akun NilaiQ ke Telegram agar Anda bisa bertanya tentang kehadiran, nilai, dan rekap kelas langsung dari chat bot.
+                </p>
+
+                @if(session('telegram_link_url'))
+                    <div class="p-4 bg-brand/5 border border-brand/20 rounded-base space-y-3">
+                        <p class="text-sm font-semibold text-heading">Kode berhasil dibuat (berlaku 15 menit):</p>
+                        <div class="flex flex-col sm:flex-row gap-2">
+                            <input id="telegram-link-url" type="text" readonly value="{{ session('telegram_link_url') }}" class="flex-1 w-full bg-white border border-default rounded-base px-3 py-2 text-xs text-heading focus:outline-none focus:border-brand">
+                            <button type="button" onclick="copyTelegramLink(this)" class="inline-flex items-center justify-center px-4 py-2 bg-brand text-white text-sm font-bold rounded-base hover:bg-brand-strong transition-all duration-200 cursor-pointer">
+                                Salin Link
+                            </button>
+                        </div>
+                        <p class="text-xs text-body">
+                            Atau buka Telegram dan kirim perintah:
+                            <code class="px-1 py-0.5 bg-neutral-secondary-medium rounded">/start {{ session('telegram_link_code') }}</code>
+                        </p>
+                    </div>
+                @endif
+
+                <form action="{{ route('profile.telegram.link') }}" method="POST" class="pt-2">
+                    @csrf
+                    <button type="submit" class="inline-flex items-center justify-center px-4 py-2 bg-brand text-white text-sm font-bold rounded-base hover:bg-brand-strong focus:outline-none transition-all duration-200 cursor-pointer shadow-sm">
+                        Hubungkan Telegram
+                    </button>
+                </form>
+            @endif
+        </div>
+        @endif
     </div>
 </div>
+
+<script>
+    function copyTelegramLink(button) {
+        const input = document.getElementById('telegram-link-url');
+
+        if (!input) {
+            return;
+        }
+
+        navigator.clipboard.writeText(input.value).then(function () {
+            const original = button.innerText;
+            button.innerText = 'Tersalin';
+            setTimeout(function () {
+                button.innerText = original;
+            }, 1500);
+        });
+    }
+</script>
 @endsection
