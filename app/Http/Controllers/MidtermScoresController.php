@@ -25,12 +25,31 @@ class MidtermScoresController extends Controller
     {
         $validated = $request->validate($this->validationRules());
 
-        $score = MidtermScores::create($validated);
+        if (! empty($validated['client_uuid'])) {
+            $existing = MidtermScores::where('client_uuid', $validated['client_uuid'])->first();
+
+            if ($existing) {
+                return response()->json([
+                    'message' => 'Midterm score already exists.',
+                    'data' => $existing->load(['midtermExam', 'student']),
+                ]);
+            }
+        }
+
+        $score = MidtermScores::updateOrCreate(
+            [
+                'midterm_exam_id' => $validated['midterm_exam_id'],
+                'student_id' => $validated['student_id'],
+            ],
+            $validated
+        );
 
         return response()->json([
-            'message' => 'Midterm score created successfully.',
+            'message' => $score->wasRecentlyCreated
+                ? 'Midterm score created successfully.'
+                : 'Midterm score updated successfully.',
             'data' => $score->load(['midtermExam', 'student']),
-        ], 201);
+        ], $score->wasRecentlyCreated ? 201 : 200);
     }
 
     /**
@@ -84,6 +103,7 @@ class MidtermScoresController extends Controller
     private function validationRules(): array
     {
         return [
+            'client_uuid' => ['nullable', 'uuid'],
             'midterm_exam_id' => ['required', 'exists:midterm_exams,id'],
             'student_id' => ['required', 'exists:students,id'],
             'score' => ['required', 'numeric', 'min:0', 'max:100'],

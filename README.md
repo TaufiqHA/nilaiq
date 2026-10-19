@@ -142,6 +142,12 @@ NilaiQ menyediakan REST API yang diautentikasi dengan **Sanctum**, khusus untuk 
 | — | `/api/attendances` | CRUD kehadiran |
 | — | `/api/daily-test-meetings` | CRUD pertemuan ulangan harian |
 | — | `/api/daily-test-scores` | CRUD nilai ulangan harian |
+| — | `/api/assignment-meetings` | CRUD pertemuan tugas |
+| — | `/api/assignment-scores` | CRUD nilai tugas |
+| — | `/api/midterm-exams` | CRUD ujian PTS |
+| — | `/api/midterm-scores` | CRUD nilai PTS |
+| — | `/api/final-exams` | CRUD ujian PAS |
+| — | `/api/final-scores` | CRUD nilai PAS |
 
 > Semua endpoint terproteksi menggunakan middleware `auth:sanctum` + `mapel`.
 

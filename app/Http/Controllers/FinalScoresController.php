@@ -25,12 +25,31 @@ class FinalScoresController extends Controller
     {
         $validated = $request->validate($this->validationRules());
 
-        $score = FinalScores::create($validated);
+        if (! empty($validated['client_uuid'])) {
+            $existing = FinalScores::where('client_uuid', $validated['client_uuid'])->first();
+
+            if ($existing) {
+                return response()->json([
+                    'message' => 'Final score already exists.',
+                    'data' => $existing->load(['finalExam', 'student']),
+                ]);
+            }
+        }
+
+        $score = FinalScores::updateOrCreate(
+            [
+                'final_exam_id' => $validated['final_exam_id'],
+                'student_id' => $validated['student_id'],
+            ],
+            $validated
+        );
 
         return response()->json([
-            'message' => 'Final score created successfully.',
+            'message' => $score->wasRecentlyCreated
+                ? 'Final score created successfully.'
+                : 'Final score updated successfully.',
             'data' => $score->load(['finalExam', 'student']),
-        ], 201);
+        ], $score->wasRecentlyCreated ? 201 : 200);
     }
 
     /**
@@ -84,6 +103,7 @@ class FinalScoresController extends Controller
     private function validationRules(): array
     {
         return [
+            'client_uuid' => ['nullable', 'uuid'],
             'final_exam_id' => ['required', 'exists:final_exams,id'],
             'student_id' => ['required', 'exists:students,id'],
             'score' => ['required', 'numeric', 'min:0', 'max:100'],

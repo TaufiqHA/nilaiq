@@ -42,6 +42,21 @@ class MidtermExamsController extends Controller
     {
         $validated = $request->validate($this->validationRules());
 
+        if (! empty($validated['client_uuid'])) {
+            $existing = MidtermExams::where('client_uuid', $validated['client_uuid'])->first();
+
+            if ($existing) {
+                if ($request->wantsJson()) {
+                    return response()->json([
+                        'message' => 'Midterm exam already exists.',
+                        'data' => $existing->load('class'),
+                    ]);
+                }
+
+                return redirect()->route('midterm-exams.index')->with('success', 'Ujian Tengah Semester sudah ada.');
+            }
+        }
+
         $exam = MidtermExams::create($validated);
 
         if ($request->wantsJson()) {
@@ -130,6 +145,7 @@ class MidtermExamsController extends Controller
     private function validationRules(): array
     {
         return [
+            'client_uuid' => ['nullable', 'uuid'],
             'class_id' => ['required', 'exists:classes,id'],
             'title' => ['required', 'string', 'max:255'],
             'exam_date' => ['required', 'date'],

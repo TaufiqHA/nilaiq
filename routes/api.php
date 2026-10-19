@@ -9,6 +9,10 @@ use App\Http\Controllers\ClassesController;
 use App\Http\Controllers\DailyTestMeetingsController;
 use App\Http\Controllers\DailyTestScoresController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\FinalExamsController;
+use App\Http\Controllers\FinalScoresController;
+use App\Http\Controllers\MidtermExamsController;
+use App\Http\Controllers\MidtermScoresController;
 use App\Http\Controllers\ScoreScanController;
 use Illuminate\Support\Facades\Route;
 
@@ -82,4 +86,32 @@ Route::middleware(['auth:sanctum', 'mapel'])->group(function () {
     Route::get('/assignment-scores/{assignmentScore}', [AssignmentScoresController::class, 'show']);
     Route::put('/assignment-scores/{assignmentScore}', [AssignmentScoresController::class, 'update']);
     Route::delete('/assignment-scores/{assignmentScore}', [AssignmentScoresController::class, 'delete']);
+
+    // Midterm exams (PTS)
+    Route::get('/midterm-exams', [MidtermExamsController::class, 'index']);
+    Route::post('/midterm-exams', [MidtermExamsController::class, 'store']);
+    Route::get('/midterm-exams/{midtermExam}', [MidtermExamsController::class, 'show']);
+    Route::put('/midterm-exams/{midtermExam}', [MidtermExamsController::class, 'update']);
+    Route::delete('/midterm-exams/{midtermExam}', [MidtermExamsController::class, 'delete']);
+
+    // Midterm scores
+    Route::get('/midterm-scores', [MidtermScoresController::class, 'index']);
+    Route::post('/midterm-scores', [MidtermScoresController::class, 'store']);
+    Route::get('/midterm-scores/{midtermScore}', [MidtermScoresController::class, 'show']);
+    Route::put('/midterm-scores/{midtermScore}', [MidtermScoresController::class, 'update']);
+    Route::delete('/midterm-scores/{midtermScore}', [MidtermScoresController::class, 'delete']);
+
+    // Final exams (PAS)
+    Route::get('/final-exams', [FinalExamsController::class, 'index']);
+    Route::post('/final-exams', [FinalExamsController::class, 'store']);
+    Route::get('/final-exams/{finalExam}', [FinalExamsController::class, 'show']);
+    Route::put('/final-exams/{finalExam}', [FinalExamsController::class, 'update']);
+    Route::delete('/final-exams/{finalExam}', [FinalExamsController::class, 'delete']);
+
+    // Final scores
+    Route::get('/final-scores', [FinalScoresController::class, 'index']);
+    Route::post('/final-scores', [FinalScoresController::class, 'store']);
+    Route::get('/final-scores/{finalScore}', [FinalScoresController::class, 'show']);
+    Route::put('/final-scores/{finalScore}', [FinalScoresController::class, 'update']);
+    Route::delete('/final-scores/{finalScore}', [FinalScoresController::class, 'delete']);
 });

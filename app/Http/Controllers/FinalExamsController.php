@@ -42,6 +42,21 @@ class FinalExamsController extends Controller
     {
         $validated = $request->validate($this->validationRules());
 
+        if (! empty($validated['client_uuid'])) {
+            $existing = FinalExams::where('client_uuid', $validated['client_uuid'])->first();
+
+            if ($existing) {
+                if ($request->wantsJson()) {
+                    return response()->json([
+                        'message' => 'Final exam already exists.',
+                        'data' => $existing->load('class'),
+                    ]);
+                }
+
+                return redirect()->route('final-exams.index')->with('success', 'Ujian Akhir Semester sudah ada.');
+            }
+        }
+
         $exam = FinalExams::create($validated);
 
         if ($request->wantsJson()) {
@@ -130,6 +145,7 @@ class FinalExamsController extends Controller
     private function validationRules(): array
     {
         return [
+            'client_uuid' => ['nullable', 'uuid'],
             'class_id' => ['required', 'exists:classes,id'],
             'title' => ['required', 'string', 'max:255'],
             'exam_date' => ['required', 'date'],
