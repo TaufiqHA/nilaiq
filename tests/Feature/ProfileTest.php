@@ -37,6 +37,25 @@ class ProfileTest extends TestCase
     }
 
     /**
+     * Test the admin profile uses the admin layout and role label.
+     */
+    public function test_admin_profile_uses_admin_layout_and_role_label(): void
+    {
+        /** @var User $admin */
+        $admin = User::factory()->create(['role' => 'admin']);
+
+        $response = $this->actingAs($admin)->get(route('profile'));
+
+        $response->assertOk();
+        $response->assertSee('NilaiQ Admin');
+        $response->assertSee('Manajemen User');
+        $response->assertSee('Administrator');
+        $response->assertDontSee('Tahun Ajaran');
+        $response->assertDontSee('Ulangan Harian');
+        $response->assertDontSee('Guru Mata Pelajaran');
+    }
+
+    /**
      * Test user can update profile info.
      */
     public function test_user_can_update_profile_info(): void

@@ -10,6 +10,7 @@ use App\Models\DailyTestMeetings;
 use App\Models\DailyTestScores;
 use App\Models\Settings;
 use App\Models\Students;
+use App\Models\Subscription;
 use App\Models\TelegramContext;
 use App\Models\TelegramLink;
 use App\Models\TelegramLinkToken;
@@ -45,6 +46,19 @@ class TelegramBotTest extends TestCase
     public function test_webhook_rejects_invalid_secret(): void
     {
         $this->postJson('/api/telegram/webhook', ['update_id' => 1])->assertStatus(403);
+    }
+
+    public function test_expired_subscription_blocks_bot_data_commands(): void
+    {
+        $user = User::factory()->withoutSubscription()->create(['role' => 'mapel']);
+        Subscription::factory()->expired()->create(['user_id' => $user->id]);
+        $this->link($user);
+
+        $this->sendMessageUpdate('/status', 90)->assertOk();
+        $this->assertTrue($this->hasSentText('Masa trial atau langganan Anda sudah berakhir'));
+
+        $this->sendMessageUpdate('/ping', 91)->assertOk();
+        $this->assertTrue($this->hasSentText('pong'));
     }
 
     public function test_unlinked_chat_receives_onboarding(): void
@@ -243,9 +257,11 @@ class TelegramBotTest extends TestCase
 
     public function test_below_kkm_query_lists_students(): void
     {
-        Settings::factory()->create(['minimum_score' => 75]);
-
         $user = $this->createMapelWithClass();
+        Settings::factory()->create([
+            'user_id' => $user->id,
+            'minimum_score' => 75,
+        ]);
         $this->link($user);
 
         $this->sendMessageUpdate('siapa yang nilainya di bawah KKM di kelas VII A', 22)->assertOk();

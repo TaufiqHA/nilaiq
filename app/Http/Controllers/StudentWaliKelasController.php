@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\AcademicYear;
 use App\Models\ClassWaliKelas;
 use App\Models\StudentWaliKelas;
+use App\Rules\OwnedExists;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -20,7 +21,7 @@ class StudentWaliKelasController extends Controller
     public function index(Request $request): View|JsonResponse
     {
         if ($request->wantsJson()) {
-            $query = StudentWaliKelas::with('classWaliKelas');
+            $query = StudentWaliKelas::ownedBy(auth()->user())->with('classWaliKelas');
 
             if ($request->has('class_id')) {
                 $query->where('class_id', $request->input('class_id'));
@@ -115,7 +116,7 @@ class StudentWaliKelasController extends Controller
     public function import(Request $request): JsonResponse|RedirectResponse
     {
         $validated = $request->validate([
-            'class_id' => ['required', 'exists:class_wali_kelas,id'],
+            'class_id' => ['required', new OwnedExists(ClassWaliKelas::class)],
             'students' => ['required', 'array', 'min:1'],
             'students.*.nis' => ['required', 'string', 'max:255', 'distinct', 'unique:student_wali_kelas,nis'],
             'students.*.nisn' => ['nullable', 'string', 'max:255', 'distinct', 'unique:student_wali_kelas,nisn'],
@@ -161,7 +162,9 @@ class StudentWaliKelasController extends Controller
             }
         });
 
-        $updatedStudents = StudentWaliKelas::where('class_id', $validated['class_id'])->get();
+        $updatedStudents = StudentWaliKelas::ownedBy(auth()->user())
+            ->where('class_id', $validated['class_id'])
+            ->get();
 
         if ($request->wantsJson()) {
             return response()->json([
@@ -189,7 +192,7 @@ class StudentWaliKelasController extends Controller
     private function validationRules(?int $ignoreId = null): array
     {
         return [
-            'class_id' => ['required', 'exists:class_wali_kelas,id'],
+            'class_id' => ['required', new OwnedExists(ClassWaliKelas::class)],
             'nis' => ['required', 'string', 'max:255', Rule::unique('student_wali_kelas', 'nis')->ignore($ignoreId)],
             'nisn' => ['nullable', 'string', 'max:255', Rule::unique('student_wali_kelas', 'nisn')->ignore($ignoreId)],
             'name' => ['required', 'string', 'max:255'],

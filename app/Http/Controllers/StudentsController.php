@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\AcademicYear;
+use App\Models\Classes;
 use App\Models\Students;
+use App\Rules\OwnedExists;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -19,9 +21,13 @@ class StudentsController extends Controller
     public function index(): JsonResponse
     {
         $activeYear = AcademicYear::getActive();
-        $students = $activeYear
-            ? Students::whereHas('class', fn ($q) => $q->where('academic_year_id', $activeYear->id))->with('class')->get()
-            : Students::with('class')->get();
+        $students = Students::ownedBy(auth()->user())
+            ->when($activeYear, fn ($query) => $query->whereHas(
+                'class',
+                fn ($class) => $class->where('academic_year_id', $activeYear->id),
+            ))
+            ->with('class')
+            ->get();
 
         return response()->json($students);
     }
@@ -90,7 +96,7 @@ class StudentsController extends Controller
     public function import(Request $request): JsonResponse
     {
         $validated = $request->validate([
-            'class_id' => ['required', 'exists:classes,id'],
+            'class_id' => ['required', new OwnedExists(Classes::class)],
             'students' => ['required', 'array', 'min:1'],
             'students.*.nis' => ['required', 'string', 'max:50', 'distinct', 'unique:students,nis'],
             'students.*.nisn' => ['required', 'string', 'max:50', 'distinct', 'unique:students,nisn'],
@@ -116,7 +122,10 @@ class StudentsController extends Controller
             }
         });
 
-        $updatedStudents = Students::with('class')->where('class_id', $validated['class_id'])->get();
+        $updatedStudents = Students::ownedBy(auth()->user())
+            ->with('class')
+            ->where('class_id', $validated['class_id'])
+            ->get();
 
         return response()->json([
             'message' => count($validated['students']).' siswa berhasil diimport.',
@@ -270,7 +279,7 @@ Do not return any explanation, markdown formatting (like ```json), or extra text
     private function validationRules(?int $studentId = null): array
     {
         return [
-            'class_id' => ['required', 'exists:classes,id'],
+            'class_id' => ['required', new OwnedExists(Classes::class)],
             'nis' => ['required', 'string', 'max:50', 'unique:students,nis'.($studentId ? ','.$studentId : '')],
             'nisn' => ['required', 'string', 'max:50', 'unique:students,nisn'.($studentId ? ','.$studentId : '')],
             'name' => ['required', 'string', 'max:255'],

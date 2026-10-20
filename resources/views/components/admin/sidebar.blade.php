@@ -35,6 +35,12 @@
                         <span class="ms-3">Manajemen User</span>
                      </a>
                   </li>
+                  <li>
+                     <a href="{{ route('backup.index') }}" class="flex items-center px-2 py-1.5 {{ request()->routeIs('backup.*') ? 'bg-neutral-tertiary text-fg-brand font-bold' : 'text-body hover:bg-neutral-tertiary hover:text-fg-brand' }} rounded-base group transition-all duration-200">
+                        <x-heroicon-o-server-stack class="w-5 h-5 transition duration-75 {{ request()->routeIs('backup.*') ? 'text-fg-brand' : 'group-hover:text-fg-brand' }}" />
+                        <span class="ms-3">Backup Database</span>
+                     </a>
+                  </li>
                </ul>
             </div>
          </div>

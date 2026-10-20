@@ -21,7 +21,7 @@ class AcademicYearFactory extends Factory
         $startYear = fake()->numberBetween(2020, 2030);
 
         return [
-            'user_id' => User::factory(),
+            'user_id' => auth()->id() ?? UserFactory::$lastCreatedId ?? User::factory(),
             'year' => "{$startYear}/".($startYear + 1),
             'semester' => fake()->randomElement(['GANJIL', 'GENAP']),
             'is_active' => false,

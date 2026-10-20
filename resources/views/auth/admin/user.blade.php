@@ -93,7 +93,8 @@
                         <th class="pb-3 text-xs font-bold text-heading uppercase tracking-wider min-w-[150px]">Nama</th>
                         <th class="pb-3 text-xs font-bold text-heading uppercase tracking-wider min-w-[150px]">Email</th>
                         <th class="pb-3 text-xs font-bold text-heading uppercase tracking-wider min-w-[100px]">Peran</th>
-                        <th class="pb-3 text-xs font-bold text-heading uppercase tracking-wider text-right min-w-[120px]">Aksi</th>
+                        <th class="pb-3 text-xs font-bold text-heading uppercase tracking-wider min-w-[130px]">Langganan</th>
+                        <th class="pb-3 text-xs font-bold text-heading uppercase tracking-wider text-right min-w-[160px]">Aksi</th>
                     </tr>
                 </thead>
                 <tbody class="divide-y divide-default">
@@ -116,8 +117,47 @@
                                     </span>
                                 @endif
                             </td>
+                            <td class="py-3.5 text-sm">
+                                @php($subscription = $user->currentSubscription())
+                                @if($subscription)
+                                    <span class="px-2.5 py-0.5 rounded-full text-xs font-bold
+                                        {{ $subscription->isOnTrial()
+                                            ? 'bg-amber-100 dark:bg-amber-950/20 text-amber-800 dark:text-amber-300 border border-amber-200 dark:border-amber-900/30'
+                                            : 'bg-emerald-100 dark:bg-emerald-950/20 text-emerald-800 dark:text-emerald-300 border border-emerald-200 dark:border-emerald-900/30' }}">
+                                        {{ $subscription->statusLabel() }}
+                                    </span>
+                                    <p class="mt-1 text-[10px] text-body">
+                                        {{ $subscription->ends_at ? 's.d. '.$subscription->ends_at->format('d/m/Y') : 'Tanpa batas' }}
+                                    </p>
+                                @else
+                                    <span class="px-2.5 py-0.5 rounded-full text-xs font-bold bg-red-100 dark:bg-red-950/20 text-red-800 dark:text-red-300 border border-red-200 dark:border-red-900/30">
+                                        Tidak Aktif
+                                    </span>
+                                @endif
+                            </td>
                             <td class="py-3.5 text-sm text-right">
                                 <div class="inline-flex items-center gap-2">
+                                    <details class="relative inline-block text-left">
+                                        <summary class="list-none cursor-pointer text-heading hover:text-fg-brand bg-transparent font-semibold text-xs py-1.5 px-3 border border-default hover:border-brand rounded-base transition-all duration-200 [&::-webkit-details-marker]:hidden">
+                                            Langganan
+                                        </summary>
+                                        <div class="absolute right-0 z-20 mt-2 w-48 rounded-base border border-default bg-neutral-primary-soft p-1.5 shadow-xl">
+                                            <form action="{{ route('admin.users.subscription.extend', $user) }}" method="POST">
+                                                @csrf
+                                                <button type="submit" class="w-full rounded-base px-3 py-2 text-left text-xs font-semibold text-heading hover:bg-neutral-tertiary">Perpanjang 1 Tahun</button>
+                                            </form>
+                                            <form action="{{ route('admin.users.subscription.grant', $user) }}" method="POST">
+                                                @csrf
+                                                <button type="submit" class="w-full rounded-base px-3 py-2 text-left text-xs font-semibold text-heading hover:bg-neutral-tertiary">Beri Akses Selamanya</button>
+                                            </form>
+                                            @if($user->id !== auth()->id())
+                                                <form action="{{ route('admin.users.subscription.revoke', $user) }}" method="POST">
+                                                    @csrf
+                                                    <button type="submit" class="w-full rounded-base px-3 py-2 text-left text-xs font-semibold text-fg-danger-strong hover:bg-danger-soft">Cabut Langganan</button>
+                                                </form>
+                                            @endif
+                                        </div>
+                                    </details>
                                     <!-- Edit button -->
                                     <button type="button" 
                                             onclick="editUser({{ json_encode($user) }})"
@@ -145,7 +185,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="4" class="py-8 text-center text-sm text-fg-disabled">
+                            <td colspan="5" class="py-8 text-center text-sm text-fg-disabled">
                                 Belum ada data user. Silakan tambahkan baru dengan tombol "Tambah User" di atas.
                             </td>
                         </tr>

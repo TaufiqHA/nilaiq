@@ -3,6 +3,7 @@
 namespace Database\Factories;
 
 use App\Models\Settings;
+use App\Models\User;
 use Illuminate\Database\Eloquent\Factories\Factory;
 
 /**
@@ -18,6 +19,7 @@ class SettingsFactory extends Factory
     public function definition(): array
     {
         return [
+            'user_id' => auth()->id() ?? UserFactory::$lastCreatedId ?? User::factory(),
             'school_name' => fake()->company().' School',
             'npsn' => fake()->numerify('########'),
             'school_address' => fake()->address(),

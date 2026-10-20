@@ -37,6 +37,7 @@
 
     <!-- Main Content Wrapper -->
     <div class="p-4 sm:ml-64">
+        @include('components.subscription-banner')
         @yield('content')
     </div>
 </body>

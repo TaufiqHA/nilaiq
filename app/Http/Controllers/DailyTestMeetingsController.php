@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\AcademicYear;
 use App\Models\Classes;
 use App\Models\DailyTestMeetings;
+use App\Rules\OwnedExists;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -18,15 +19,14 @@ class DailyTestMeetingsController extends Controller
     public function index(Request $request): JsonResponse|View
     {
         $activeYear = AcademicYear::getActive();
-        if ($activeYear) {
-            $meetings = DailyTestMeetings::whereHas('class', fn ($q) => $q->where('academic_year_id', $activeYear->id))
-                ->with(['class.students', 'scores'])
-                ->get();
-            $classes = Classes::where('academic_year_id', $activeYear->id)->with('students')->get();
-        } else {
-            $meetings = DailyTestMeetings::with(['class.students', 'scores'])->get();
-            $classes = Classes::with('students')->get();
-        }
+        $meetings = DailyTestMeetings::ownedBy(auth()->user())
+            ->when($activeYear, fn ($query) => $query->whereHas('class', fn ($class) => $class->where('academic_year_id', $activeYear->id)))
+            ->with(['class.students', 'scores'])
+            ->get();
+        $classes = Classes::ownedBy(auth()->user())
+            ->when($activeYear, fn ($query) => $query->where('academic_year_id', $activeYear->id))
+            ->with('students')
+            ->get();
 
         if ($request->wantsJson()) {
             return response()->json($meetings);
@@ -43,7 +43,9 @@ class DailyTestMeetingsController extends Controller
         $validated = $request->validate($this->validationRules());
 
         if (! empty($validated['client_uuid'])) {
-            $existing = DailyTestMeetings::where('client_uuid', $validated['client_uuid'])->first();
+            $existing = DailyTestMeetings::ownedBy(auth()->user())
+                ->where('client_uuid', $validated['client_uuid'])
+                ->first();
 
             if ($existing) {
                 if ($request->wantsJson()) {
@@ -81,15 +83,14 @@ class DailyTestMeetingsController extends Controller
         }
 
         $activeYear = AcademicYear::getActive();
-        if ($activeYear) {
-            $meetings = DailyTestMeetings::whereHas('class', fn ($q) => $q->where('academic_year_id', $activeYear->id))
-                ->with(['class.students', 'scores'])
-                ->get();
-            $classes = Classes::where('academic_year_id', $activeYear->id)->with('students')->get();
-        } else {
-            $meetings = DailyTestMeetings::with(['class.students', 'scores'])->get();
-            $classes = Classes::with('students')->get();
-        }
+        $meetings = DailyTestMeetings::ownedBy(auth()->user())
+            ->when($activeYear, fn ($query) => $query->whereHas('class', fn ($class) => $class->where('academic_year_id', $activeYear->id)))
+            ->with(['class.students', 'scores'])
+            ->get();
+        $classes = Classes::ownedBy(auth()->user())
+            ->when($activeYear, fn ($query) => $query->where('academic_year_id', $activeYear->id))
+            ->with('students')
+            ->get();
 
         return view('auth.UlanganHarian', compact('meetings', 'classes', 'dailyTestMeeting'));
     }
@@ -146,7 +147,7 @@ class DailyTestMeetingsController extends Controller
     {
         return [
             'client_uuid' => ['nullable', 'uuid'],
-            'class_id' => ['required', 'exists:classes,id'],
+            'class_id' => ['required', new OwnedExists(Classes::class)],
             'title' => ['required', 'string', 'max:255'],
             'test_date' => ['required', 'date'],
             'description' => ['nullable', 'string'],

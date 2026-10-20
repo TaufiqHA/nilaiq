@@ -38,10 +38,19 @@ class AuthController extends Controller
         }
 
         $token = $user->createToken($credentials['device_name'] ?? 'mobile')->plainTextToken;
+        $subscription = $user->currentSubscription();
 
         return response()->json([
             'token' => $token,
             'user' => $user,
+            'has_access' => $user->hasAppAccess(),
+            'subscription' => [
+                'status' => $subscription?->status ?? 'inactive',
+                'status_label' => $user->subscriptionStatusLabel(),
+                'is_trial' => $user->isOnTrial(),
+                'days_left' => $user->subscriptionDaysLeft(),
+                'ends_at' => $subscription?->ends_at?->toIso8601String(),
+            ],
         ]);
     }
 

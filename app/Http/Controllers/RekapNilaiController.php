@@ -22,7 +22,7 @@ class RekapNilaiController extends Controller
 
         $classWaliKelas = $activeAcademicYear
             ? ClassWaliKelas::where('user_id', $userId)->where('academic_year_id', $activeAcademicYear->id)->first()
-            : null;
+            : ClassWaliKelas::where('user_id', $userId)->first();
 
         $students = collect();
         $mapelSettings = collect();
@@ -32,18 +32,12 @@ class RekapNilaiController extends Controller
         $highestAverage = 0;
         $lowestAverage = 0;
 
-        $settingsWaliKelas = $activeAcademicYear
-            ? SettingsWaliKelas::where('academicYear_id', $activeAcademicYear->id)->first()
-            : (SettingsWaliKelas::whereHas('academicYear', function ($q) use ($userId) {
-                $q->where('user_id', $userId);
-            })->first() ?? SettingsWaliKelas::first());
+        $settingsWaliKelas = SettingsWaliKelas::ownedBy(auth()->user())
+            ->when($activeAcademicYear, fn ($query) => $query->where('academicYear_id', $activeAcademicYear->id))
+            ->first();
 
         if ($settingsWaliKelas) {
             $mapelSettings = MapelSettings::where('settingsWaliKelas_id', $settingsWaliKelas->id)->get();
-        }
-
-        if ($mapelSettings->isEmpty()) {
-            $mapelSettings = MapelSettings::all();
         }
 
         if ($classWaliKelas) {

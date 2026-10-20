@@ -15,7 +15,7 @@ class SettingsController extends Controller
      */
     public function index(Request $request): JsonResponse|View
     {
-        $setting = Settings::first() ?? new Settings;
+        $setting = Settings::firstOrCreate(['user_id' => auth()->id()]);
 
         if ($request->wantsJson()) {
             return response()->json($setting);
@@ -36,12 +36,8 @@ class SettingsController extends Controller
             $validated['school_logo'] = $path;
         }
 
-        $setting = Settings::first();
-        if ($setting) {
-            $setting->update($validated);
-        } else {
-            $setting = Settings::create($validated);
-        }
+        $setting = Settings::firstOrNew(['user_id' => auth()->id()]);
+        $setting->fill($validated)->save();
 
         if ($request->wantsJson()) {
             return response()->json([

@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Database\Factories\NilaiMapelFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -52,5 +53,16 @@ class NilaiMapel extends Model
     public function mapel(): BelongsTo
     {
         return $this->belongsTo(MapelSettings::class, 'mapel_id');
+    }
+
+    /**
+     * Limit the query to scores owned by the given user.
+     */
+    public function scopeOwnedBy(Builder $query, User|int $user): Builder
+    {
+        return $query->whereHas(
+            'student.classWaliKelas',
+            fn (Builder $relation): Builder => $relation->where('user_id', $user instanceof User ? $user->id : $user),
+        );
     }
 }

@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\FinalExams;
 use App\Models\FinalScores;
+use App\Models\Students;
+use App\Rules\OwnedExists;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -13,7 +16,9 @@ class FinalScoresController extends Controller
      */
     public function index(): JsonResponse
     {
-        $scores = FinalScores::with(['finalExam', 'student'])->get();
+        $scores = FinalScores::ownedBy(auth()->user())
+            ->with(['finalExam', 'student'])
+            ->get();
 
         return response()->json($scores);
     }
@@ -26,7 +31,9 @@ class FinalScoresController extends Controller
         $validated = $request->validate($this->validationRules());
 
         if (! empty($validated['client_uuid'])) {
-            $existing = FinalScores::where('client_uuid', $validated['client_uuid'])->first();
+            $existing = FinalScores::ownedBy(auth()->user())
+                ->where('client_uuid', $validated['client_uuid'])
+                ->first();
 
             if ($existing) {
                 return response()->json([
@@ -104,8 +111,8 @@ class FinalScoresController extends Controller
     {
         return [
             'client_uuid' => ['nullable', 'uuid'],
-            'final_exam_id' => ['required', 'exists:final_exams,id'],
-            'student_id' => ['required', 'exists:students,id'],
+            'final_exam_id' => ['required', new OwnedExists(FinalExams::class)],
+            'student_id' => ['required', new OwnedExists(Students::class)],
             'score' => ['required', 'numeric', 'min:0', 'max:100'],
         ];
     }

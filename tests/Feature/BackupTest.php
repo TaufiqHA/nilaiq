@@ -41,13 +41,29 @@ class BackupTest extends TestCase
     }
 
     /**
-     * Test mapel role can access backup index.
+     * Test mapel role cannot access backup routes.
      */
-    public function test_mapel_role_can_access_backup_index(): void
+    public function test_mapel_role_cannot_access_backup_routes(): void
     {
         /** @var User $user */
         $user = User::factory()->create([
             'role' => 'mapel',
+        ]);
+
+        $this->actingAs($user)->get(route('backup.index'))->assertRedirect(route('dashboard'));
+        $this->actingAs($user)->post(route('backup.store'))->assertRedirect(route('dashboard'));
+        $this->actingAs($user)->get(route('backup.download', 'test.zip'))->assertRedirect(route('dashboard'));
+        $this->actingAs($user)->delete(route('backup.destroy', 'test.zip'))->assertRedirect(route('dashboard'));
+    }
+
+    /**
+     * Test admin role can access backup index.
+     */
+    public function test_admin_role_can_access_backup_index(): void
+    {
+        /** @var User $user */
+        $user = User::factory()->create([
+            'role' => 'admin',
         ]);
 
         Storage::fake('backups');
@@ -65,11 +81,11 @@ class BackupTest extends TestCase
     /**
      * Test mapel role can trigger backup store.
      */
-    public function test_mapel_role_can_trigger_backup_store(): void
+    public function test_admin_role_can_trigger_backup_store(): void
     {
         /** @var User $user */
         $user = User::factory()->create([
-            'role' => 'mapel',
+            'role' => 'admin',
         ]);
 
         Artisan::shouldReceive('call')
@@ -86,11 +102,11 @@ class BackupTest extends TestCase
     /**
      * Test mapel role can download backup file.
      */
-    public function test_mapel_role_can_download_backup(): void
+    public function test_admin_role_can_download_backup(): void
     {
         /** @var User $user */
         $user = User::factory()->create([
-            'role' => 'mapel',
+            'role' => 'admin',
         ]);
 
         Storage::fake('backups');
@@ -107,11 +123,11 @@ class BackupTest extends TestCase
     /**
      * Test mapel role can delete backup file.
      */
-    public function test_mapel_role_can_delete_backup(): void
+    public function test_admin_role_can_delete_backup(): void
     {
         /** @var User $user */
         $user = User::factory()->create([
-            'role' => 'mapel',
+            'role' => 'admin',
         ]);
 
         Storage::fake('backups');

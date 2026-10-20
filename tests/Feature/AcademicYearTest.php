@@ -239,17 +239,17 @@ class AcademicYearTest extends TestCase
 
         // Attempting to view details
         $this->actingAs($user1)->get(route('academic-years.show', $yearOfUser2))
-            ->assertStatus(403);
+            ->assertNotFound();
 
         // Attempting to update
         $this->actingAs($user1)->put(route('academic-years.update', $yearOfUser2), [
             'year' => '2027/2028',
             'semester' => 'GENAP',
             'is_active' => '1',
-        ])->assertStatus(403);
+        ])->assertNotFound();
 
         // Attempting to delete
         $this->actingAs($user1)->delete(route('academic-years.destroy', $yearOfUser2))
-            ->assertStatus(403);
+            ->assertNotFound();
     }
 }

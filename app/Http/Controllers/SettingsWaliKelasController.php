@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\AcademicYear;
 use App\Models\MapelSettings;
 use App\Models\SettingsWaliKelas;
+use App\Rules\OwnedExists;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -17,16 +18,17 @@ class SettingsWaliKelasController extends Controller
      */
     public function index(Request $request): View|JsonResponse
     {
-        $userId = auth()->id();
         $activeAcademicYear = AcademicYear::getActive();
 
-        $settingsWaliKelas = $activeAcademicYear
-            ? SettingsWaliKelas::where('academicYear_id', $activeAcademicYear->id)->with('academicYear')->first()
-            : SettingsWaliKelas::with('academicYear')->first();
+        $settingsWaliKelas = SettingsWaliKelas::ownedBy(auth()->user())
+            ->when($activeAcademicYear, fn ($query) => $query->where('academicYear_id', $activeAcademicYear->id))
+            ->with('academicYear')
+            ->first();
 
-        $settings = $activeAcademicYear
-            ? SettingsWaliKelas::where('academicYear_id', $activeAcademicYear->id)->with('academicYear')->get()
-            : SettingsWaliKelas::with('academicYear')->get();
+        $settings = SettingsWaliKelas::ownedBy(auth()->user())
+            ->when($activeAcademicYear, fn ($query) => $query->where('academicYear_id', $activeAcademicYear->id))
+            ->with('academicYear')
+            ->get();
 
         if ($request->wantsJson()) {
             return response()->json($settings);
@@ -47,7 +49,9 @@ class SettingsWaliKelasController extends Controller
             $validated['school_logo'] = $path;
         }
 
-        $existing = SettingsWaliKelas::where('academicYear_id', $validated['academicYear_id'])->first();
+        $existing = SettingsWaliKelas::ownedBy(auth()->user())
+            ->where('academicYear_id', $validated['academicYear_id'])
+            ->first();
         if ($existing) {
             $existing->update($validated);
             $settingsWaliKelas = $existing;
@@ -130,20 +134,18 @@ class SettingsWaliKelasController extends Controller
      */
     private function renderMasterDataView(?SettingsWaliKelas $settingsWaliKelas = null): View
     {
-        $userId = auth()->id();
         $activeAcademicYear = AcademicYear::getActive();
 
-        $settingsWaliKelas = $settingsWaliKelas ?? ($activeAcademicYear
-            ? SettingsWaliKelas::where('academicYear_id', $activeAcademicYear->id)->with('academicYear')->first()
-            : SettingsWaliKelas::with('academicYear')->first());
+        $settingsWaliKelas = $settingsWaliKelas ?? SettingsWaliKelas::ownedBy(auth()->user())
+            ->when($activeAcademicYear, fn ($query) => $query->where('academicYear_id', $activeAcademicYear->id))
+            ->with('academicYear')
+            ->first();
 
         $mapelSettings = $settingsWaliKelas
             ? MapelSettings::where('settingsWaliKelas_id', $settingsWaliKelas->id)->get()
-            : MapelSettings::all();
+            : collect();
 
-        $academicYears = auth()->check()
-            ? AcademicYear::where('user_id', auth()->id())->get()
-            : AcademicYear::all();
+        $academicYears = AcademicYear::ownedBy(auth()->user())->get();
 
         return view('auth.waliKelas.masterData', compact('settingsWaliKelas', 'mapelSettings', 'academicYears'));
     }
@@ -167,7 +169,7 @@ class SettingsWaliKelasController extends Controller
             'teacher_nip' => ['nullable', 'string', 'max:255'],
             'teacher_email' => ['nullable', 'email', 'max:255'],
             'teacher_phone' => ['nullable', 'string', 'max:255'],
-            'academicYear_id' => ['required', 'exists:academic_years,id'],
+            'academicYear_id' => ['required', new OwnedExists(AcademicYear::class)],
             'tanggal_penerimaan_rapor' => ['required', 'date'],
         ];
     }

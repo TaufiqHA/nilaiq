@@ -6,6 +6,7 @@ use App\Models\AcademicYear;
 use App\Models\ClassWaliKelas;
 use App\Models\Prestasi;
 use App\Models\StudentWaliKelas;
+use App\Rules\OwnedExists;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -19,7 +20,7 @@ class PrestasiController extends Controller
     public function index(Request $request): View|JsonResponse
     {
         if ($request->wantsJson()) {
-            $query = Prestasi::with('student');
+            $query = Prestasi::ownedBy(auth()->user())->with('student');
 
             if ($request->has('student_id')) {
                 $query->where('student_id', $request->input('student_id'));
@@ -123,7 +124,7 @@ class PrestasiController extends Controller
     private function validationRules(): array
     {
         return [
-            'student_id' => ['required', 'exists:student_wali_kelas,id'],
+            'student_id' => ['required', new OwnedExists(StudentWaliKelas::class)],
             'prestasi1' => ['nullable', 'integer'],
             'catatan_prestasi1' => ['nullable', 'string', 'max:255'],
             'prestasi2' => ['nullable', 'integer'],

@@ -1,4 +1,10 @@
-@extends(auth()->user()->role === 'wali_kelas' ? 'layouts.waliKelas' : 'layouts.main')
+@extends(auth()->user()->role === 'admin' ? 'layouts.admin' : (auth()->user()->role === 'wali_kelas' ? 'layouts.waliKelas' : 'layouts.main'))
+
+@php($roleLabel = match ($user->role) {
+    'admin' => 'Administrator',
+    'wali_kelas' => 'Wali Kelas',
+    default => 'Guru Mata Pelajaran',
+})
 
 @section('title', 'Pengaturan Profil')
 
@@ -49,7 +55,7 @@
 
                 <div>
                     <label class="block text-xs font-bold text-heading uppercase tracking-wider mb-1.5">Peran Akun</label>
-                    <input type="text" value="{{ $user->role === 'wali_kelas' ? 'Wali Kelas' : 'Guru Mata Pelajaran' }}" class="w-full bg-neutral-secondary-medium/50 border border-default rounded-base px-3 py-2 text-sm text-fg-disabled cursor-not-allowed" disabled>
+                    <input type="text" value="{{ $roleLabel }}" class="w-full bg-neutral-secondary-medium/50 border border-default rounded-base px-3 py-2 text-sm text-fg-disabled cursor-not-allowed" disabled>
                     <p class="text-[11px] text-body mt-1">Peran akun tidak dapat diubah sendiri untuk alasan keamanan.</p>
                 </div>
 

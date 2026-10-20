@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Middleware\AdminMiddleware;
+use App\Http\Middleware\EnsureRecordOwnership;
+use App\Http\Middleware\EnsureSubscriptionActive;
 use App\Http\Middleware\MapelMiddleware;
 use App\Http\Middleware\WaliKelasMiddleware;
 use Illuminate\Foundation\Application;
@@ -20,6 +22,12 @@ return Application::configure(basePath: dirname(__DIR__))
             'mapel' => MapelMiddleware::class,
             'wali_kelas' => WaliKelasMiddleware::class,
             'admin' => AdminMiddleware::class,
+            'subscribed' => EnsureSubscriptionActive::class,
+            'owns.records' => EnsureRecordOwnership::class,
+        ]);
+
+        $middleware->preventRequestForgery(except: [
+            'midtrans/notification',
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

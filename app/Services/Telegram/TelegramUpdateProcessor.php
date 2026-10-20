@@ -299,6 +299,17 @@ class TelegramUpdateProcessor
         $text = $this->expandShortcut($text);
         $command = $this->parseCommand($text);
 
+        $freeCommands = ['start', 'bantuan', 'help', 'ping', 'putuskan'];
+
+        if (! $user->hasAppAccess() && ($command === null || ! in_array($command['name'], $freeCommands, true))) {
+            $this->send(
+                $chatId,
+                'Masa trial atau langganan Anda sudah berakhir. Perpanjang langganan di '.route('billing.index').' untuk melanjutkan penggunaan bot.'
+            );
+
+            return;
+        }
+
         if ($command !== null) {
             $this->handleCommand($user, $link, $chatId, $command['name'], $command['argument']);
 
@@ -874,16 +885,18 @@ class TelegramUpdateProcessor
         return ['inline_keyboard' => $rows];
     }
 
-    private function kkm(): ?float
+    private function kkm(Classes $class): ?float
     {
-        $minimumScore = Settings::query()->value('minimum_score');
+        $minimumScore = Settings::query()
+            ->where('user_id', $class->academicYear?->user_id)
+            ->value('minimum_score');
 
         return $minimumScore !== null ? (float) $minimumScore : null;
     }
 
     private function sendBelowKkm(int $chatId, Classes $class, TelegramIntent $intent): void
     {
-        $kkm = $this->kkm();
+        $kkm = $this->kkm($class);
 
         if ($kkm === null) {
             $this->send($chatId, 'KKM belum diatur. Atur nilai KKM di menu Pengaturan website NilaiQ terlebih dahulu.');
@@ -975,7 +988,7 @@ class TelegramUpdateProcessor
 
     private function sendAtRisk(int $chatId, Classes $class, TelegramIntent $intent): void
     {
-        $kkm = $this->kkm();
+        $kkm = $this->kkm($class);
         $summary = $this->attendance->classAttendance($class);
         $recap = $this->recaps->classRecap($class);
         $attendanceRows = collect($summary['rows'])
@@ -1032,7 +1045,7 @@ class TelegramUpdateProcessor
     {
         $summary = $this->attendance->classAttendance($class);
         $recap = $this->recaps->classRecap($class);
-        $kkm = $this->kkm();
+        $kkm = $this->kkm($class);
         $scoredRows = array_values(array_filter(
             $recap['rows'],
             fn (array $row): bool => $row['score_count'] > 0
@@ -1301,7 +1314,8 @@ class TelegramUpdateProcessor
      */
     private function scopeFor(User $user): array
     {
-        $year = AcademicYear::getActive($user->id);
+        $year = AcademicYear::getActive($user->id)
+            ?? AcademicYear::ownedBy($user->id)->latest()->first();
 
         if ($year === null) {
             return ['year' => null, 'classes' => collect()];

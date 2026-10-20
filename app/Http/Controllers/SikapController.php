@@ -6,6 +6,7 @@ use App\Models\AcademicYear;
 use App\Models\ClassWaliKelas;
 use App\Models\Sikap;
 use App\Models\StudentWaliKelas;
+use App\Rules\OwnedExists;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -19,7 +20,7 @@ class SikapController extends Controller
     public function index(Request $request): View|JsonResponse
     {
         if ($request->wantsJson()) {
-            $query = Sikap::with('student');
+            $query = Sikap::ownedBy(auth()->user())->with('student');
 
             if ($request->has('student_id')) {
                 $query->where('student_id', $request->input('student_id'));
@@ -123,7 +124,7 @@ class SikapController extends Controller
     private function validationRules(): array
     {
         return [
-            'student_id' => ['required', 'exists:student_wali_kelas,id'],
+            'student_id' => ['required', new OwnedExists(StudentWaliKelas::class)],
             'beriman_bertakwa_dan_berakhlak_mulia' => ['nullable', 'string'],
             'mandiri' => ['nullable', 'string'],
             'bergotong_royong' => ['nullable', 'string'],

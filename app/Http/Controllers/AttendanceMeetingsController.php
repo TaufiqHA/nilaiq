@@ -16,6 +16,7 @@ use App\Models\MidtermExams;
 use App\Models\MidtermScores;
 use App\Models\Settings;
 use App\Models\Students;
+use App\Rules\OwnedExists;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -29,15 +30,14 @@ class AttendanceMeetingsController extends Controller
     public function index(Request $request): JsonResponse|View
     {
         $activeYear = AcademicYear::getActive();
-        if ($activeYear) {
-            $meetings = AttendanceMeetings::whereHas('class', fn ($q) => $q->where('academic_year_id', $activeYear->id))
-                ->with(['class.students', 'attendances'])
-                ->get();
-            $classes = Classes::where('academic_year_id', $activeYear->id)->with('students')->get();
-        } else {
-            $meetings = AttendanceMeetings::with(['class.students', 'attendances'])->get();
-            $classes = Classes::with('students')->get();
-        }
+        $meetings = AttendanceMeetings::ownedBy(auth()->user())
+            ->when($activeYear, fn ($query) => $query->whereHas('class', fn ($class) => $class->where('academic_year_id', $activeYear->id)))
+            ->with(['class.students', 'attendances'])
+            ->get();
+        $classes = Classes::ownedBy(auth()->user())
+            ->when($activeYear, fn ($query) => $query->where('academic_year_id', $activeYear->id))
+            ->with('students')
+            ->get();
 
         if ($request->wantsJson()) {
             return response()->json($meetings);
@@ -54,7 +54,9 @@ class AttendanceMeetingsController extends Controller
         $validated = $request->validate($this->validationRules());
 
         if (! empty($validated['client_uuid'])) {
-            $existing = AttendanceMeetings::where('client_uuid', $validated['client_uuid'])->first();
+            $existing = AttendanceMeetings::ownedBy(auth()->user())
+                ->where('client_uuid', $validated['client_uuid'])
+                ->first();
 
             if ($existing) {
                 if ($request->wantsJson()) {
@@ -92,15 +94,14 @@ class AttendanceMeetingsController extends Controller
         }
 
         $activeYear = AcademicYear::getActive();
-        if ($activeYear) {
-            $meetings = AttendanceMeetings::whereHas('class', fn ($q) => $q->where('academic_year_id', $activeYear->id))
-                ->with(['class.students', 'attendances'])
-                ->get();
-            $classes = Classes::where('academic_year_id', $activeYear->id)->with('students')->get();
-        } else {
-            $meetings = AttendanceMeetings::with(['class.students', 'attendances'])->get();
-            $classes = Classes::with('students')->get();
-        }
+        $meetings = AttendanceMeetings::ownedBy(auth()->user())
+            ->when($activeYear, fn ($query) => $query->whereHas('class', fn ($class) => $class->where('academic_year_id', $activeYear->id)))
+            ->with(['class.students', 'attendances'])
+            ->get();
+        $classes = Classes::ownedBy(auth()->user())
+            ->when($activeYear, fn ($query) => $query->where('academic_year_id', $activeYear->id))
+            ->with('students')
+            ->get();
 
         return view('auth.absensi', compact('meetings', 'classes', 'attendanceMeeting'));
     }
@@ -157,7 +158,7 @@ class AttendanceMeetingsController extends Controller
     {
         return [
             'client_uuid' => ['nullable', 'uuid'],
-            'class_id' => ['required', 'exists:classes,id'],
+            'class_id' => ['required', new OwnedExists(Classes::class)],
             'title' => ['required', 'string', 'max:255'],
             'meeting_date' => ['required', 'date'],
             'description' => ['nullable', 'string'],
@@ -172,9 +173,9 @@ class AttendanceMeetingsController extends Controller
     {
         $classId = $request->query('class_id');
         $activeYear = AcademicYear::getActive();
-        $classes = $activeYear
-            ? Classes::where('academic_year_id', $activeYear->id)->get()
-            : Classes::all();
+        $classes = Classes::ownedBy(auth()->user())
+            ->when($activeYear, fn ($query) => $query->where('academic_year_id', $activeYear->id))
+            ->get();
 
         $selectedClass = null;
         $students = collect();
@@ -192,7 +193,7 @@ class AttendanceMeetingsController extends Controller
         $finalScores = collect();
 
         if ($classId) {
-            $selectedClass = Classes::with('academicYear')->find($classId);
+            $selectedClass = Classes::ownedBy(auth()->user())->with('academicYear')->find($classId);
             if ($selectedClass) {
                 $students = Students::where('class_id', $classId)
                     ->where('status', 'ACTIVE')
@@ -234,7 +235,7 @@ class AttendanceMeetingsController extends Controller
             }
         }
 
-        $settings = Settings::first();
+        $settings = Settings::ownedBy(auth()->user())->first();
 
         if ($request->wantsJson()) {
             return response()->json([

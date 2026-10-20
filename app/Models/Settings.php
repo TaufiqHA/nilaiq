@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Database\Factories\SettingsFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -51,5 +52,13 @@ class Settings extends Model
             'midterm_weight' => 'decimal:2',
             'final_weight' => 'decimal:2',
         ];
+    }
+
+    /**
+     * Limit the query to settings owned by the given user.
+     */
+    public function scopeOwnedBy(Builder $query, User|int $user): Builder
+    {
+        return $query->where('user_id', $user instanceof User ? $user->id : $user);
     }
 }

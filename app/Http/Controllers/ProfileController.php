@@ -21,7 +21,9 @@ class ProfileController extends Controller
     public function edit(): View
     {
         $user = auth()->user();
-        $telegramLink = TelegramLink::where('user_id', $user->id)->first();
+        $telegramLink = $user->role === 'mapel'
+            ? TelegramLink::where('user_id', $user->id)->first()
+            : null;
 
         return view('auth.profile', compact('user', 'telegramLink'));
     }

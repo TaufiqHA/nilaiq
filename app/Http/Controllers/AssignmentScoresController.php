@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AssignmentMeetings;
 use App\Models\AssignmentScores;
+use App\Models\Students;
+use App\Rules\OwnedExists;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -13,7 +16,9 @@ class AssignmentScoresController extends Controller
      */
     public function index(): JsonResponse
     {
-        $scores = AssignmentScores::with(['assignmentMeeting', 'student'])->get();
+        $scores = AssignmentScores::ownedBy(auth()->user())
+            ->with(['assignmentMeeting', 'student'])
+            ->get();
 
         return response()->json($scores);
     }
@@ -26,7 +31,9 @@ class AssignmentScoresController extends Controller
         $validated = $request->validate($this->validationRules());
 
         if (! empty($validated['client_uuid'])) {
-            $existing = AssignmentScores::where('client_uuid', $validated['client_uuid'])->first();
+            $existing = AssignmentScores::ownedBy(auth()->user())
+                ->where('client_uuid', $validated['client_uuid'])
+                ->first();
 
             if ($existing) {
                 return response()->json([
@@ -104,8 +111,8 @@ class AssignmentScoresController extends Controller
     {
         return [
             'client_uuid' => ['nullable', 'uuid'],
-            'assignment_meeting_id' => ['required', 'exists:assignment_meetings,id'],
-            'student_id' => ['required', 'exists:students,id'],
+            'assignment_meeting_id' => ['required', new OwnedExists(AssignmentMeetings::class)],
+            'student_id' => ['required', new OwnedExists(Students::class)],
             'score' => ['required', 'numeric', 'min:0', 'max:100'],
         ];
     }

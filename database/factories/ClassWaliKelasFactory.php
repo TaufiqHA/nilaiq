@@ -22,7 +22,7 @@ class ClassWaliKelasFactory extends Factory
         return [
             'academic_year_id' => AcademicYear::factory(),
             'name' => 'Kelas '.fake()->randomElement(['X', 'XI', 'XII']).' '.fake()->randomElement(['MIPA', 'IPS']).' '.fake()->numberBetween(1, 4),
-            'user_id' => User::factory(),
+            'user_id' => auth()->id() ?? UserFactory::$lastCreatedId ?? User::factory(),
         ];
     }
 }

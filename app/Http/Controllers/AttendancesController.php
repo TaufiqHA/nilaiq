@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\AttendanceMeetings;
 use App\Models\Attendances;
+use App\Models\Students;
+use App\Rules\OwnedExists;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -13,7 +16,9 @@ class AttendancesController extends Controller
      */
     public function index(): JsonResponse
     {
-        $attendances = Attendances::with(['attendanceMeeting', 'student'])->get();
+        $attendances = Attendances::ownedBy(auth()->user())
+            ->with(['attendanceMeeting', 'student'])
+            ->get();
 
         return response()->json($attendances);
     }
@@ -93,8 +98,8 @@ class AttendancesController extends Controller
     {
         return [
             'client_uuid' => ['nullable', 'uuid'],
-            'attendance_meeting_id' => ['required', 'exists:attendance_meetings,id'],
-            'student_id' => ['required', 'exists:students,id'],
+            'attendance_meeting_id' => ['required', new OwnedExists(AttendanceMeetings::class)],
+            'student_id' => ['required', new OwnedExists(Students::class)],
             'status' => ['required', 'in:HADIR,IZIN,SAKIT,ALFA'],
             'note' => ['nullable', 'string'],
         ];

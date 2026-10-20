@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Database\Factories\ClassWaliKelasFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -48,5 +49,13 @@ class ClassWaliKelas extends Model
     public function students(): HasMany
     {
         return $this->hasMany(StudentWaliKelas::class, 'class_id');
+    }
+
+    /**
+     * Limit the query to classes owned by the given user.
+     */
+    public function scopeOwnedBy(Builder $query, User|int $user): Builder
+    {
+        return $query->where('user_id', $user instanceof User ? $user->id : $user);
     }
 }

@@ -256,7 +256,6 @@ class ClassWaliKelasTest extends TestCase
         $response->assertJsonValidationErrors([
             'academic_year_id',
             'name',
-            'user_id',
         ]);
     }
 

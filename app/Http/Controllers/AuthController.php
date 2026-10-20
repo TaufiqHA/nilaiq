@@ -28,6 +28,12 @@ class AuthController extends Controller
                 return response()->json($user);
             }
 
+            if (! $user->hasAppAccess()) {
+                return redirect()
+                    ->route('billing.index')
+                    ->with('error', 'Masa trial atau langganan Anda sudah berakhir. Silakan berlangganan untuk melanjutkan.');
+            }
+
             $targetRoute = match ($user->role) {
                 'admin' => route('admin.monitoring'),
                 'wali_kelas' => route('wali-kelas.dashboard'),
@@ -62,7 +68,7 @@ class AuthController extends Controller
             return response()->json(['message' => 'Logged out successfully.']);
         }
 
-        return redirect(route('login'));
+        return redirect(route('home'));
     }
 
     /**

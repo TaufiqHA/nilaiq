@@ -64,9 +64,23 @@
                         <label for="password" class="block mb-2.5 text-sm font-medium text-heading">Your password</label>
                         <input type="password" id="password" name="password" class="bg-neutral-secondary-medium border border-default-medium text-heading text-sm rounded-base focus:ring-brand focus:border-brand block w-full px-3 py-2.5 shadow-xs placeholder:text-body transition-colors duration-200" placeholder="••••••••" required />
                     </div>
-                    <button type="submit" class="w-full text-white bg-brand box-border border border-transparent hover:bg-brand-strong focus:ring-4 focus:ring-brand-medium shadow-xs font-medium leading-5 rounded-base text-sm px-4 py-2.5 focus:outline-none transition-colors duration-200 cursor-pointer">Submit</button>
+                    <button type="submit" class="w-full text-white bg-brand box-border border border-transparent hover:bg-brand-strong focus:ring-4 focus:ring-brand-medium shadow-xs font-medium leading-5 rounded-base text-sm px-4 py-2.5 focus:outline-none transition-colors duration-200 cursor-pointer">Masuk</button>
                 </form>
+
+                <p class="mt-6 text-center text-sm text-body">
+                    Belum punya akun?
+                    <a href="{{ route('register') }}" class="font-bold text-fg-brand hover:underline">Daftar & coba gratis</a>
+                </p>
             </div>
+        </div>
+
+        <div class="w-full max-w-md mx-auto z-10 mt-6 text-center">
+            <a href="{{ route('home') }}" class="inline-flex items-center gap-1.5 text-xs font-medium text-body transition-colors hover:text-fg-brand">
+                <svg class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M10.5 19.5 3 12m0 0 7.5-7.5M3 12h18" />
+                </svg>
+                Kembali ke beranda
+            </a>
         </div>
     </div>
 </body>

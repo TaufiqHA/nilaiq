@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Database\Factories\AbsensiFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -48,5 +49,16 @@ class Absensi extends Model
     public function student(): BelongsTo
     {
         return $this->belongsTo(StudentWaliKelas::class, 'student_id');
+    }
+
+    /**
+     * Limit the query to records owned by the given user.
+     */
+    public function scopeOwnedBy(Builder $query, User|int $user): Builder
+    {
+        return $query->whereHas(
+            'student.classWaliKelas',
+            fn (Builder $relation): Builder => $relation->where('user_id', $user instanceof User ? $user->id : $user),
+        );
     }
 }

@@ -7,6 +7,8 @@ use App\Models\AcademicYear;
 use App\Models\Classes;
 use App\Models\Recaps;
 use App\Models\Settings;
+use App\Models\Students;
+use App\Rules\OwnedExists;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -22,9 +24,10 @@ class RecapsController extends Controller
     public function index(): JsonResponse
     {
         $activeYear = AcademicYear::getActive();
-        $recaps = $activeYear
-            ? Recaps::where('academic_year_id', $activeYear->id)->with(['academicYear', 'class', 'student'])->get()
-            : Recaps::with(['academicYear', 'class', 'student'])->get();
+        $recaps = Recaps::ownedBy(auth()->user())
+            ->when($activeYear, fn ($query) => $query->where('academic_year_id', $activeYear->id))
+            ->with(['academicYear', 'class', 'student'])
+            ->get();
 
         return response()->json($recaps);
     }
@@ -35,10 +38,11 @@ class RecapsController extends Controller
     public function nilaiAkhirView(Request $request): View
     {
         $activeYear = AcademicYear::getActive();
-        $classes = $activeYear
-            ? Classes::where('academic_year_id', $activeYear->id)->with(['academicYear', 'students'])->get()
-            : Classes::with(['academicYear', 'students'])->get();
-        $settings = Settings::first();
+        $classes = Classes::ownedBy(auth()->user())
+            ->when($activeYear, fn ($query) => $query->where('academic_year_id', $activeYear->id))
+            ->with(['academicYear', 'students'])
+            ->get();
+        $settings = Settings::ownedBy(auth()->user())->first();
 
         $selectedClassId = $request->input('class_id', $classes->first()?->id);
         $selectedClass = null;
@@ -47,7 +51,7 @@ class RecapsController extends Controller
         $finalScoresKeyed = collect();
 
         if ($selectedClassId) {
-            $selectedClass = Classes::with('academicYear')->find($selectedClassId);
+            $selectedClass = Classes::ownedBy(auth()->user())->with('academicYear')->find($selectedClassId);
             if ($selectedClass) {
                 $students = $selectedClass->students()
                     ->where('status', 'ACTIVE')
@@ -79,14 +83,16 @@ class RecapsController extends Controller
     public function batchStore(Request $request): RedirectResponse|JsonResponse
     {
         $validated = $request->validate([
-            'class_id' => ['required', 'exists:classes,id'],
+            'class_id' => ['required', new OwnedExists(Classes::class)],
             'recaps' => ['required', 'array'],
-            'recaps.*.student_id' => ['required', 'exists:students,id'],
+            'recaps.*.student_id' => ['required', new OwnedExists(Students::class)],
             'recaps.*.final_score_result' => ['nullable', 'numeric', 'min:0', 'max:100'],
             'recaps.*.competency_description' => ['nullable', 'string'],
         ]);
 
-        $class = Classes::with('academicYear')->find($validated['class_id']);
+        $class = Classes::ownedBy(auth()->user())
+            ->with('academicYear')
+            ->findOrFail($validated['class_id']);
 
         $recapData = $this->buildClassRecap($class);
         $autoScores = collect($recapData['rekap'])
@@ -192,9 +198,9 @@ class RecapsController extends Controller
     private function validationRules(): array
     {
         return [
-            'academic_year_id' => ['required', 'exists:academic_years,id'],
-            'class_id' => ['required', 'exists:classes,id'],
-            'student_id' => ['required', 'exists:students,id'],
+            'academic_year_id' => ['required', new OwnedExists(AcademicYear::class)],
+            'class_id' => ['required', new OwnedExists(Classes::class)],
+            'student_id' => ['required', new OwnedExists(Students::class)],
             'final_score_result' => ['nullable', 'numeric', 'min:0', 'max:100'],
             'competency_description' => ['nullable', 'string'],
         ];

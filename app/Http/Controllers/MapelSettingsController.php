@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\MapelSettings;
+use App\Models\SettingsWaliKelas;
+use App\Rules\OwnedExists;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -13,7 +15,7 @@ class MapelSettingsController extends Controller
      */
     public function index(Request $request): JsonResponse
     {
-        $query = MapelSettings::with('settingsWaliKelas');
+        $query = MapelSettings::ownedBy(auth()->user())->with('settingsWaliKelas');
 
         if ($request->has('settingsWaliKelas_id')) {
             $query->where('settingsWaliKelas_id', $request->input('settingsWaliKelas_id'));
@@ -88,7 +90,7 @@ class MapelSettingsController extends Controller
     private function validationRules(): array
     {
         return [
-            'settingsWaliKelas_id' => ['required', 'exists:settings_wali_kelas,id'],
+            'settingsWaliKelas_id' => ['required', new OwnedExists(SettingsWaliKelas::class)],
             'mapel' => ['required', 'string', 'max:255'],
             'guru' => ['required', 'string', 'max:255'],
             'kkm' => ['required', 'integer', 'min:0', 'max:100'],

@@ -8,6 +8,7 @@ use App\Models\MapelSettings;
 use App\Models\NilaiMapel;
 use App\Models\SettingsWaliKelas;
 use App\Models\StudentWaliKelas;
+use App\Rules\OwnedExists;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -27,7 +28,7 @@ class NilaiMapelController extends Controller
     public function index(Request $request): View|JsonResponse
     {
         if ($request->wantsJson()) {
-            $query = NilaiMapel::with(['student', 'mapel']);
+            $query = NilaiMapel::ownedBy(auth()->user())->with(['student', 'mapel']);
 
             if ($request->has('student_id')) {
                 $query->where('student_id', $request->input('student_id'));
@@ -45,40 +46,34 @@ class NilaiMapelController extends Controller
 
         $classWaliKelas = $activeAcademicYear
             ? ClassWaliKelas::where('user_id', $userId)->where('academic_year_id', $activeAcademicYear->id)->first()
-            : null;
+            : ClassWaliKelas::where('user_id', $userId)->first();
 
         $students = collect();
         $mapelSettings = collect();
         $selectedMapel = null;
         $nilaiMapelsKeyed = collect();
 
-        $settingsWaliKelas = $activeAcademicYear
-            ? SettingsWaliKelas::where('academicYear_id', $activeAcademicYear->id)->first()
-            : (SettingsWaliKelas::whereHas('academicYear', function ($q) use ($userId) {
-                $q->where('user_id', $userId);
-            })->first() ?? SettingsWaliKelas::first());
+        $settingsWaliKelas = SettingsWaliKelas::ownedBy(auth()->user())
+            ->when($activeAcademicYear, fn ($query) => $query->where('academicYear_id', $activeAcademicYear->id))
+            ->first();
 
         if ($settingsWaliKelas) {
             $mapelSettings = MapelSettings::where('settingsWaliKelas_id', $settingsWaliKelas->id)->get();
         }
 
-        if ($mapelSettings->isEmpty()) {
-            $mapelSettings = MapelSettings::all();
-        }
-
         $selectedMapelId = $request->input('mapel_id', $mapelSettings->first()?->id);
         if ($selectedMapelId) {
-            $selectedMapel = $mapelSettings->firstWhere('id', $selectedMapelId) ?? MapelSettings::find($selectedMapelId);
+            $selectedMapel = $mapelSettings->firstWhere('id', $selectedMapelId)
+                ?? MapelSettings::ownedBy(auth()->user())->find($selectedMapelId);
         }
 
         if ($classWaliKelas) {
             $students = StudentWaliKelas::where('class_id', $classWaliKelas->id)->get();
-        } else {
-            $students = StudentWaliKelas::all();
         }
 
         if ($selectedMapelId) {
-            $nilaiMapelsKeyed = NilaiMapel::where('mapel_id', $selectedMapelId)
+            $nilaiMapelsKeyed = NilaiMapel::ownedBy(auth()->user())
+                ->where('mapel_id', $selectedMapelId)
                 ->when($classWaliKelas, function ($q) use ($classWaliKelas) {
                     $q->whereHas('student', function ($sub) use ($classWaliKelas) {
                         $sub->where('class_id', $classWaliKelas->id);
@@ -97,9 +92,9 @@ class NilaiMapelController extends Controller
     public function batchStore(Request $request): RedirectResponse|JsonResponse
     {
         $validated = $request->validate([
-            'mapel_id' => ['required', 'exists:mapel_settings,id'],
+            'mapel_id' => ['required', new OwnedExists(MapelSettings::class)],
             'scores' => ['required', 'array'],
-            'scores.*.student_id' => ['required', 'exists:student_wali_kelas,id'],
+            'scores.*.student_id' => ['required', new OwnedExists(StudentWaliKelas::class)],
             'scores.*.nilai' => ['nullable', 'integer', 'min:0', 'max:100'],
             'scores.*.capaian' => ['nullable', 'string'],
         ]);
@@ -243,7 +238,7 @@ class NilaiMapelController extends Controller
             return redirect()->back()->with('error', 'Mata pelajaran tidak dipilih.');
         }
 
-        $mapel = MapelSettings::find($mapelId);
+        $mapel = MapelSettings::ownedBy(auth()->user())->find($mapelId);
         if (! $mapel) {
             return redirect()->back()->with('error', 'Mata pelajaran tidak ditemukan.');
         }
@@ -323,7 +318,7 @@ class NilaiMapelController extends Controller
         }
 
         $validated = $request->validate([
-            'mapel_id' => ['required', 'exists:mapel_settings,id'],
+            'mapel_id' => ['required', new OwnedExists(MapelSettings::class)],
             'file' => ['required', 'file', 'mimes:xlsx,xls'],
         ]);
 
@@ -426,8 +421,8 @@ class NilaiMapelController extends Controller
     private function validationRules(): array
     {
         return [
-            'student_id' => ['required', 'exists:student_wali_kelas,id'],
-            'mapel_id' => ['required', 'exists:mapel_settings,id'],
+            'student_id' => ['required', new OwnedExists(StudentWaliKelas::class)],
+            'mapel_id' => ['required', new OwnedExists(MapelSettings::class)],
             'nilai' => ['nullable', 'integer', 'min:0', 'max:100'],
             'capaian' => ['nullable', 'string'],
         ];

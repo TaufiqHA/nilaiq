@@ -140,6 +140,13 @@
                         <span class="flex-1 ms-3 whitespace-nowrap">Master Data</span>
                      </a>
                   </li>
+                  <li>
+                     <a href="{{ route('billing.index') }}" class="flex items-center px-2 py-1.5 {{ request()->routeIs('billing.*') ? 'bg-neutral-tertiary text-fg-brand font-bold' : 'text-body hover:bg-neutral-tertiary hover:text-fg-brand' }} rounded-base group transition-all duration-200">
+                        <x-heroicon-o-credit-card class="shrink-0 w-5 h-5 transition duration-75 {{ request()->routeIs('billing.*') ? 'text-fg-brand' : 'group-hover:text-fg-brand' }}" />
+                        <span class="flex-1 ms-3 whitespace-nowrap">Langganan</span>
+                        <span class="rounded-full bg-brand-soft px-2 py-0.5 text-[10px] font-bold text-fg-brand">{{ auth()->user()->subscriptionStatusLabel() }}</span>
+                     </a>
+                  </li>
                </ul>
             </div>
          </div>

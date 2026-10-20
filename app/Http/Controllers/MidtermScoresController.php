@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\MidtermExams;
 use App\Models\MidtermScores;
+use App\Models\Students;
+use App\Rules\OwnedExists;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -13,7 +16,9 @@ class MidtermScoresController extends Controller
      */
     public function index(): JsonResponse
     {
-        $scores = MidtermScores::with(['midtermExam', 'student'])->get();
+        $scores = MidtermScores::ownedBy(auth()->user())
+            ->with(['midtermExam', 'student'])
+            ->get();
 
         return response()->json($scores);
     }
@@ -26,7 +31,9 @@ class MidtermScoresController extends Controller
         $validated = $request->validate($this->validationRules());
 
         if (! empty($validated['client_uuid'])) {
-            $existing = MidtermScores::where('client_uuid', $validated['client_uuid'])->first();
+            $existing = MidtermScores::ownedBy(auth()->user())
+                ->where('client_uuid', $validated['client_uuid'])
+                ->first();
 
             if ($existing) {
                 return response()->json([
@@ -104,8 +111,8 @@ class MidtermScoresController extends Controller
     {
         return [
             'client_uuid' => ['nullable', 'uuid'],
-            'midterm_exam_id' => ['required', 'exists:midterm_exams,id'],
-            'student_id' => ['required', 'exists:students,id'],
+            'midterm_exam_id' => ['required', new OwnedExists(MidtermExams::class)],
+            'student_id' => ['required', new OwnedExists(Students::class)],
             'score' => ['required', 'numeric', 'min:0', 'max:100'],
         ];
     }

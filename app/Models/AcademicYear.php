@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Database\Factories\AcademicYearFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
@@ -31,33 +32,31 @@ class AcademicYear extends Model
     }
 
     /**
-     * Get the active academic year for the authenticated user, or fallback.
+     * Get the active academic year owned by the given user.
+     *
+     * Never falls back to another user's data: without an explicit owner
+     * there is no active academic year.
      */
     public static function getActive(?int $userId = null): ?self
     {
         $userId = $userId ?? auth()->id();
 
-        if ($userId) {
-            $active = self::where('user_id', $userId)->where('is_active', true)->first();
-            if ($active) {
-                return $active;
-            }
+        if (! $userId) {
+            return null;
         }
 
-        if (app()->environment('testing')) {
-            $hasActive = self::where('is_active', true)->exists();
-            if (! $hasActive) {
-                return null;
-            }
-        }
+        return self::query()
+            ->where('user_id', $userId)
+            ->where('is_active', true)
+            ->latest()
+            ->first();
+    }
 
-        if ($userId) {
-            $latest = self::where('user_id', $userId)->latest()->first();
-            if ($latest) {
-                return $latest;
-            }
-        }
-
-        return self::where('is_active', true)->first() ?? self::latest()->first();
+    /**
+     * Limit the query to records owned by the given user.
+     */
+    public function scopeOwnedBy(Builder $query, User|int $user): Builder
+    {
+        return $query->where('user_id', $user instanceof User ? $user->id : $user);
     }
 }

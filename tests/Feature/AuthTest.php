@@ -15,10 +15,22 @@ class AuthTest extends TestCase
      */
     public function test_guest_can_view_login_page(): void
     {
-        $response = $this->get('/');
+        $response = $this->get('/login');
 
         $response->assertStatus(200);
         $response->assertSee('NilaiQ');
+    }
+
+    /**
+     * Test guest can view the public landing page.
+     */
+    public function test_guest_can_view_landing_page(): void
+    {
+        $response = $this->get('/');
+
+        $response->assertStatus(200);
+        $response->assertSee('Administrasi guru');
+        $response->assertSee('Trial gratis');
     }
 
     /**

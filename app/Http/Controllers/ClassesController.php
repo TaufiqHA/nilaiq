@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\AcademicYear;
 use App\Models\Classes;
+use App\Rules\OwnedExists;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -17,10 +18,11 @@ class ClassesController extends Controller
     public function index(Request $request): JsonResponse|View
     {
         $activeYear = AcademicYear::getActive();
-        $classes = $activeYear
-            ? Classes::where('academic_year_id', $activeYear->id)->with(['academicYear', 'students'])->get()
-            : Classes::with(['academicYear', 'students'])->get();
-        $academicYears = AcademicYear::where('user_id', auth()->id())
+        $classes = Classes::ownedBy(auth()->user())
+            ->when($activeYear, fn ($query) => $query->where('academic_year_id', $activeYear->id))
+            ->with(['academicYear', 'students'])
+            ->get();
+        $academicYears = AcademicYear::ownedBy(auth()->user())
             ->orderBy('year', 'desc')
             ->orderBy('semester', 'asc')
             ->get();
@@ -63,10 +65,11 @@ class ClassesController extends Controller
         }
 
         $activeYear = AcademicYear::getActive();
-        $classes = $activeYear
-            ? Classes::where('academic_year_id', $activeYear->id)->with(['academicYear', 'students'])->get()
-            : Classes::with(['academicYear', 'students'])->get();
-        $academicYears = AcademicYear::where('user_id', auth()->id())
+        $classes = Classes::ownedBy(auth()->user())
+            ->when($activeYear, fn ($query) => $query->where('academic_year_id', $activeYear->id))
+            ->with(['academicYear', 'students'])
+            ->get();
+        $academicYears = AcademicYear::ownedBy(auth()->user())
             ->orderBy('year', 'desc')
             ->orderBy('semester', 'asc')
             ->get();
@@ -125,7 +128,7 @@ class ClassesController extends Controller
     private function validationRules(?int $classId = null): array
     {
         return [
-            'academic_year_id' => ['required', 'exists:academic_years,id'],
+            'academic_year_id' => ['required', new OwnedExists(AcademicYear::class)],
             'name' => ['required', 'string', 'max:255'],
         ];
     }

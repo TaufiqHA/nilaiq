@@ -7,6 +7,7 @@ use App\Models\ClassWaliKelas;
 use App\Models\MapelSettings;
 use App\Models\SettingsWaliKelas;
 use App\Models\StudentWaliKelas;
+use App\Rules\OwnedExists;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -43,19 +44,15 @@ class RaportController extends Controller
             $students = $query->orderBy('name', 'asc')->get();
         }
 
-        $settingsWaliKelas = $activeAcademicYear
-            ? SettingsWaliKelas::where('academicYear_id', $activeAcademicYear->id)->first()
-            : (SettingsWaliKelas::whereHas('academicYear', function ($q) use ($userId) {
-                $q->where('user_id', $userId);
-            })->first() ?? SettingsWaliKelas::first());
+        $settingsWaliKelas = SettingsWaliKelas::ownedBy(auth()->user())
+            ->when($activeAcademicYear, fn ($query) => $query->where('academicYear_id', $activeAcademicYear->id))
+            ->first();
 
         $mapelSettings = collect();
         if ($settingsWaliKelas) {
             $mapelSettings = MapelSettings::where('settingsWaliKelas_id', $settingsWaliKelas->id)->get();
         }
-        $academicYears = auth()->check()
-            ? AcademicYear::where('user_id', auth()->id())->get()
-            : AcademicYear::all();
+        $academicYears = AcademicYear::ownedBy(auth()->user())->get();
 
         return view('auth.waliKelas.raport', compact('classWaliKelas', 'students', 'settingsWaliKelas', 'mapelSettings', 'academicYears', 'search'));
     }
@@ -67,7 +64,7 @@ class RaportController extends Controller
     {
         $validated = $request->validate([
             'mapels' => ['required', 'array'],
-            'mapels.*.id' => ['required', 'exists:mapel_settings,id'],
+            'mapels.*.id' => ['required', new OwnedExists(MapelSettings::class)],
             'mapels.*.kelompok' => ['required', 'in:A,B'],
         ]);
 
@@ -146,15 +143,11 @@ class RaportController extends Controller
         $settingsWaliKelas = SettingsWaliKelas::with('academicYear')
             ->whereHas('academicYear', function ($q) use ($userId) {
                 $q->where('user_id', $userId);
-            })->first() ?? SettingsWaliKelas::with('academicYear')->first();
+            })->first();
 
         $allMapels = collect();
         if ($settingsWaliKelas) {
             $allMapels = MapelSettings::where('settingsWaliKelas_id', $settingsWaliKelas->id)->get();
-        }
-
-        if ($allMapels->isEmpty()) {
-            $allMapels = MapelSettings::all();
         }
 
         // Group subjects into Kelompok A and Kelompok B

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\AcademicYear;
 use App\Models\ClassWaliKelas;
+use App\Rules\OwnedExists;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
@@ -17,14 +18,10 @@ class ClassWaliKelasController extends Controller
     public function index(Request $request): View|JsonResponse
     {
         if ($request->wantsJson()) {
-            $query = ClassWaliKelas::with(['academicYear', 'user']);
+            $query = ClassWaliKelas::ownedBy(auth()->user())->with(['academicYear', 'user']);
 
             if ($request->has('academic_year_id')) {
                 $query->where('academic_year_id', $request->input('academic_year_id'));
-            }
-
-            if ($request->has('user_id')) {
-                $query->where('user_id', $request->input('user_id'));
             }
 
             return response()->json($query->get());
@@ -52,6 +49,7 @@ class ClassWaliKelasController extends Controller
     public function store(Request $request): RedirectResponse|JsonResponse
     {
         $validated = $request->validate($this->validationRules());
+        $validated['user_id'] = auth()->id();
 
         $classWaliKelas = ClassWaliKelas::updateOrCreate(
             [
@@ -85,6 +83,7 @@ class ClassWaliKelasController extends Controller
     public function update(Request $request, ClassWaliKelas $classWaliKelas): RedirectResponse|JsonResponse
     {
         $validated = $request->validate($this->validationRules());
+        $validated['user_id'] = auth()->id();
 
         $classWaliKelas->update($validated);
 
@@ -126,9 +125,8 @@ class ClassWaliKelasController extends Controller
     private function validationRules(): array
     {
         return [
-            'academic_year_id' => ['required', 'exists:academic_years,id'],
+            'academic_year_id' => ['required', new OwnedExists(AcademicYear::class)],
             'name' => ['required', 'string', 'max:255'],
-            'user_id' => ['required', 'exists:users,id'],
         ];
     }
 }

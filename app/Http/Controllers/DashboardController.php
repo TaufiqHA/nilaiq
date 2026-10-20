@@ -135,7 +135,7 @@ class DashboardController extends Controller
         }
 
         // 5. Settings (Mata Pelajaran & KKM)
-        $settings = Settings::first();
+        $settings = Settings::ownedBy(auth()->user())->first();
 
         $data = compact(
             'totalStudents',
@@ -168,11 +168,11 @@ class DashboardController extends Controller
 
         $classWaliKelas = $activeAcademicYear
             ? ClassWaliKelas::where('user_id', $userId)->where('academic_year_id', $activeAcademicYear->id)->first()
-            : null;
+            : ClassWaliKelas::where('user_id', $userId)->first();
 
         $settingsWaliKelas = $activeAcademicYear
             ? SettingsWaliKelas::where('academicYear_id', $activeAcademicYear->id)->first()
-            : null;
+            : SettingsWaliKelas::ownedBy(auth()->user())->first();
 
         $students = collect();
         $totalStudents = 0;

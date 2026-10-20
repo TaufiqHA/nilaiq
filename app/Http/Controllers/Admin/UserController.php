@@ -18,7 +18,7 @@ class UserController extends Controller
      */
     public function index(Request $request): View|JsonResponse
     {
-        $query = User::query();
+        $query = User::query()->with('subscriptions');
 
         if ($request->filled('search')) {
             $search = $request->input('search');

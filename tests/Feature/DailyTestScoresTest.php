@@ -116,7 +116,7 @@ class DailyTestScoresTest extends TestCase
     {
         /** @var User $user */
         $user = User::factory()->create();
-        $score = DailyTestScores::factory()->create();
+        $score = DailyTestScores::factory()->create(['score' => 69.5]);
 
         $response = $this->actingAs($user)->getJson(route('daily-test-scores.show', $score));
 

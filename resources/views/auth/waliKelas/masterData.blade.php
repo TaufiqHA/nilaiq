@@ -4,13 +4,10 @@
 
 @section('content')
 @php
-    $settingsWaliKelas = $settingsWaliKelas ?? \App\Models\SettingsWaliKelas::with('academicYear')->first();
-    $mapelSettings = $mapelSettings ?? ($settingsWaliKelas ? \App\Models\MapelSettings::where('settingsWaliKelas_id', $settingsWaliKelas->id)->get() : \App\Models\MapelSettings::all());
-    $academicYears = auth()->check()
-        ? \App\Models\AcademicYear::where('user_id', auth()->id())->get()
-        : \App\Models\AcademicYear::all();
+    $settingsWaliKelas = $settingsWaliKelas ?? null;
+    $mapelSettings = $mapelSettings ?? collect();
+    $academicYears = $academicYears ?? collect();
 @endphp
-
 
 <!-- Container Utama Master Data -->
 <div class="p-0 sm:p-6 border-0 sm:border border-default border-dashed rounded-none sm:rounded-base bg-transparent sm:bg-white/40 dark:sm:bg-neutral-secondary-medium/20 backdrop-blur-none sm:backdrop-blur-md space-y-4 sm:space-y-6 w-full">

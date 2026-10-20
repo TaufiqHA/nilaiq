@@ -2,7 +2,10 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\DailyTestMeetings;
 use App\Models\DailyTestScores;
+use App\Models\Students;
+use App\Rules\OwnedExists;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
@@ -13,7 +16,9 @@ class DailyTestScoresController extends Controller
      */
     public function index(): JsonResponse
     {
-        $scores = DailyTestScores::with(['dailyTestMeeting', 'student'])->get();
+        $scores = DailyTestScores::ownedBy(auth()->user())
+            ->with(['dailyTestMeeting', 'student'])
+            ->get();
 
         return response()->json($scores);
     }
@@ -26,7 +31,9 @@ class DailyTestScoresController extends Controller
         $validated = $request->validate($this->validationRules());
 
         if (! empty($validated['client_uuid'])) {
-            $existing = DailyTestScores::where('client_uuid', $validated['client_uuid'])->first();
+            $existing = DailyTestScores::ownedBy(auth()->user())
+                ->where('client_uuid', $validated['client_uuid'])
+                ->first();
 
             if ($existing) {
                 return response()->json([
@@ -104,8 +111,8 @@ class DailyTestScoresController extends Controller
     {
         return [
             'client_uuid' => ['nullable', 'uuid'],
-            'daily_test_meeting_id' => ['required', 'exists:daily_test_meetings,id'],
-            'student_id' => ['required', 'exists:students,id'],
+            'daily_test_meeting_id' => ['required', new OwnedExists(DailyTestMeetings::class)],
+            'student_id' => ['required', new OwnedExists(Students::class)],
             'score' => ['required', 'numeric', 'min:0', 'max:100'],
         ];
     }

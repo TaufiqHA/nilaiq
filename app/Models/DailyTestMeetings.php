@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Database\Factories\DailyTestMeetingsFactory;
 use Illuminate\Database\Eloquent\Attributes\Fillable;
+use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
@@ -47,5 +48,16 @@ class DailyTestMeetings extends Model
     public function scores(): HasMany
     {
         return $this->hasMany(DailyTestScores::class, 'daily_test_meeting_id');
+    }
+
+    /**
+     * Limit the query to meetings owned by the given user.
+     */
+    public function scopeOwnedBy(Builder $query, User|int $user): Builder
+    {
+        return $query->whereHas(
+            'class.academicYear',
+            fn (Builder $relation): Builder => $relation->where('user_id', $user instanceof User ? $user->id : $user),
+        );
     }
 }

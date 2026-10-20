@@ -19,10 +19,11 @@ class RekapController extends Controller
     public function index(): View
     {
         $activeYear = AcademicYear::getActive();
-        $classes = $activeYear
-            ? Classes::where('academic_year_id', $activeYear->id)->with(['academicYear', 'students'])->get()
-            : Classes::with(['academicYear', 'students'])->get();
-        $settings = Settings::first();
+        $classes = Classes::ownedBy(auth()->user())
+            ->when($activeYear, fn ($query) => $query->where('academic_year_id', $activeYear->id))
+            ->with(['academicYear', 'students'])
+            ->get();
+        $settings = Settings::ownedBy(auth()->user())->first();
 
         return view('auth.rekap', compact('classes', 'settings'));
     }

@@ -110,6 +110,13 @@
                         <span class="flex-1 ms-3 whitespace-nowrap">Master Data</span>
                      </a>
                   </li>
+                  <li>
+                     <a href="{{ route('billing.index') }}" class="flex items-center px-2 py-1.5 {{ request()->routeIs('billing.*') ? 'bg-neutral-tertiary text-fg-brand font-bold' : 'text-body hover:bg-neutral-tertiary hover:text-fg-brand' }} rounded-base group transition-all duration-200">
+                        <x-heroicon-o-credit-card class="shrink-0 w-5 h-5 transition duration-75 {{ request()->routeIs('billing.*') ? 'text-fg-brand' : 'group-hover:text-fg-brand' }}" />
+                        <span class="flex-1 ms-3 whitespace-nowrap">Langganan</span>
+                        <span class="rounded-full bg-brand-soft px-2 py-0.5 text-[10px] font-bold text-fg-brand">{{ auth()->user()->subscriptionStatusLabel() }}</span>
+                     </a>
+                  </li>
                   {{-- <li>
                      <a href="{{ route('backup.index') }}" class="flex items-center px-2 py-1.5 {{ request()->routeIs('backup.*') ? 'bg-neutral-tertiary text-fg-brand font-bold' : 'text-body hover:bg-neutral-tertiary hover:text-fg-brand' }} rounded-base group transition-all duration-200">
                         <svg class="shrink-0 w-5 h-5 transition duration-75 {{ request()->routeIs('backup.*') ? 'text-fg-brand' : 'group-hover:text-fg-brand' }}" aria-hidden="true" xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24">
