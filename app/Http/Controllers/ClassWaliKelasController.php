@@ -4,11 +4,11 @@ namespace App\Http\Controllers;
 
 use App\Models\AcademicYear;
 use App\Models\ClassWaliKelas;
-use App\Rules\OwnedExists;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 
 class ClassWaliKelasController extends Controller
 {
@@ -38,9 +38,7 @@ class ClassWaliKelasController extends Controller
                 ->where('user_id', $userId)
                 ->first();
 
-        $academicYears = AcademicYear::where('user_id', $userId)->get();
-
-        return view('auth.waliKelas.kelas', compact('classWaliKelas', 'academicYears'));
+        return view('auth.waliKelas.kelas', compact('classWaliKelas', 'activeAcademicYear'));
     }
 
     /**
@@ -49,7 +47,16 @@ class ClassWaliKelasController extends Controller
     public function store(Request $request): RedirectResponse|JsonResponse
     {
         $validated = $request->validate($this->validationRules());
+        $activeAcademicYear = AcademicYear::getActive();
+
+        if (! $activeAcademicYear) {
+            throw ValidationException::withMessages([
+                'academic_year_id' => 'Aktifkan tahun ajaran terlebih dahulu sebelum menyimpan informasi kelas.',
+            ]);
+        }
+
         $validated['user_id'] = auth()->id();
+        $validated['academic_year_id'] = $activeAcademicYear->id;
 
         $classWaliKelas = ClassWaliKelas::updateOrCreate(
             [
@@ -125,7 +132,6 @@ class ClassWaliKelasController extends Controller
     private function validationRules(): array
     {
         return [
-            'academic_year_id' => ['required', new OwnedExists(AcademicYear::class)],
             'name' => ['required', 'string', 'max:255'],
         ];
     }

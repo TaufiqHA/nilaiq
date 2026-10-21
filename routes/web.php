@@ -92,6 +92,7 @@ Route::middleware('auth')->group(function () {
         Route::middleware('owns.records')->group(function () {
             // Academic Years
             Route::resource('academic-years', AcademicYearController::class);
+            Route::post('academic-years/{academic_year}/activate', [AcademicYearController::class, 'activate'])->name('academic-years.activate');
             Route::delete('academic-years/{academic_year}/delete', [AcademicYearController::class, 'delete'])->name('academic-years.delete');
 
             // Settings Wali Kelas

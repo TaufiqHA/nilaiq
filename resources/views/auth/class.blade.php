@@ -51,6 +51,20 @@
                 </div>
             @endif
 
+            @if($errors->any())
+                <div class="flex items-start p-4 mb-6 text-red-800 border border-red-300 rounded-lg bg-red-50 dark:bg-neutral-primary-soft dark:text-red-400 dark:border-red-800"
+                    role="alert">
+                    <div class="ms-1 text-sm font-medium">
+                        <p class="font-bold mb-1">Terjadi kesalahan:</p>
+                        <ul class="list-disc pl-5 space-y-0.5">
+                            @foreach($errors->all() as $error)
+                                <li>{{ $error }}</li>
+                            @endforeach
+                        </ul>
+                    </div>
+                </div>
+            @endif
+
             <!-- Classes Grid -->
             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                 @forelse($classes as $class)
@@ -296,17 +310,25 @@
                     @csrf
                     <div id="modal-method-container"></div>
 
-                    <!-- Academic Year Select -->
+                    <!-- Academic Year (active, read-only) -->
                     <div>
-                        <label for="modal_academic_year_id" class="block mb-2 text-sm font-semibold text-heading">Tahun
-                            Ajaran</label>
-                        <select name="academic_year_id" id="modal_academic_year_id" required
-                            class="bg-neutral-secondary-medium border border-default text-heading text-sm rounded-base focus:ring-brand focus:border-brand block w-full p-2.5">
-                            <option value="" disabled selected>-- Pilih Tahun Ajaran --</option>
-                            @foreach($academicYears as $year)
-                                <option value="{{ $year->id }}">{{ $year->year }} - {{ $year->semester }}</option>
-                            @endforeach
-                        </select>
+                        <span class="block mb-2 text-sm font-semibold text-heading">Tahun Ajaran</span>
+                        @if($activeYear)
+                            <div class="flex items-center gap-2 bg-neutral-secondary-medium border border-default text-heading text-sm rounded-base px-3 py-2.5">
+                                <svg class="w-4 h-4 text-emerald-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                                <span class="font-semibold">{{ $activeYear->year }}</span>
+                                <span class="text-xs text-body">Semester {{ $activeYear->semester }}</span>
+                            </div>
+                            <p class="mt-1 text-[11px] text-body">Kelas baru otomatis masuk ke tahun ajaran aktif.</p>
+                        @else
+                            <div class="p-3 text-xs text-amber-800 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-900/30 rounded-base">
+                                Belum ada tahun ajaran aktif.
+                                <a href="{{ route('academic-years.index') }}" class="font-bold underline">Aktifkan tahun ajaran</a>
+                                terlebih dahulu.
+                            </div>
+                        @endif
                     </div>
 
                     <!-- Class Name Input -->
@@ -323,8 +345,8 @@
                             class="px-5 py-2.5 text-sm font-semibold border border-default hover:bg-neutral-tertiary text-body rounded-base transition-all duration-200 cursor-pointer">
                             Batal
                         </button>
-                        <button type="submit"
-                            class="bg-brand hover:bg-brand-strong text-white px-5 py-2.5 rounded-base text-sm font-bold shadow-md shadow-brand/10 transition-all duration-200 cursor-pointer">
+                        <button type="submit" @disabled(! $activeYear)
+                            class="bg-brand hover:bg-brand-strong text-white px-5 py-2.5 rounded-base text-sm font-bold shadow-md shadow-brand/10 transition-all duration-200 cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">
                             Simpan
                         </button>
                     </div>
@@ -360,17 +382,15 @@
                     @csrf
                     @method('PUT')
 
-                    <!-- Academic Year Select -->
+                    <!-- Academic Year (read-only; unchanged when editing) -->
                     <div>
-                        <label for="edit_modal_academic_year_id" class="block mb-2 text-sm font-semibold text-heading">Tahun
-                            Ajaran</label>
-                        <select name="academic_year_id" id="edit_modal_academic_year_id" required
-                            class="bg-neutral-secondary-medium border border-default text-heading text-sm rounded-base focus:ring-brand focus:border-brand block w-full p-2.5">
-                            <option value="" disabled selected>-- Pilih Tahun Ajaran --</option>
-                            @foreach($academicYears as $year)
-                                <option value="{{ $year->id }}">{{ $year->year }} - {{ $year->semester }}</option>
-                            @endforeach
-                        </select>
+                        <span class="block mb-2 text-sm font-semibold text-heading">Tahun
+                            Ajaran</span>
+                        <div id="edit_class_academic_year"
+                            class="bg-neutral-secondary-medium border border-default text-heading text-sm rounded-base px-3 py-2.5">
+                            {{ $activeYear ? $activeYear->year.' - '.$activeYear->semester : '-' }}
+                        </div>
+                        <p class="mt-1 text-[11px] text-body">Tahun ajaran kelas tidak berubah saat diubah.</p>
                     </div>
 
                     <!-- Class Name Input -->
@@ -902,14 +922,18 @@
             document.getElementById('class-form').action = "{{ route('classes.store') }}";
             document.getElementById('modal-method-container').innerHTML = '';
 
-            document.getElementById('modal_academic_year_id').value = '';
             document.getElementById('modal_name').value = '';
         }
 
         // Open Modal for Edit Class
         function prepareEditClass(classData) {
             document.getElementById('edit-class-form').action = `/classes/${classData.id}`;
-            document.getElementById('edit_modal_academic_year_id').value = classData.academic_year_id;
+            const editYear = document.getElementById('edit_class_academic_year');
+            if (editYear) {
+                editYear.textContent = classData.academic_year
+                    ? `${classData.academic_year.year} - ${classData.academic_year.semester}`
+                    : '-';
+            }
             document.getElementById('edit_modal_name').value = classData.name;
         }
 

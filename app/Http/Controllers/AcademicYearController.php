@@ -6,6 +6,7 @@ use App\Models\AcademicYear;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
 
 class AcademicYearController extends Controller
@@ -103,6 +104,33 @@ class AcademicYearController extends Controller
         }
 
         return redirect()->route('academic-years.index')->with('success', 'Academic year updated successfully.');
+    }
+
+    /**
+     * Activate the specified academic year and deactivate the others.
+     */
+    public function activate(Request $request, AcademicYear $academicYear): JsonResponse|RedirectResponse
+    {
+        if ($academicYear->user_id !== auth()->id()) {
+            abort(403, 'Akses ditolak.');
+        }
+
+        DB::transaction(function () use ($academicYear): void {
+            AcademicYear::where('user_id', auth()->id())
+                ->where('id', '!=', $academicYear->id)
+                ->update(['is_active' => false]);
+
+            $academicYear->update(['is_active' => true]);
+        });
+
+        if ($request->wantsJson()) {
+            return response()->json([
+                'message' => 'Academic year activated successfully.',
+                'data' => $academicYear->refresh(),
+            ]);
+        }
+
+        return redirect()->route('academic-years.index')->with('success', 'Academic year activated successfully.');
     }
 
     /**

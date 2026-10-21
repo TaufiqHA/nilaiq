@@ -4,10 +4,10 @@ namespace App\Http\Controllers;
 
 use App\Models\AcademicYear;
 use App\Models\Classes;
-use App\Rules\OwnedExists;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 use Illuminate\View\View;
 
 class ClassesController extends Controller
@@ -22,16 +22,12 @@ class ClassesController extends Controller
             ->when($activeYear, fn ($query) => $query->where('academic_year_id', $activeYear->id))
             ->with(['academicYear', 'students'])
             ->get();
-        $academicYears = AcademicYear::ownedBy(auth()->user())
-            ->orderBy('year', 'desc')
-            ->orderBy('semester', 'asc')
-            ->get();
 
         if ($request->wantsJson()) {
             return response()->json($classes);
         }
 
-        return view('auth.class', compact('classes', 'academicYears'));
+        return view('auth.class', compact('classes', 'activeYear'));
     }
 
     /**
@@ -40,7 +36,15 @@ class ClassesController extends Controller
     public function store(Request $request): JsonResponse|RedirectResponse
     {
         $validated = $request->validate($this->validationRules());
+        $activeYear = AcademicYear::getActive();
 
+        if (! $activeYear) {
+            throw ValidationException::withMessages([
+                'academic_year_id' => 'Aktifkan tahun ajaran terlebih dahulu sebelum menambahkan kelas.',
+            ]);
+        }
+
+        $validated['academic_year_id'] = $activeYear->id;
         $class = Classes::create($validated);
 
         if ($request->wantsJson()) {
@@ -69,12 +73,8 @@ class ClassesController extends Controller
             ->when($activeYear, fn ($query) => $query->where('academic_year_id', $activeYear->id))
             ->with(['academicYear', 'students'])
             ->get();
-        $academicYears = AcademicYear::ownedBy(auth()->user())
-            ->orderBy('year', 'desc')
-            ->orderBy('semester', 'asc')
-            ->get();
 
-        return view('auth.class', compact('classes', 'academicYears', 'class'));
+        return view('auth.class', compact('classes', 'activeYear', 'class'));
     }
 
     /**
@@ -82,7 +82,7 @@ class ClassesController extends Controller
      */
     public function update(Request $request, Classes $class): JsonResponse|RedirectResponse
     {
-        $validated = $request->validate($this->validationRules($class->id));
+        $validated = $request->validate($this->validationRules());
 
         $class->update($validated);
 
@@ -125,10 +125,9 @@ class ClassesController extends Controller
      *
      * @return array<string, array<int, string>>
      */
-    private function validationRules(?int $classId = null): array
+    private function validationRules(): array
     {
         return [
-            'academic_year_id' => ['required', new OwnedExists(AcademicYear::class)],
             'name' => ['required', 'string', 'max:255'],
         ];
     }

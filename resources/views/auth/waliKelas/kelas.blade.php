@@ -101,19 +101,25 @@
                     <p class="mt-1 text-[11px] text-body">Masukkan nama resmi kelas (contoh: Kelas X IPA 1, Kelas XII IPS 2).</p>
                 </div>
 
-                <!-- Select Tahun Ajaran -->
+                <!-- Tahun Ajaran Aktif (read-only) -->
                 <div>
-                    <label for="academic_year_id" class="block mb-1.5 text-xs font-bold text-heading">Tahun Ajaran <span class="text-red-500">*</span></label>
+                    <span class="block mb-1.5 text-xs font-bold text-heading">Tahun Ajaran</span>
                     <div class="flex items-center gap-2">
-                        <select id="academic_year_id" name="academic_year_id" required
-                            class="bg-neutral-secondary-medium border border-default text-heading text-sm rounded-base focus:ring-brand focus:border-brand block w-full p-2.5 transition-colors">
-                            <option value="" disabled {{ !old('academic_year_id', $classWaliKelas->academic_year_id ?? null) ? 'selected' : '' }}>-- Pilih Tahun Ajaran --</option>
-                            @foreach($academicYears as $year)
-                                <option value="{{ $year->id }}" {{ old('academic_year_id', $classWaliKelas->academic_year_id ?? null) == $year->id ? 'selected' : '' }}>
-                                    {{ $year->year }} - Semester {{ $year->semester }} {{ $year->is_active ? '(Aktif)' : '' }}
-                                </option>
-                            @endforeach
-                        </select>
+                        @if($activeAcademicYear)
+                            <div class="flex items-center gap-2 flex-1 bg-neutral-secondary-medium border border-default text-heading text-sm rounded-base px-3 py-2.5">
+                                <svg class="w-4 h-4 text-emerald-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                                <span class="font-bold">{{ $activeAcademicYear->year }}</span>
+                                <span class="text-xs text-body">Semester {{ $activeAcademicYear->semester }}</span>
+                            </div>
+                        @else
+                            <div class="flex-1 px-3 py-2.5 text-xs text-amber-800 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-900/30 rounded-base">
+                                Belum ada tahun ajaran aktif.
+                                <a href="{{ route('academic-years.index') }}" class="font-bold underline">Aktifkan tahun ajaran</a>
+                                terlebih dahulu.
+                            </div>
+                        @endif
                         <button type="button" onclick="openAcademicYearModal()" class="inline-flex items-center gap-1.5 px-4 py-2.5 text-xs font-bold text-heading bg-neutral-secondary-soft hover:bg-neutral-tertiary border border-default rounded-base shadow-xs transition-colors shrink-0 cursor-pointer">
                             <svg class="w-4 h-4 text-body" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
@@ -122,7 +128,7 @@
                             <span>Kelola</span>
                         </button>
                     </div>
-                    <p class="mt-1 text-[11px] text-body">Pilih tahun ajaran aktif yang berlaku untuk kelas ini.</p>
+                    <p class="mt-1 text-[11px] text-body">Kelas ini otomatis terhubung ke tahun ajaran aktif.</p>
                 </div>
 
                 <!-- Readonly Wali Kelas -->
@@ -141,7 +147,7 @@
 
                 <!-- Action Button -->
                 <div class="pt-3 border-t border-default flex justify-end">
-                    <button type="submit" class="inline-flex items-center gap-2 text-white bg-brand hover:bg-brand-strong focus:ring-4 focus:ring-brand/30 font-bold rounded-base text-xs px-5 py-2.5 transition-all duration-200 shadow-sm cursor-pointer">
+                    <button type="submit" @disabled(! $activeAcademicYear) class="inline-flex items-center gap-2 text-white bg-brand hover:bg-brand-strong focus:ring-4 focus:ring-brand/30 font-bold rounded-base text-xs px-5 py-2.5 transition-all duration-200 shadow-sm cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed">
                         <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
                         </svg>
@@ -431,8 +437,7 @@
             }
             
             resetModalForm();
-            loadAcademicYears();
-            await refreshParentSelect();
+            window.location.reload();
         } catch (e) {
             console.error(e);
             alert('Terjadi kesalahan saat menyimpan data.');
@@ -456,44 +461,10 @@
             if (!response.ok) throw new Error(result.message || 'Gagal menghapus data');
             
             resetModalForm();
-            loadAcademicYears();
-            await refreshParentSelect();
+            window.location.reload();
         } catch (e) {
             console.error(e);
             alert('Terjadi kesalahan saat menghapus data.');
-        }
-    }
-
-    async function refreshParentSelect() {
-        const select = document.getElementById('academic_year_id');
-        if (!select) return;
-        
-        const currentVal = select.value;
-        
-        try {
-            const response = await fetch('/academic-years', {
-                headers: { 'Accept': 'application/json', 'X-Requested-With': 'XMLHttpRequest' }
-            });
-            if (!response.ok) throw new Error('Gagal me-refresh select');
-            const data = await response.json();
-            
-            select.innerHTML = '<option value="" disabled>-- Pilih Tahun Ajaran --</option>';
-            
-            data.forEach(year => {
-                const opt = document.createElement('option');
-                opt.value = year.id;
-                opt.text = `${year.year} - Semester ${year.semester} ${year.is_active ? '(Aktif)' : ''}`;
-                select.appendChild(opt);
-            });
-            
-            // Restore selection if option still exists
-            if (currentVal && [...select.options].some(o => o.value == currentVal)) {
-                select.value = currentVal;
-            } else {
-                select.value = '';
-            }
-        } catch (e) {
-            console.error(e);
         }
     }
 </script>

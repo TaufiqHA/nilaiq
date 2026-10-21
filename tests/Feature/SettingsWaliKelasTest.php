@@ -52,7 +52,8 @@ class SettingsWaliKelasTest extends TestCase
     public function test_authenticated_user_can_store_settings_wali_kelas_json(): void
     {
         $user = User::factory()->create(['role' => 'wali_kelas']);
-        $academicYear = AcademicYear::factory()->create(['user_id' => $user->id]);
+        $academicYear = AcademicYear::factory()->active()->create(['user_id' => $user->id]);
+        $otherYear = AcademicYear::factory()->create(['user_id' => $user->id]);
 
         $data = [
             'school_name' => 'SMA Negeri 1 Jakarta',
@@ -64,7 +65,7 @@ class SettingsWaliKelasTest extends TestCase
             'teacher_nip' => '198501012010011001',
             'teacher_email' => 'budi@school.sch.id',
             'teacher_phone' => '081234567890',
-            'academicYear_id' => $academicYear->id,
+            'academicYear_id' => $otherYear->id,
             'tanggal_penerimaan_rapor' => '2026-06-25',
         ];
 
@@ -85,7 +86,30 @@ class SettingsWaliKelasTest extends TestCase
             'school_name' => 'SMA Negeri 1 Jakarta',
             'npsn' => '12345678',
             'principal_nip' => '198001012005011002',
+            'academicYear_id' => $academicYear->id,
         ]);
+    }
+
+    /**
+     * Test settings wali kelas cannot be stored without an active academic year.
+     */
+    public function test_settings_wali_kelas_cannot_be_stored_without_active_academic_year(): void
+    {
+        $user = User::factory()->create(['role' => 'wali_kelas']);
+        AcademicYear::factory()->create(['user_id' => $user->id, 'is_active' => false]);
+
+        $response = $this->actingAs($user)->postJson(route('settings-wali-kelas.store'), [
+            'school_name' => 'SMA Tanpa Tahun Aktif',
+            'npsn' => '12345678',
+            'school_address' => 'Jl. Merdeka No. 1',
+            'principal_name' => 'Dr. H. Ahmad',
+            'teacher_name' => 'Budi Santoso, S.Pd',
+            'tanggal_penerimaan_rapor' => '2026-06-25',
+        ]);
+
+        $response->assertStatus(422);
+        $response->assertJsonValidationErrors('academicYear_id');
+        $this->assertDatabaseMissing('settings_wali_kelas', ['school_name' => 'SMA Tanpa Tahun Aktif']);
     }
 
     /**
@@ -113,6 +137,7 @@ class SettingsWaliKelasTest extends TestCase
     {
         $user = User::factory()->create(['role' => 'wali_kelas']);
         $academicYear = AcademicYear::factory()->create(['user_id' => $user->id]);
+        $activeYear = AcademicYear::factory()->active()->create(['user_id' => $user->id]);
         $setting = SettingsWaliKelas::factory()->create(['academicYear_id' => $academicYear->id]);
 
         $updatedData = [
@@ -125,7 +150,7 @@ class SettingsWaliKelasTest extends TestCase
             'teacher_nip' => '199001012015012002',
             'teacher_email' => 'siti@school.sch.id',
             'teacher_phone' => '089876543210',
-            'academicYear_id' => $academicYear->id,
+            'academicYear_id' => $activeYear->id,
             'tanggal_penerimaan_rapor' => '2026-12-20',
         ];
 
@@ -139,6 +164,7 @@ class SettingsWaliKelasTest extends TestCase
 
         $this->assertDatabaseHas('settings_wali_kelas', [
             'id' => $setting->id,
+            'academicYear_id' => $academicYear->id,
             'school_name' => 'SMA Negeri 2 Jakarta Updated',
             'principal_nip' => '197501012000011003',
         ]);
@@ -192,6 +218,7 @@ class SettingsWaliKelasTest extends TestCase
     public function test_settings_wali_kelas_validation_errors(): void
     {
         $user = User::factory()->create(['role' => 'wali_kelas']);
+        AcademicYear::factory()->active()->create(['user_id' => $user->id]);
 
         $response = $this->actingAs($user)->postJson(route('settings-wali-kelas.store'), []);
 
@@ -202,7 +229,6 @@ class SettingsWaliKelasTest extends TestCase
             'school_address',
             'principal_name',
             'teacher_name',
-            'academicYear_id',
             'tanggal_penerimaan_rapor',
         ]);
     }

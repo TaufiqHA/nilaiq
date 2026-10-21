@@ -208,16 +208,23 @@
                     </h4>
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div>
-                            <label for="academicYear_id" class="block mb-1 text-xs font-semibold text-heading">Tahun Akademik Aktif <span class="text-red-500">*</span></label>
+                            <span class="block mb-1 text-xs font-semibold text-heading">Tahun Akademik Aktif</span>
                             <div class="flex gap-2">
-                                <select id="academicYear_id" name="academicYear_id" required class="bg-neutral-secondary-soft dark:bg-neutral-secondary-medium/50 border border-default text-heading text-xs rounded-base focus:ring-brand focus:border-brand block w-full p-2.5">
-                                    <option value="" disabled {{ !$settingsWaliKelas?->academicYear_id ? 'selected' : '' }}>-- Pilih Tahun Akademik --</option>
-                                    @foreach($academicYears as $year)
-                                        <option value="{{ $year->id }}" {{ old('academicYear_id', $settingsWaliKelas?->academicYear_id) == $year->id ? 'selected' : '' }}>
-                                            {{ $year->year }} - Semester {{ $year->semester }} {{ $year->is_active ? '(Aktif)' : '' }}
-                                        </option>
-                                    @endforeach
-                                </select>
+                                @if($activeAcademicYear)
+                                    <div class="flex items-center gap-2 flex-1 px-3 py-2.5 text-xs text-heading bg-neutral-secondary-soft dark:bg-neutral-secondary-medium/50 border border-default rounded-base">
+                                        <svg class="w-4 h-4 text-emerald-600 shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                            <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                        </svg>
+                                        <span class="font-bold">{{ $activeAcademicYear->year }}</span>
+                                        <span class="text-body">Semester {{ $activeAcademicYear->semester }}</span>
+                                    </div>
+                                @else
+                                    <div class="flex-1 px-3 py-2.5 text-xs text-amber-800 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-900/30 rounded-base">
+                                        Belum ada tahun ajaran aktif.
+                                        <a href="{{ route('academic-years.index') }}" class="font-bold underline">Aktifkan tahun ajaran</a>
+                                        terlebih dahulu.
+                                    </div>
+                                @endif
                                 <button type="button" data-modal-target="modal-tambah-tahun-ajaran" data-modal-toggle="modal-tambah-tahun-ajaran" class="text-body bg-neutral-secondary-medium box-border border border-default-medium hover:bg-neutral-tertiary-medium hover:text-heading focus:ring-4 focus:ring-neutral-tertiary shadow-xs font-medium leading-5 rounded-base text-sm px-4 py-2.5 focus:outline-none shrink-0 flex items-center gap-1.5 cursor-pointer">
                                     <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4"/>
@@ -225,6 +232,7 @@
                                     Kelola
                                 </button>
                             </div>
+                            <p class="mt-1 text-[10px] text-body">Data master ini otomatis tersimpan pada tahun ajaran aktif.</p>
                         </div>
 
                         <div>
@@ -236,7 +244,7 @@
 
                 <!-- Action Button -->
                 <div class="flex items-center justify-end border-t border-default pt-4">
-                    <button type="submit" class="px-5 py-2.5 text-xs font-bold text-white bg-brand hover:bg-brand-strong rounded-base focus:ring-4 focus:ring-brand-medium transition-all duration-200 flex items-center gap-2">
+                    <button type="submit" @disabled(! $activeAcademicYear) class="px-5 py-2.5 text-xs font-bold text-white bg-brand hover:bg-brand-strong rounded-base focus:ring-4 focus:ring-brand-medium transition-all duration-200 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
                         <svg class="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7"/>
                         </svg>

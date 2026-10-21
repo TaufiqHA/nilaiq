@@ -42,7 +42,7 @@ class ClassesTest extends TestCase
         $response->assertStatus(200);
         $response->assertViewIs('auth.class');
         $response->assertViewHas('classes');
-        $response->assertViewHas('academicYears');
+        $response->assertViewHas('activeYear');
     }
 
     /**
@@ -71,9 +71,10 @@ class ClassesTest extends TestCase
     {
         /** @var User $user */
         $user = User::factory()->create(['role' => 'mapel']);
-        $academicYear = AcademicYear::factory()->create();
+        $academicYear = AcademicYear::factory()->active()->create(['user_id' => $user->id]);
+        $otherYear = AcademicYear::factory()->create(['user_id' => $user->id]);
         $classData = [
-            'academic_year_id' => $academicYear->id,
+            'academic_year_id' => $otherYear->id,
             'name' => 'Kelas X MIPA 1',
         ];
 
@@ -89,23 +90,34 @@ class ClassesTest extends TestCase
     }
 
     /**
+     * Test class cannot be stored without an active academic year.
+     */
+    public function test_class_cannot_be_stored_without_active_academic_year(): void
+    {
+        /** @var User $user */
+        $user = User::factory()->create(['role' => 'mapel']);
+        AcademicYear::factory()->create(['user_id' => $user->id, 'is_active' => false]);
+
+        $response = $this->actingAs($user)->post(route('classes.store'), [
+            'name' => 'Kelas Tanpa Tahun Aktif',
+        ]);
+
+        $response->assertSessionHasErrors('academic_year_id');
+        $this->assertDatabaseMissing('classes', ['name' => 'Kelas Tanpa Tahun Aktif']);
+    }
+
+    /**
      * Test validation rules on store.
      */
     public function test_store_class_validation(): void
     {
         /** @var User $user */
         $user = User::factory()->create(['role' => 'mapel']);
+        AcademicYear::factory()->active()->create(['user_id' => $user->id]);
 
-        // Test required fields
         $response = $this->actingAs($user)->post(route('classes.store'), []);
-        $response->assertSessionHasErrors(['academic_year_id', 'name']);
 
-        // Test invalid academic_year_id
-        $response = $this->actingAs($user)->post(route('classes.store'), [
-            'academic_year_id' => 9999,
-            'name' => 'Valid Name',
-        ]);
-        $response->assertSessionHasErrors(['academic_year_id']);
+        $response->assertSessionHasErrors(['name']);
     }
 
     /**
@@ -132,11 +144,12 @@ class ClassesTest extends TestCase
     {
         /** @var User $user */
         $user = User::factory()->create(['role' => 'mapel']);
-        $class = Classes::factory()->create();
-        $academicYear = AcademicYear::factory()->create();
+        $classYear = AcademicYear::factory()->create(['user_id' => $user->id]);
+        $class = Classes::factory()->create(['academic_year_id' => $classYear->id]);
+        $activeYear = AcademicYear::factory()->active()->create(['user_id' => $user->id]);
 
         $updateData = [
-            'academic_year_id' => $academicYear->id,
+            'academic_year_id' => $activeYear->id,
             'name' => 'Kelas XI IPS 2',
         ];
 
@@ -144,7 +157,7 @@ class ClassesTest extends TestCase
 
         $this->assertDatabaseHas('classes', [
             'id' => $class->id,
-            'academic_year_id' => $academicYear->id,
+            'academic_year_id' => $classYear->id,
             'name' => 'Kelas XI IPS 2',
         ]);
 

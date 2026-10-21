@@ -22,6 +22,7 @@ class AcademicYearTest extends TestCase
         $this->get(route('academic-years.show', $year))->assertRedirect(route('login'));
         $this->post(route('academic-years.store'), [])->assertRedirect(route('login'));
         $this->put(route('academic-years.update', $year), [])->assertRedirect(route('login'));
+        $this->post(route('academic-years.activate', $year))->assertRedirect(route('login'));
         $this->delete(route('academic-years.destroy', $year))->assertRedirect(route('login'));
         $this->delete(route('academic-years.delete', $year))->assertRedirect(route('login'));
     }
@@ -187,6 +188,114 @@ class AcademicYearTest extends TestCase
             'id' => $activeYear->id,
             'is_active' => false,
         ]);
+    }
+
+    /**
+     * Test activating a year deactivates the previously active year.
+     */
+    public function test_authenticated_user_can_activate_academic_year(): void
+    {
+        /** @var User $user */
+        $user = User::factory()->create();
+        /** @var User $otherUser */
+        $otherUser = User::factory()->create();
+
+        $activeYear = AcademicYear::factory()->active()->create(['user_id' => $user->id]);
+        $otherUserActiveYear = AcademicYear::factory()->active()->create(['user_id' => $otherUser->id]);
+        $targetYear = AcademicYear::factory()->create(['is_active' => false, 'user_id' => $user->id]);
+
+        $response = $this->actingAs($user)->post(route('academic-years.activate', $targetYear));
+
+        $response->assertRedirect(route('academic-years.index'));
+        $response->assertSessionHas('success', 'Academic year activated successfully.');
+
+        $this->assertDatabaseHas('academic_years', [
+            'id' => $targetYear->id,
+            'is_active' => true,
+        ]);
+
+        $this->assertDatabaseHas('academic_years', [
+            'id' => $activeYear->id,
+            'is_active' => false,
+        ]);
+
+        $this->assertDatabaseHas('academic_years', [
+            'id' => $otherUserActiveYear->id,
+            'is_active' => true,
+        ]);
+    }
+
+    /**
+     * Test activating an already active year keeps it active.
+     */
+    public function test_activating_an_already_active_academic_year_is_idempotent(): void
+    {
+        /** @var User $user */
+        $user = User::factory()->create();
+        $activeYear = AcademicYear::factory()->active()->create(['user_id' => $user->id]);
+
+        $this->actingAs($user)->post(route('academic-years.activate', $activeYear))
+            ->assertRedirect(route('academic-years.index'));
+
+        $this->assertDatabaseHas('academic_years', [
+            'id' => $activeYear->id,
+            'is_active' => true,
+        ]);
+    }
+
+    /**
+     * Test activation returns JSON when requested.
+     */
+    public function test_activation_returns_json_when_requested(): void
+    {
+        /** @var User $user */
+        $user = User::factory()->create();
+        $targetYear = AcademicYear::factory()->create(['is_active' => false, 'user_id' => $user->id]);
+
+        $response = $this->actingAs($user)->postJson(route('academic-years.activate', $targetYear));
+
+        $response->assertOk();
+        $response->assertJsonPath('message', 'Academic year activated successfully.');
+        $response->assertJsonPath('data.id', $targetYear->id);
+        $response->assertJsonPath('data.is_active', true);
+    }
+
+    /**
+     * Test user cannot activate another user's academic year.
+     */
+    public function test_user_cannot_activate_another_users_academic_year(): void
+    {
+        /** @var User $user1 */
+        $user1 = User::factory()->create();
+        /** @var User $user2 */
+        $user2 = User::factory()->create();
+
+        $yearOfUser2 = AcademicYear::factory()->create(['is_active' => false, 'user_id' => $user2->id]);
+
+        $this->actingAs($user1)
+            ->post(route('academic-years.activate', $yearOfUser2))
+            ->assertNotFound();
+
+        $this->assertDatabaseHas('academic_years', [
+            'id' => $yearOfUser2->id,
+            'is_active' => false,
+        ]);
+    }
+
+    /**
+     * Test the activate action is only rendered for inactive years.
+     */
+    public function test_activate_button_is_only_rendered_for_inactive_academic_years(): void
+    {
+        /** @var User $user */
+        $user = User::factory()->create();
+        $activeYear = AcademicYear::factory()->active()->create(['user_id' => $user->id]);
+        $inactiveYear = AcademicYear::factory()->create(['is_active' => false, 'user_id' => $user->id]);
+
+        $content = $this->actingAs($user)->get(route('academic-years.index'))->getContent();
+
+        $this->assertStringContainsString("openActivateModal({$inactiveYear->id},", $content);
+        $this->assertStringNotContainsString("openActivateModal({$activeYear->id},", $content);
     }
 
     /**

@@ -87,7 +87,7 @@
                             <th class="pb-3 text-xs font-bold text-heading uppercase tracking-wider min-w-[150px]">Tahun Ajaran</th>
                             <th class="pb-3 text-xs font-bold text-heading uppercase tracking-wider min-w-[120px]">Semester</th>
                             <th class="pb-3 text-xs font-bold text-heading uppercase tracking-wider min-w-[120px]">Status</th>
-                            <th class="pb-3 text-xs font-bold text-heading uppercase tracking-wider text-right min-w-[150px]">Aksi</th>
+                            <th class="pb-3 text-xs font-bold text-heading uppercase tracking-wider text-right min-w-[210px]">Aksi</th>
                         </tr>
                     </thead>
                     <tbody class="divide-y divide-default">
@@ -111,7 +111,15 @@
                                     @endif
                                 </td>
                                 <td class="py-3.5 text-sm text-right">
-                                    <div class="inline-flex items-center gap-2">
+                                    <div class="inline-flex flex-wrap items-center justify-end gap-2">
+                                        @if(! $year->is_active)
+                                            <button type="button"
+                                                    onclick="openActivateModal({{ $year->id }}, {{ json_encode($year->year) }})"
+                                                    class="text-emerald-700 dark:text-emerald-300 hover:text-emerald-800 dark:hover:text-emerald-200 bg-transparent font-semibold text-xs py-1.5 px-3 border border-default hover:border-emerald-500 rounded-base transition-all duration-200 cursor-pointer">
+                                                Aktifkan
+                                            </button>
+                                        @endif
+
                                         <!-- Edit button triggers Javascript fill -->
                                         <button type="button" 
                                                 onclick="editAcademicYear({{ json_encode($year) }})"
@@ -145,8 +153,50 @@
     </div>
 </div>
 
+<!-- ========================================================================= -->
+<!-- MODAL KONFIRMASI AKTIFKAN TAHUN AJARAN -->
+<!-- ========================================================================= -->
+<div id="activate-academic-year-modal" tabindex="-1" aria-hidden="true" class="fixed top-0 left-0 right-0 z-50 hidden w-full p-4 overflow-x-hidden overflow-y-auto md:inset-0 h-[calc(100%-1rem)] max-h-full flex items-center justify-center bg-black/50 backdrop-blur-xs">
+    <div class="relative w-full max-w-md max-h-full">
+        <div class="relative bg-white dark:bg-neutral-primary-soft rounded-base shadow-lg border border-default overflow-hidden">
+            <div class="p-6 text-center space-y-4">
+                <div class="w-12 h-12 rounded-full bg-emerald-100 dark:bg-emerald-950/30 text-emerald-600 dark:text-emerald-300 flex items-center justify-center mx-auto">
+                    <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                    </svg>
+                </div>
+                <div>
+                    <h3 class="text-base font-extrabold text-heading">Aktifkan Tahun Ajaran</h3>
+                    <p class="text-xs text-body mt-1">Apakah Anda yakin ingin mengaktifkan tahun ajaran <strong id="activate-academic-year-name" class="text-heading"></strong>? Tahun ajaran lain akan otomatis dinonaktifkan.</p>
+                </div>
+
+                <form id="activate-academic-year-form" action="" method="POST" class="pt-2 flex items-center justify-center gap-3">
+                    @csrf
+                    <button type="button" onclick="closeActivateModal()" class="px-4 py-2 text-xs font-bold text-body bg-neutral-secondary-medium border border-default rounded-base hover:bg-neutral-tertiary transition-colors cursor-pointer">
+                        Tidak, Batal
+                    </button>
+                    <button type="submit" class="px-4 py-2 text-xs font-bold text-white bg-emerald-600 hover:bg-emerald-700 rounded-base transition-colors cursor-pointer shadow-xs">
+                        Ya, Aktifkan
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
 <script>
     const defaultAction = "{{ route('academic-years.store') }}";
+    const activateAcademicYearUrl = "{{ route('academic-years.activate', ':id') }}";
+
+    function openActivateModal(id, year) {
+        document.getElementById('activate-academic-year-name').textContent = year;
+        document.getElementById('activate-academic-year-form').action = activateAcademicYearUrl.replace(':id', id);
+        document.getElementById('activate-academic-year-modal').classList.remove('hidden');
+    }
+
+    function closeActivateModal() {
+        document.getElementById('activate-academic-year-modal').classList.add('hidden');
+    }
 
     function editAcademicYear(yearData) {
         // Change form header and action URL

@@ -110,10 +110,11 @@ class ClassWaliKelasTest extends TestCase
     public function test_wali_kelas_can_store_class_wali_kelas_json(): void
     {
         $user = User::factory()->create(['role' => 'wali_kelas']);
-        $academicYear = AcademicYear::factory()->create(['user_id' => $user->id]);
+        $academicYear = AcademicYear::factory()->active()->create(['user_id' => $user->id]);
+        $otherYear = AcademicYear::factory()->create(['user_id' => $user->id]);
 
         $data = [
-            'academic_year_id' => $academicYear->id,
+            'academic_year_id' => $otherYear->id,
             'name' => 'Kelas XII MIPA 3',
             'user_id' => $user->id,
         ];
@@ -138,6 +139,24 @@ class ClassWaliKelasTest extends TestCase
             'name' => 'Kelas XII MIPA 3',
             'user_id' => $user->id,
         ]);
+    }
+
+    /**
+     * Test class wali kelas cannot be stored without an active academic year.
+     */
+    public function test_wali_kelas_cannot_store_class_without_active_academic_year(): void
+    {
+        $user = User::factory()->create(['role' => 'wali_kelas']);
+        AcademicYear::factory()->create(['user_id' => $user->id, 'is_active' => false]);
+
+        $response = $this->actingAs($user)->postJson(route('wali-kelas.class-wali-kelas.store'), [
+            'name' => 'Kelas Tanpa Tahun Aktif',
+            'user_id' => $user->id,
+        ]);
+
+        $response->assertStatus(422);
+        $response->assertJsonValidationErrors('academic_year_id');
+        $this->assertDatabaseMissing('class_wali_kelas', ['name' => 'Kelas Tanpa Tahun Aktif']);
     }
 
     /**
@@ -170,13 +189,14 @@ class ClassWaliKelasTest extends TestCase
     {
         $user = User::factory()->create(['role' => 'wali_kelas']);
         $academicYear = AcademicYear::factory()->create(['user_id' => $user->id]);
+        $activeYear = AcademicYear::factory()->active()->create(['user_id' => $user->id]);
         $classWaliKelas = ClassWaliKelas::factory()->create([
             'academic_year_id' => $academicYear->id,
             'user_id' => $user->id,
         ]);
 
         $updatedData = [
-            'academic_year_id' => $academicYear->id,
+            'academic_year_id' => $activeYear->id,
             'name' => 'Kelas X MIPA 1 Updated',
             'user_id' => $user->id,
         ];
@@ -191,6 +211,7 @@ class ClassWaliKelasTest extends TestCase
 
         $this->assertDatabaseHas('class_wali_kelas', [
             'id' => $classWaliKelas->id,
+            'academic_year_id' => $academicYear->id,
             'name' => 'Kelas X MIPA 1 Updated',
         ]);
     }
@@ -249,14 +270,12 @@ class ClassWaliKelasTest extends TestCase
     public function test_class_wali_kelas_validation_errors(): void
     {
         $user = User::factory()->create(['role' => 'wali_kelas']);
+        AcademicYear::factory()->active()->create(['user_id' => $user->id]);
 
         $response = $this->actingAs($user)->postJson(route('wali-kelas.class-wali-kelas.store'), []);
 
         $response->assertStatus(422);
-        $response->assertJsonValidationErrors([
-            'academic_year_id',
-            'name',
-        ]);
+        $response->assertJsonValidationErrors('name');
     }
 
     /**
@@ -267,7 +286,7 @@ class ClassWaliKelasTest extends TestCase
         $user = User::factory()->create(['role' => 'wali_kelas']);
         $otherUser = User::factory()->create(['role' => 'wali_kelas']);
 
-        $myYear = AcademicYear::factory()->create([
+        $myYear = AcademicYear::factory()->active()->create([
             'user_id' => $user->id,
             'year' => '2026/2027',
             'semester' => 'GANJIL',
@@ -282,8 +301,8 @@ class ClassWaliKelasTest extends TestCase
         $response = $this->actingAs($user)->get(route('wali-kelas.informasi-kelas'));
 
         $response->assertStatus(200);
-        $response->assertSee('2026/2027 - Semester GANJIL');
-        $response->assertDontSee('2027/2028 - Semester GENAP');
+        $response->assertSee('2026/2027');
+        $response->assertDontSee('2027/2028');
         $response->assertSee('academic-year-modal');
         $response->assertSee('Kelola');
     }

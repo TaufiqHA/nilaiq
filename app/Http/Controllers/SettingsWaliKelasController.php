@@ -5,11 +5,11 @@ namespace App\Http\Controllers;
 use App\Models\AcademicYear;
 use App\Models\MapelSettings;
 use App\Models\SettingsWaliKelas;
-use App\Rules\OwnedExists;
 use Illuminate\Contracts\View\View;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 
 class SettingsWaliKelasController extends Controller
 {
@@ -43,6 +43,15 @@ class SettingsWaliKelasController extends Controller
     public function store(Request $request): RedirectResponse|JsonResponse|View
     {
         $validated = $request->validate($this->validationRules());
+        $activeAcademicYear = AcademicYear::getActive();
+
+        if (! $activeAcademicYear) {
+            throw ValidationException::withMessages([
+                'academicYear_id' => 'Aktifkan tahun ajaran terlebih dahulu sebelum menyimpan data master.',
+            ]);
+        }
+
+        $validated['academicYear_id'] = $activeAcademicYear->id;
 
         if ($request->hasFile('school_logo_file')) {
             $path = $request->file('school_logo_file')->store('logos', 'public');
@@ -147,7 +156,7 @@ class SettingsWaliKelasController extends Controller
 
         $academicYears = AcademicYear::ownedBy(auth()->user())->get();
 
-        return view('auth.waliKelas.masterData', compact('settingsWaliKelas', 'mapelSettings', 'academicYears'));
+        return view('auth.waliKelas.masterData', compact('settingsWaliKelas', 'mapelSettings', 'academicYears', 'activeAcademicYear'));
     }
 
     /**
@@ -169,7 +178,6 @@ class SettingsWaliKelasController extends Controller
             'teacher_nip' => ['nullable', 'string', 'max:255'],
             'teacher_email' => ['nullable', 'email', 'max:255'],
             'teacher_phone' => ['nullable', 'string', 'max:255'],
-            'academicYear_id' => ['required', new OwnedExists(AcademicYear::class)],
             'tanggal_penerimaan_rapor' => ['required', 'date'],
         ];
     }
