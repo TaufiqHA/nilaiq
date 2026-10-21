@@ -233,7 +233,13 @@
 
         <!-- Personas -->
         <section class="bg-neutral-primary-soft/50 py-20">
-            <div class="mx-auto grid max-w-7xl gap-8 px-4 sm:px-6 lg:grid-cols-2 lg:px-8">
+            <div class="mx-auto max-w-2xl px-4 text-center sm:px-6 lg:px-8">
+                <span class="text-xs font-bold uppercase tracking-widest text-fg-brand">Sesuai Peran Anda</span>
+                <h2 class="mt-3 text-3xl font-extrabold tracking-tight text-heading sm:text-4xl">Satu aplikasi, dua cara kerja</h2>
+                <p class="mt-4 text-body">Guru mapel dan wali kelas punya kebutuhan berbeda. NilaiQ menyiapkan tampilan yang langsung sesuai tugas Anda.</p>
+            </div>
+
+            <div class="mx-auto mt-12 grid max-w-7xl gap-8 px-4 sm:px-6 lg:grid-cols-2 lg:px-8">
                 <div class="rounded-2xl border border-default bg-neutral-primary-soft p-8">
                     <span class="inline-flex rounded-lg bg-brand-soft p-2.5 text-fg-brand"><x-heroicon-o-user-group class="h-5 w-5" /></span>
                     <h3 class="mt-4 text-xl font-extrabold text-heading">Untuk Guru Mapel</h3>
