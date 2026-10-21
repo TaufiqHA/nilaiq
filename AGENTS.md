@@ -1,3 +1,30 @@
+# NilaiQ
+
+Laravel 13 + Blade + Tailwind CSS 4 school grading/report app. All user-facing copy is Indonesian; keep new UI text consistent with the surrounding views.
+
+## Setup & commands
+
+- `composer setup` — full bootstrap (composer install, `.env`, key, migrate, npm install, `npm run build`). Requires PHP 8.3+.
+- `composer dev` — runs `artisan serve`, `queue:listen`, and Vite together. Queued work (backups, subscriptions, Midtrans sync) needs that worker.
+- Tests: `php artisan test --compact path/to/Test.php` or `--filter=name`; full suite `composer test` (clears config first). PHPUnit uses in-memory SQLite per `phpunit.xml`.
+- Format modified PHP: `vendor/bin/pint --dirty --format agent`.
+- Frontend: Tailwind v4 CSS-first config lives in `resources/css/app.css` (`@theme`, dark via `.dark`); there is no `tailwind.config.js`. Run `npm run build` if the UI does not reflect changes.
+- Seeded logins: `admin@nilaiq.com` (guru mapel), `wali@nilaiq.com`, `administrator@nilaiq.com`; password `password`.
+
+## Architecture & gotchas
+
+- Controllers are shared by web and API. Blade pages are shells whose JS calls the same JSON endpoints with `fetch`; most controllers return `JsonResponse`, others branch on `$request->wantsJson()` (see `SettingsController`). Use `getJson`/`postJson` in feature tests for CRUD and plain `post` for redirect/validation tests.
+- API is unversioned `/api/*` (no `/v1`) and uses Sanctum: `auth:sanctum` + `mapel`; mobile login rejects non-`mapel` roles. `/api/telegram/webhook` skips Sanctum and authenticates with `TELEGRAM_WEBHOOK_SECRET`.
+- Model names are plural/nonstandard: `Students`, `Classes`, `Attendances`, `Recaps`, `Ekskul`, `Prestasi`, `Sikap`, `Absensi`. There is no `Student`/`Class`; factories match (`StudentsFactory`).
+- Models declare `#[Fillable([...])]` / `#[Hidden([...])]` attributes and a `casts()` method (Laravel 13 style), not `$fillable` properties. Copy a sibling model.
+- Tenant isolation: teacher data belongs to a user through `academic_years.user_id` (guru mapel) or `class_wali_kelas.user_id` (wali kelas). `owns.records` (`EnsureRecordOwnership`) 404s foreign route params, queries use `scopeOwnedBy`, and FK validation uses the `OwnedExists` rule. Any new tenant model must be added to `OwnershipService::isOwnedBy()` and get an `ownedBy` scope or it leaks data across users.
+- Roles are `admin`, `mapel`, `wali_kelas`; middleware aliases `admin`, `mapel`, `wali_kelas`, `subscribed`, `owns.records` are registered in `bootstrap/app.php`. Feature routes sit behind `subscribed`; access means admin or a usable subscription (`User::hasAppAccess()`), so nest new pages in that group.
+- Tests: `User::factory()` auto-creates a lifetime subscription; use `->withoutSubscription()` to exercise the 402/redirect billing gate. Factories attach related data to `UserFactory::$lastCreatedId` (reset in `Tests\TestCase`), so create the user first or pass IDs explicitly.
+- Offline sync: meeting/score endpoints accept `client_uuid` and upsert on it (`updateOrCreate`). Keep writes idempotent when editing them.
+- Settings are per-user (`settings.user_id`), not global; legacy rows are consolidated by `LegacySettingsConsolidator`. Do not reintroduce global settings.
+- Naming: harian/PTS/PAS map to daily-test/midterm/final in code. Role views live in `resources/views/auth/` (mapel), `auth/waliKelas/`, `auth/admin/`, with layouts `main`, `waliKelas`, `admin`.
+- Integrations: Gemini OCR uses `services.gemini.key` (tests fake `Http`), Midtrans checkout/webhook is reconciled by `orders:sync-pending`, Telegram bot uses a rule-based parser. Scheduled tasks are in `routes/console.php`. Reusable domain logic lives in `app/Services`; check it before duplicating controller logic.
+
 <laravel-boost-guidelines>
 === foundation rules ===
 
